@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-tw" style="height: 100%;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>歡迎頁面</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%; 
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .content {
+            flex: 1; 
+        }
+        footer {
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <nav class="navbar">
+            <div class="logo">Tudo's WEB</div>
+            <ul class="nav-links">
+                <a href="/login">登入</a> |
+                <a href="/register">註冊</a> |
+                <a href="/upload">上傳文章</a>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="content">
+        <div class="hero">
+            <h1>歡迎來到我的網站</h1>
+            <p></p>
+            <button>了解更多</button>
+        </div>
+    </div>
+
+    <footer>&copy; Tudo</footer>
+</div>
+
+</body>
+</html>
+

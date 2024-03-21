@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 神經網絡儀表板</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+    <!-- 自定義 CSS -->
+    <style>
+        .dashboard-container {
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container dashboard-container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="text-center">AI 神經網絡儀表板</h1>
+            <div class="input-section mt-4">
+                <input type="text" id="aiInput" class="form-control" placeholder="輸入您的數據...">
+                <button class="btn btn-primary mt-2" onclick="sendData()">送出</button>
+            </div>
+            <div class="output-section mt-4">
+                <h2>輸出：</h2>
+                <p id="aiOutput" class="p-2 bg-light border">等待數據...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 引入 Bootstrap 和自己的 JavaScript -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

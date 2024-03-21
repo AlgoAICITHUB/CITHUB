@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入頁面</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="login-container">
+    <form id="loginForm" method="post">
+        <h2>登入</h2>
+        <div class="input-group">
+            <label for="username">使用者名稱：</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="input-group">
+            <label for="password">密碼：</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">登入</button>
+    </form>
+</div>
+</body>
+</html>
