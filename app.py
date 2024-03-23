@@ -4,7 +4,7 @@ import os
 from markdown.extensions.codehilite import CodeHiliteExtension
 from markdown.extensions.tables import TableExtension
 app = Flask(__name__)
-
+app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a'
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
     if request.method == "POST":

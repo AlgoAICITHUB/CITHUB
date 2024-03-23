@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>編輯個人資料</title>
+</head>
+<body>
+    <h2>編輯個人資料</h2>
+    <form method="post">
+        照片：<input type="text" name="photo" value="{{ profile['photo'] }}"><br>
+        自我介紹：<textarea name="bio">{{ profile['bio'] }}</textarea><br>
+        <input type="submit" value="更新資料">
+    </form>
+</body>
+</html>
