@@ -6,19 +6,28 @@ from markdown.extensions.codehilite import CodeHiliteExtension
 from markdown.extensions.tables import TableExtension
 import markdown
 import os
+from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
 db_initialized = False
 app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a'
-UPLOAD_FOLDER = r'C:\Gdrive_tudo\spell_training\flaskwebb\mdp'
+UPLOAD_FOLDER = r'mdp'
+IMAGE = 'static/images'  # 請更換為您的文件保存路徑
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
+
+DATABASE = 'app.db'
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -37,9 +46,9 @@ def login():
          if result:
              # 登入成功，將user_id儲存到會話中
              session['user_id'] = result['id']
-             print(result['id'])
+             session['user_name'] = username
              # 重定向到儀表板或其他頁面
-             return redirect(url_for('profile', user_id=session['user_id']))
+             return redirect(url_for('edit_profile', user_id=result['id']))
 
          else:
              # 登入失敗，顯示錯誤訊息
@@ -48,7 +57,9 @@ def login():
      # 對於GET請求，顯示登入表單
      return render_template("login.html")
 
-DATABASE = 'app.db'
+
+
+
 
 def create_table():
     # 連接到 SQLite 數據庫（如果文件不存在，會自動創建）
@@ -94,6 +105,7 @@ def initialize_database():
         create_table()
         db_initialized = True
 
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -110,7 +122,7 @@ def register():
 
         # 插入新用戶
         c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
-        conn.commit()
+        user_id = c.lastrowid  # 獲取剛剛插入的用戶的id
         success = """
 <!DOCTYPE html>
 <html lang="zh-tw">
@@ -175,6 +187,10 @@ def register():
 
 
 """
+        # 為新用戶創建空的個人資料條目
+        c.execute("INSERT INTO profiles (user_id, photo, bio) VALUES (?, '', '')", (user_id,))
+
+        conn.commit()
         return render_template_string(success)
     else:
         return render_template("register.html")
@@ -183,6 +199,8 @@ def register():
 @app.route("/", methods=["GET", "POST"])
 def index():
     return render_template("index.html")
+
+
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
     if request.method == "POST":
@@ -195,6 +213,8 @@ def upload_file():
 @app.route("/math", methods=["GET", "POST"])
 def math():
     return render_template("lat.html")
+
+
 @app.route("/view/<filename>")
 def view_file(filename):
     markdown_path = os.path.join(UPLOAD_FOLDER, filename)
@@ -211,31 +231,47 @@ def view_file(filename):
 def profile(user_id):
     db = get_db_connection()
     user_profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
-    posts = db.execute('SELECT * FROM posts WHERE user_id = ? ORDER BY created_at DESC', (user_id,)).fetchall()
     db.close()
-    return render_template('profile.html', profile=user_profile, posts=posts)
+
+    # 如果找到了用戶資料，則將 bio 文本從 Markdown 轉換為 HTML
+    if user_profile and user_profile['bio']:
+        profile_bio_html = markdown.markdown(user_profile['bio'], extensions=['codehilite', 'fenced_code', 'tables'])
+    else:
+        profile_bio_html = "No bio available."
+
+    # 將轉換後的 HTML 傳遞給模板
+    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html)
 
 
 @app.route('/edit-profile/<int:user_id>', methods=['GET', 'POST'])
 def edit_profile(user_id):
     db = get_db_connection()
     if request.method == 'POST':
-        # 假設表單中有照片和自我介紹的字段
-        photo = request.form['photo']
-        bio = request.form['bio']
+        bio = request.form.get('bio')
 
-        # 更新數據庫中的用戶資料
-        db.execute('UPDATE profiles SET photo = ?, bio = ? WHERE user_id = ?', (photo, bio, user_id))
+        # 將 bio 文本保存到數據庫
+        db.execute('UPDATE profiles SET bio = ? WHERE user_id = ?', (bio, user_id))
         db.commit()
         db.close()
+
         flash('個人資料更新成功！')
         return redirect(url_for('profile', user_id=user_id))
-    
-    # 用 GET 請求獲取當前用戶資料，並顯示在表單中
-    profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
-    db.close()
-    return render_template('edit_profile.html', profile=profile)
 
+    else:
+        # 獲取當前用戶的個人資料
+        profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
+        db.close()
 
+        if not profile:
+            flash('未找到指定的個人資料。')
+            return redirect(url_for('index'))
+
+        # 直接將 Row 轉換成 dict 傳給 Jinja，以避免 UndefinedError
+        profile_dict = dict(profile) if profile else None
+
+        return render_template('edit_profile.html', profile=profile_dict)
+@app.route('/about', methods=["GET", "POST"])
+def about():
+    return render_template('about.html')
 if __name__ == "__main__":
     app.run(debug=True)

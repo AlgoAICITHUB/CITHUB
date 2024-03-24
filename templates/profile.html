@@ -61,17 +61,26 @@
         .post-content {
             color: #666;
         }
+        footer {
+            text-align: center;
+            width: 100%;
+        }
     </style>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+      </script>
+      <script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+      
+      </script>
 </head>
 <body>
     <div class="container">
         <div class="profile-header">
-            <div class="profile-photo">
-                <img src="{{ profile['photo'] | default('/path/to/default/image.jpg', true) }}" alt="Profile Photo">
-            </div>
             <div class="profile-info">
-                <h2>{{ profile['username'] }}</h2>
-                <p>{{ profile['bio'] | default('No bio available.', true) }}</p>
+                <h2>{{ profile.user }}</h2>
+                <p>{{ profile_bio_html | safe }}</p>
+                
             </div>
         </div>
         <div class="posts">
@@ -86,8 +95,10 @@
             {% endfor %}
         </div>
     </div>
+
     {% if profile %}
-    <a href="{{ url_for('edit_profile', user_id=profile.get('user_id')) }}">編輯個人資料</a>
+    
+    <footer><a href="{{ url_for('edit_profile', user_id=profile['user_id']) }}">編輯個人資料</a></footer>
 {% endif %}
 
 

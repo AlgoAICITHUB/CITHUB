@@ -23,6 +23,30 @@
             text-align: center;
             width: 100%;
         }
+
+        .coolButton {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+    font-size: 18px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.coolButton:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transform: translateY(-2px);
+}
+
+.coolButton:active {
+    background-color: #004494;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    transform: translateY(1px);
+}
     </style>
 </head>
 <body>
@@ -43,7 +67,7 @@
         <div class="hero">
             <h1>歡迎來到我的網站</h1>
             <p></p>
-            <button>了解更多</button>
+            <button onclick="location.href='/about'">了解更多</button>
         </div>
     </div>
 
