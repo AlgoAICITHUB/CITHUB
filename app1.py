@@ -273,5 +273,9 @@ def edit_profile(user_id):
 @app.route('/about', methods=["GET", "POST"])
 def about():
     return render_template('about.html')
+
+@app.route('/comingsoon', methods=["GET", "POST"])
+def comingsoon():
+    return render_template("ComingSoon.html")
 if __name__ == "__main__":
     app.run(debug=True)
