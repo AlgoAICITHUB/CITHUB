@@ -24,7 +24,12 @@ header {
         color: #66fcf1; 
         text-shadow: 0px 0px 8px rgba(102, 252, 241, 0.7); 
 }
-
+.logo1 {
+    font-size: 32px;
+        margin-bottom: 1.5rem;
+        color: #66fcf1; 
+        text-shadow: 0px 0px 8px rgba(102, 252, 241, 0.7); 
+}
 .nav-links {
     list-style: none;
 }
