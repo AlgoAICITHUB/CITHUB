@@ -13,7 +13,7 @@ app = Flask(__name__)
 db_initialized = False
 app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a'
 UPLOAD_FOLDER = r'mdp'
-IMAGE = 'static/images'  # 請更換為您的文件保存路徑
+IMAGE = 'static/images'  
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 if not os.path.exists(UPLOAD_FOLDER):
@@ -36,25 +36,23 @@ def login():
          password = request.form['password']
 
          conn = sqlite3.connect("app.db")
-         conn.row_factory = sqlite3.Row # 使得資料庫查詢結果可以透過列名稱進行訪問
+         conn.row_factory = sqlite3.Row 
          c = conn.cursor()
 
-         # 使用參數化查詢來防止SQL注入
+
          c.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
          result = c.fetchone()
 
          if result:
-             # 登入成功，將user_id儲存到會話中
              session['user_id'] = result['id']
              session['user_name'] = username
-             # 重定向到儀表板或其他頁面
              return redirect(url_for('edit_profile', user_id=result['id']))
 
          else:
-             # 登入失敗，顯示錯誤訊息
+
              return render_template("login.html", error="無效的使用者名稱或密碼。")
 
-     # 對於GET請求，顯示登入表單
+
      return render_template("login.html")
 
 
@@ -62,11 +60,11 @@ def login():
 
 
 def create_table():
-    # 連接到 SQLite 數據庫（如果文件不存在，會自動創建）
+
     conn = sqlite3.connect(DATABASE)
     c = conn.cursor()
     
-    # 創建表的 SQL 命令
+
     tables = [
         """CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -92,10 +90,10 @@ def create_table():
     for table in tables:
         c.execute(table)
     
-    # 提交更改
+
     conn.commit()
     
-    # 關閉連接
+
     conn.close()
 
 @app.before_request
@@ -115,14 +113,14 @@ def register():
         conn = sqlite3.connect("app.db")
         c = conn.cursor()
         
-        # 插入新用戶前，檢查用戶名是否已存在
+
         c.execute("SELECT * FROM users WHERE username = ?", (username,))
         if c.fetchone():
             return "用戶名已存在。"
 
         # 插入新用戶
         c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
-        user_id = c.lastrowid  # 獲取剛剛插入的用戶的id
+        user_id = c.lastrowid 
         success = """
 <!DOCTYPE html>
 <html lang="zh-tw">
@@ -187,7 +185,7 @@ def register():
 
 
 """
-        # 為新用戶創建空的個人資料條目
+
         c.execute("INSERT INTO profiles (user_id, photo, bio) VALUES (?, '', '')", (user_id,))
 
         conn.commit()
@@ -221,7 +219,7 @@ def view_file(filename):
     if os.path.exists(markdown_path):
         with open(markdown_path, 'r', encoding='utf-8') as f:
             markdown_text = f.read()
-            # 使用 Markdown 庫將 Markdown 文件轉換為 HTML
+
             html = Markup(markdown.markdown(markdown_text, extensions=['codehilite', 'fenced_code', 'tables']))
             return render_template("display.html", content=html)
     else:
@@ -233,13 +231,13 @@ def profile(user_id):
     user_profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
     db.close()
 
-    # 如果找到了用戶資料，則將 bio 文本從 Markdown 轉換為 HTML
+
     if user_profile and user_profile['bio']:
         profile_bio_html = markdown.markdown(user_profile['bio'], extensions=['codehilite', 'fenced_code', 'tables'])
     else:
         profile_bio_html = "No bio available."
 
-    # 將轉換後的 HTML 傳遞給模板
+
     return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html)
 
 
@@ -249,7 +247,7 @@ def edit_profile(user_id):
     if request.method == 'POST':
         bio = request.form.get('bio')
 
-        # 將 bio 文本保存到數據庫
+
         db.execute('UPDATE profiles SET bio = ? WHERE user_id = ?', (bio, user_id))
         db.commit()
         db.close()
@@ -258,7 +256,7 @@ def edit_profile(user_id):
         return redirect(url_for('profile', user_id=user_id))
 
     else:
-        # 獲取當前用戶的個人資料
+
         profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
         db.close()
 
@@ -266,7 +264,6 @@ def edit_profile(user_id):
             flash('未找到指定的個人資料。')
             return redirect(url_for('index'))
 
-        # 直接將 Row 轉換成 dict 傳給 Jinja，以避免 UndefinedError
         profile_dict = dict(profile) if profile else None
 
         return render_template('edit_profile.html', profile=profile_dict)
