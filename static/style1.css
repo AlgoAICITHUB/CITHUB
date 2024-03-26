@@ -21,8 +21,8 @@ header {
 .logo {
     font-size: 24px;
         margin-bottom: 1.5rem;
-        color: #66fcf1; /* 亮眼但不過分的標題顏色 */
-        text-shadow: 0px 0px 8px rgba(102, 252, 241, 0.7); /* 為標題添加微妙的陰影效果 */
+        color: #66fcf1; 
+        text-shadow: 0px 0px 8px rgba(102, 252, 241, 0.7); 
 }
 
 .nav-links {
