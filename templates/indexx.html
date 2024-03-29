@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-tw" style="height: 100%;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>歡迎頁面</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%; 
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .content {
+            flex: 1; 
+        }
+        footer {
+            text-align: center;
+            width: 100%;
+        }
+
+        .coolButton {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+    font-size: 18px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.coolButton:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transform: translateY(-2px);
+}
+
+.coolButton:active {
+    background-color: #004494;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    transform: translateY(1px);
+}
+#chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+#chatbot-message {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 40px;
+    width: 200px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+    </style>
+    <link rel="icon" type="image/x-icon" href="https://download1581.mediafire.com/ozzx9k5n1oggSVaMjQa74MmEoeXVHeWkSFcgit0iMYElGLP0Yw8G0gfkf4bOFotPgxHVBPCUkTMshbXw2m4bjFg9YMvYuedMVIOXhNvcXdP1SOUtBFxCK3KQMxK4BWd3WmcVzGVzIXSGO8WfJeO8JmrHWuGuNzpkruZCmJV74fli/xdslwuun4zr62dl/favicon.ico">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <nav class="navbar">
+            <div class="logo">CitHub</div>
+            <ul class="nav-links">
+                <a href="/login">登入</a> |
+                <a href="/register">註冊</a> |
+                <a href="/upload">上傳文章</a>|
+                <a href="/comingsoon">程式碼庫</a>|
+                <a href="/comingsoon">文章庫</a>|
+            </ul>
+        </nav>
+    </header>
+
+    <div class="content">
+        <div class="hero">
+            <h1>Welcome to The <div class="logo1">Cithub</div></h1>
+            <p></p>
+            <button onclick="location.href='/about'">了解更多</button>
+        </div>
+    </div>
+
+    <footer>&copy; Tudo</footer>
+</div>
+
+<div id="chatbot-container">
+    &#9990;
+    <div id="chatbot-message">
+        您好！有什麼可以幫助您的嗎？
+    </div>
+</div>
+<script src="{{ url_for('static', filename='chatbot.js') }}"></script>
+
+
+</body>
+</html>
+

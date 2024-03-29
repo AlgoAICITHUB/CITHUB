@@ -3,52 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>歡迎頁面</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+    <title>歡迎頁面 - CitHub</title>
+    <!--<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">-->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%; 
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        .content {
-            flex: 1; 
-        }
-        footer {
-            text-align: center;
-            width: 100%;
-        }
+/* 全局設定 */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #1E1E24;
+    color: #EFEFEF;
+    width: 100%;
+    height: 100%;
+}
 
-        .coolButton {
+.container {
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 導航條 */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0D3B66;
+    padding: 1rem;
+
+}
+
+.nav-links {
+    display: flex;
+}
+
+.nav-links a {
+    margin: 0 10px;
+    color: #EFEFEF;
+    text-decoration: none;
+}
+
+.nav-links a:hover {
+    color: #16DB93;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 24px;
+    color: #16DB93;
+}
+
+/* 主要內容區域 */
+.hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 50px 0;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.feature {
+    background-color: #0D3B66;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+/* 呼籲行動區域 */
+.call-to-action {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.btn {
+    background-color: #048BA8;
+    color: #EFEFEF;
     padding: 10px 20px;
     border: none;
-    background-color: #007bff;
-    color: white;
     cursor: pointer;
-    transition: all 0.3s ease;
     border-radius: 5px;
-    font-size: 18px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: background 0.3s;
 }
 
-.coolButton:hover {
-    background-color: #0056b3;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    transform: translateY(-2px);
+.btn:hover {
+    background-color: #16DB93;
 }
 
-.coolButton:active {
-    background-color: #004494;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-    transform: translateY(1px);
+/* 頁腳 */
+footer {
+    background-color: #0D3B66;
+    color: #CCCCCC;
+    text-align: center;
+    padding: 10px;
+    margin-top: 20px;
 }
+
+
     </style>
-    <link rel="icon" type="image/x-icon" href="https://download1581.mediafire.com/ozzx9k5n1oggSVaMjQa74MmEoeXVHeWkSFcgit0iMYElGLP0Yw8G0gfkf4bOFotPgxHVBPCUkTMshbXw2m4bjFg9YMvYuedMVIOXhNvcXdP1SOUtBFxCK3KQMxK4BWd3WmcVzGVzIXSGO8WfJeO8JmrHWuGuNzpkruZCmJV74fli/xdslwuun4zr62dl/favicon.ico">
 </head>
 <body>
 
@@ -57,25 +117,49 @@
         <nav class="navbar">
             <div class="logo">CitHub</div>
             <ul class="nav-links">
-                <a href="/login">登入</a> |
-                <a href="/register">註冊</a> |
+                <a href="/login">登入</a>
+                <a href="/register">註冊</a>
                 <a href="/upload">上傳文章</a>
-                <a href="/comingsoon">程式碼庫</a>
+                <a href="/repository">程式碼庫</a>
+                <a href="/articles">文章庫</a>
             </ul>
         </nav>
     </header>
 
-    <div class="content">
-        <div class="hero">
-            <h1>Welcome to The <div class="logo1">Cithub</div></h1>
-            <p></p>
-            <button onclick="location.href='/about'">了解更多</button>
-        </div>
-    </div>
+    <main>
+        <section class="hero">
+            <h1>歡迎來到 CitHub</h1>
+            <p>從零開源的異世界冒險</p>
+            <a href="/about" class="btn">了解更多</a>
+        </section>
 
-    <footer>&copy; Tudo</footer>
+        <section class="features">
+            <div class="feature">
+                <h2>無限合作</h2>
+                <p>與夥伴一起開啟、打造並完成一個專案</p>
+            </div>
+            <div class="feature">
+                <h2>項目管理</h2>
+                <p>高效管理你的項目，保持進度和質量。</p>
+            </div>
+            <div class="feature">
+                <h2>學術交流</h2>
+                <p>分享你的想法，腦力激盪，不斷進步。</p>
+            </div>
+        </section>
+
+        <section class="call-to-action">
+            <h2>準備好加入了嗎？</h2>
+            <a href="/register" class="btn">立即註冊</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 CitHub. </p>
+    </footer>
 </div>
+
+<script src="{{ url_for('static', filename='chatbot.js') }}"></script>
 
 </body>
 </html>
-
