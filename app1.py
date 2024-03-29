@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify,render_template_string, redirect, url_for, flash,session
+from flask import Flask, request, render_template, jsonify,render_template_string, redirect, url_for, flash,session,make_response
 from markupsafe import Markup
 import sqlite3
 import json
@@ -7,6 +7,8 @@ from markdown.extensions.tables import TableExtension
 import markdown
 import os
 from werkzeug.utils import secure_filename
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
 
 
 app = Flask(__name__)
@@ -31,29 +33,28 @@ DATABASE = 'app.db'
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-     if request.method == "POST":
-         username = request.form['username']
-         password = request.form['password']
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
 
-         conn = sqlite3.connect("app.db")
-         conn.row_factory = sqlite3.Row 
-         c = conn.cursor()
+        conn = sqlite3.connect("app.db")
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
 
+        c.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
+        result = c.fetchone()
 
-         c.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-         result = c.fetchone()
+        if result:
+            resp = make_response(redirect(url_for('edit_profile', user_id=result['id'])))
 
-         if result:
-             session['user_id'] = result['id']
-             session['user_name'] = username
-             return redirect(url_for('edit_profile', user_id=result['id']))
+            resp.set_cookie('user_id', str(result['id']))
+            
+            resp.set_cookie('user_name', username)
+            return resp
+        else:
+            return render_template("login.html", error="無效的使用者名稱或密碼。")
 
-         else:
-
-             return render_template("login.html", error="無效的使用者名稱或密碼。")
-
-
-     return render_template("login.html")
+    return render_template("login.html")
 
 
 
@@ -227,36 +228,37 @@ def view_file(filename):
 
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
+
     db = get_db_connection()
     user_profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
     db.close()
-
 
     if user_profile and user_profile['bio']:
         profile_bio_html = markdown.markdown(user_profile['bio'], extensions=['codehilite', 'fenced_code', 'tables'])
     else:
         profile_bio_html = "No bio available."
 
-
     return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html)
 
-
-@app.route('/edit-profile/<int:user_id>', methods=['GET', 'POST'])
-def edit_profile(user_id):
+@app.route('/edit-profile', methods=['GET', 'POST'])
+def edit_profile():
+    user_id = request.cookies.get('user_id')
+    if not user_id:
+        flash('請先登錄。')
+        return redirect(url_for('login'))
+    
     db = get_db_connection()
     if request.method == 'POST':
         bio = request.form.get('bio')
-
 
         db.execute('UPDATE profiles SET bio = ? WHERE user_id = ?', (bio, user_id))
         db.commit()
         db.close()
 
         flash('個人資料更新成功！')
-        return redirect(url_for('profile', user_id=user_id))
+        return redirect(url_for('profile',user_id=user_id))
 
     else:
-
         profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
         db.close()
 
