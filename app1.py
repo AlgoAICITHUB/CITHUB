@@ -7,23 +7,19 @@ from markdown.extensions.tables import TableExtension
 import markdown
 import os
 from werkzeug.utils import secure_filename
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.backends import default_backend
+import subprocess
 
-
+#---------前處理---------
 app = Flask(__name__)
 db_initialized = False
-app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a'
-UPLOAD_FOLDER = r'mdp'
-IMAGE = 'static/images'  
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a' #SHA256函數加密
+UPLOAD_FOLDER = r'mdp' #裝Markdown文件用
 
-if not os.path.exists(UPLOAD_FOLDER):
+if not os.path.exists(UPLOAD_FOLDER): #防爆措施
     os.makedirs(UPLOAD_FOLDER)
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# 與DATABASE進行溝通用
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
@@ -31,35 +27,8 @@ def get_db_connection():
 
 DATABASE = 'app.db'
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form['username']
-        password = request.form['password']
 
-        conn = sqlite3.connect("app.db")
-        conn.row_factory = sqlite3.Row
-        c = conn.cursor()
-
-        c.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-        result = c.fetchone()
-
-        if result:
-            resp = make_response(redirect(url_for('edit_profile', user_id=result['id'])))
-
-            resp.set_cookie('user_id', str(result['id']))
-            
-            resp.set_cookie('user_name', username)
-            return resp
-        else:
-            return render_template("login.html", error="無效的使用者名稱或密碼。")
-
-    return render_template("login.html")
-
-
-
-
-
+# 設定SQL邏輯
 def create_table():
 
     conn = sqlite3.connect(DATABASE)
@@ -96,6 +65,39 @@ def create_table():
     
 
     conn.close()
+#---------網站主函數---------
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+
+        conn = sqlite3.connect("app.db")
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+
+        c.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
+        result = c.fetchone()
+
+        if result:
+            resp = make_response(redirect(url_for('edit_profile', user_id=result['id'])))
+
+            resp.set_cookie('user_id', str(result['id']))
+            
+            resp.set_cookie('user_name', username)
+            return resp
+        else:
+            return render_template("login.html", error="無效的使用者名稱或密碼。")
+
+    return render_template("login.html")
+
+
+
+
+
+
 
 @app.before_request
 def initialize_database():
@@ -269,6 +271,7 @@ def edit_profile():
         profile_dict = dict(profile) if profile else None
 
         return render_template('edit_profile.html', profile=profile_dict)
+
 @app.route('/about', methods=["GET", "POST"])
 def about():
     return render_template('about.html')
@@ -276,5 +279,42 @@ def about():
 @app.route('/comingsoon', methods=["GET", "POST"])
 def comingsoon():
     return render_template("ComingSoon.html")
+
+@app.route('/create-repo', methods=['GET','POST'])
+def create_repo():
+    if request.method == 'POST':
+        repo_name = request.form['repo_name']
+        license_type = request.form['license_type']
+        readme_contents = request.form.get('readme_contents', '')
+
+        repo_path = os.path.join('repositories', repo_name)
+
+        if not os.path.exists(repo_path):
+            os.makedirs(repo_path)
+
+        # 初始化 git 倉庫
+        subprocess.run(['git', 'init', repo_path])
+
+        # 創建 LICENSE
+        if license_type != 'No License':
+            with open(os.path.join(repo_path, 'LICENSE'), 'w') as f:
+                f.write(f"This is a placeholder for the {license_type} license.")
+
+        # 創建 README
+        if readme_contents:
+            with open(os.path.join(repo_path, 'README.md'), 'w') as f:
+                f.write(readme_contents)
+
+        return '倉庫創建成功，包含選定的 License 和自定義 README。'
+    else:
+        return render_template('create_repo.html')
+
+@app.route('/repos')
+def list_repos():
+    repo_directory = 'repositories'
+    repos = [d for d in os.listdir(repo_directory) if os.path.isdir(os.path.join(repo_directory, d))]
+    return render_template('list_repos.html', repos=repos)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
