@@ -124,6 +124,53 @@ footer {
     margin-top: 20px;
 }
 
+.night-mode {
+  background-color: #000000; /* 深藍色背景代表夜晚 */
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 0 2px #fff;
+  opacity: 0.8;
+  animation: twinkle 2s infinite ease-in-out alternate;
+}
+
+@keyframes twinkle {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+.dLINE, .dLINE2 {
+  position: relative; /* 確保可以相對於它們定位 ::after 偽元素 */
+  display: inline-block; /* 或其他適合的顯示方式，以適應內容 */
+}
+
+.dLINE::after, .dLINE2::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; /* 根據需要調整底線距離元素底部的位置 */
+  left: -10%; /* 向左延伸底線 */
+  width: 120%; /* 增加底線的總長度 */
+  height: 2px; /* 根據需要調整底線的厚度 */
+}
+
+.dLINE::after {
+  background-image: linear-gradient(181deg, #ffa620 0%, #fba11a 50%, transparent 54%, transparent 100%);
+}
+
+.dLINE2::after {
+  background-image: linear-gradient(179deg, #fe619e 0%, #fe619e 50%, transparent 54%, transparent 100%);
+}
+
 
     </style>
 </head>
@@ -146,7 +193,7 @@ footer {
     <main>
         <section class="hero">
             <h1>歡迎來到 CitHub</h1>
-            <p>從零開源的異世界冒險</p>
+            <p><span class ="dLINE"><span class ="dLINE2">從零開源的異世界冒險</span></span></p>
             <a href="/about" class="btn">了解更多</a>
         </section>
 
@@ -173,11 +220,14 @@ footer {
     </main>
 
     <footer>
-        <p>&copy; 2024 CitHub. </p>
+        <p>Copyright &copy; 2024 Cithub. All rights reserved.</p>
     </footer>
 </div>
 <div class="snow-container"></div> 
+<div id="stars"></div>
+
 <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
 <script src="{{ url_for('static', filename='snow.js') }}"></script>
+<script src="{{ url_for('static', filename='night.js') }}"></script>
 </body>
 </html>

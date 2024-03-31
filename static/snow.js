@@ -58,5 +58,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth(); 
+    if (currentMonth >= 9) { 
+        snowing = true;
+        generateSnowflakes();
+        toggleSnowButton.textContent = "停止下雪";
+    }
+
     toggleSnowButton.addEventListener('click', toggleSnowfall);
 });

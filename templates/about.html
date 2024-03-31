@@ -2,65 +2,90 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>了解更多</title>
+    <title>了解更多 - CitHub</title>
     <style>
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            padding: 20px;
-            background: #232526; /* 深沉的漸變背景 */
-            background: linear-gradient(to right, #232526, #414345);
-            color: #f5f5f5;
-            text-align: center;
-            margin: 0;
-        }
+    font-family: system-ui, -apple-system, sans-serif;
+    padding: 20px;
+    background: #232526; /* 深沉的漸變背景 */
+    background: linear-gradient(to right, #232526, #414345);
+    color: #f5f5f5;
+    text-align: center;
+    margin: 0;
+    overflow-x: hidden;
+}
 
-        .container {
-            max-width: 800px;
-            margin: auto;
-            overflow: hidden;
-        }
+.container {
+    max-width: 800px;
+    margin: auto;
+    overflow: hidden;
+    padding-bottom: 2rem;
+}
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            color: #66fcf1; /* 亮眼但不過分的標題顏色 */
-            text-shadow: 0px 0px 8px rgba(102, 252, 241, 0.7); /* 為標題添加微妙的陰影效果 */
-        }
+.iframe-container {
+    position: relative;
+    width: 100%; /* 確保容器寬度為視窗的100% */
+    height: 0; /* 初始高度設為0 */
+    padding-top: 56.25%; /* 16:9 的寬高比（9 / 16 = 0.5625） */
+    overflow: hidden;
+}
 
-        p {
-            text-align: justify;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-        }
+.iframe-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
 
-        .link {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 1rem;
-            background-color: #1f2833;
-            color: #45a29e;
-            border: 2px solid #66fcf1;
-            border-radius: 5px;
-            text-decoration: none;
-            transition: background-color 0.3s, color 0.3s;
-        }
+h1, h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: #66fcf1;
+    text-shadow: 0 0 8px rgba(102, 252, 241, 0.7);
+}
 
-        .link:hover, .link:focus {
-            background-color: #0b0c10;
-            color: #66fcf1;
-        }
+p {
+    text-align: justify;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
 
-        .section {
-            margin: 2rem 0;
-        }
+.link {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #1f2833;
+    color: #45a29e;
+    border: 2px solid #66fcf1;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.link:hover, .link:focus {
+    background-color: #0b0c10;
+    color: #66fcf1;
+}
+
+.section {
+    margin: 2rem 0;
+}
+
     </style>
 </head>
 <body>
 <div class="container">
+
+
     <h1>Welcome to CitHub</h1>
     <p>這是一個專屬於高中生的開源程式碼網站，提前讓大家進入開源程式碼的世界。</p>
     <div class="section">
         <h2>平台特色</h2>
-        <p>類似Github,使用Git進行版本控制，但是去除掉太複雜的控制功能，只保留純粹的Pull, Commit, Push</p>
+        <p>類似Github, 使用Git進行版本控制，但是去除掉太複雜的控制功能，只保留純粹的Pull, Commit, Push。</p>
     </div>
 </div>
+</div>
+
+</body>
+</html>
