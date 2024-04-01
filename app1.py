@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, jsonify,render_template_string, redirect, url_for, flash,session,make_response
+from flask_socketio import SocketIO, emit, join_room, leave_room
 from markupsafe import Markup
 import sqlite3
 import json
@@ -11,24 +12,30 @@ import subprocess
 
 #---------前處理---------
 app = Flask(__name__)
+socketio = SocketIO(app)
 db_initialized = False
+db_initialized_c = False
 app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a' #SHA256函數加密
 UPLOAD_FOLDER = r'mdp' #裝Markdown文件用
 
 if not os.path.exists(UPLOAD_FOLDER): #防爆措施
     os.makedirs(UPLOAD_FOLDER)
 
-
+DATABASEC = 'chat.db'
 # 與DATABASE進行溝通用
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
-
+def get_db_connection_chat():
+    conn = sqlite3.connect(DATABASEC)
+    conn.row_factory = sqlite3.Row
+    return conn
 DATABASE = 'app.db'
 
 
 # 設定SQL邏輯
+
 def create_table():
 
     conn = sqlite3.connect(DATABASE)
@@ -65,6 +72,27 @@ def create_table():
     
 
     conn.close()
+
+def create_chat_sql():
+    conn = sqlite3.connect(DATABASEC)
+    c = conn.cursor()
+    table = """
+CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    username TEXT,
+    message TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+"""
+    c.execute(table)
+    conn.commit()
+    
+
+    conn.close()
+    print("yes")
 #---------網站主函數---------
 
 
@@ -101,11 +129,13 @@ def login():
 
 @app.before_request
 def initialize_database():
-    global db_initialized
+    global db_initialized,db_initialized_c
     if not db_initialized:
         create_table()
         db_initialized = True
-
+    if not db_initialized_c:
+        create_chat_sql()
+        db_initialized_c = True
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -315,6 +345,39 @@ def list_repos():
     repos = [d for d in os.listdir(repo_directory) if os.path.isdir(os.path.join(repo_directory, d))]
     return render_template('list_repos.html', repos=repos)
 
+@app.route('/discussion')
+def discussion():
+    user_id = request.cookies.get('user_id')
+    if user_id:
+        db = get_db_connection_chat()
+        recent_messages = db.execute('SELECT username, message, created_at FROM messages ORDER BY created_at DESC LIMIT 50').fetchall()
+        db.close()
+        messages = [dict(message) for message in recent_messages]
+        return render_template('discussion.html', messages=messages)
+    else:
+        flash('請先登錄才能進入討論室。')
+        return redirect(url_for('login'))
 
+@socketio.on('send_message')
+def handle_send_message_event(data):
+    user_id = request.cookies.get('user_id')
+    if not user_id:
+        return
+    user_name = request.cookies.get('user_name', '匿名')
+    msg = data['msg']
+    
+    # 將Markdown消息轉換為HTML
+    html_msg = markdown.markdown(msg)
+    
+    # 存儲轉換後的HTML消息到數據庫
+    db = get_db_connection_chat()
+    db.execute('INSERT INTO messages (user_id, username, message) VALUES (?, ?, ?)', (user_id, user_name, html_msg))
+    db.commit()
+    db.close()
+    
+    emit('announce_message', {'user': user_name, 'msg': html_msg}, broadcast=True)
+@app.route('/slide')
+def slide():
+    return render_template('slide.html')
 if __name__ == "__main__":
     app.run(debug=True)

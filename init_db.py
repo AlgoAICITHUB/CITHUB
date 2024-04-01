@@ -1,15 +1,19 @@
 import sqlite3
 
-conn = sqlite3.connect('login.db')
-c = conn.cursor()
+conn = sqlite3.connect('chat.db')
 
-# 創建一個使用者表
-c.execute('''
-    CREATE TABLE users (username TEXT, password TEXT)
-''')
-
-# 插入一個示例使用者
-c.execute("INSERT INTO users VALUES ('admin', '1234')")
-
-conn.commit()
-conn.close()
+def create_chat_db():
+    conn = sqlite3.connect('chat.db')
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            username TEXT,
+            message TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        );
+    """)
+    conn.commit()
+    conn.close()

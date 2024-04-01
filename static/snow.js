@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth(); 
-    if (currentMonth >= 9) { 
+    if (currentMonth >= 10) { 
         snowing = true;
         generateSnowflakes();
         toggleSnowButton.textContent = "停止下雪";

@@ -71,6 +71,24 @@ p {
 .section {
     margin: 2rem 0;
 }
+a {
+            color: #64ffda;
+            text-decoration: none;
+            border: 2px solid #64ffda;
+            padding: 10px 25px;
+            border-radius: 30px;
+            transition: all 0.4s ease;
+            font-size: 1rem;
+            letter-spacing: 1px; /* 增加字母間距 */
+            box-shadow: 0 4px 14px 0 rgba(100, 255, 218, 0.4); /* 按鈕陰影 */
+            background: transparent;
+        }
+
+        a:hover {
+            background-color: #64ffda;
+            color: #0a192f;
+            box-shadow: 0 6px 20px rgba(100, 255, 218, 0.5); /* 滑過時的陰影效果 */
+        }
 
     </style>
 </head>
@@ -83,6 +101,7 @@ p {
     <div class="section">
         <h2>平台特色</h2>
         <p>類似Github, 使用Git進行版本控制，但是去除掉太複雜的控制功能，只保留純粹的Pull, Commit, Push。</p>
+        <a href="/slide">概念簡報</a>
     </div>
 </div>
 </div>
