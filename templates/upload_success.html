@@ -1,12 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-tw">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>成功!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: '微軟正黑體', 'Arial', sans-serif;
+            background: radial-gradient(circle at top right, #0a192f, #20232a); /* 徑向漸變背景 */
+            color: #ccd6f6; /* 柔和的藍色調文字 */
+            text-align: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 2.5rem; /* 增加標題字體大小 */
+            margin: 30px 0;
+            position: relative;
+            display: inline-block;
+        }
+
+        .title::after { /* 標題底部裝飾 */
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            height: 4px;
+            background-color: #64ffda; /* 底部裝飾條顏色 */
+            border-radius: 2px;
+        }
+
+        .rainbow-energetic {
+            background-size: 400% 100%;
+            background-image: repeating-linear-gradient(45deg, #ff5e57, #fca652, #ffff55, #48f442, #42f4ee, #4269f4, #b142f4, #f44298, #ff5e57);
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: rainbow-animation 3s linear infinite;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5); /* 添加輕微的白色文字陰影增強可讀性 */
+        }
+
+        @keyframes rainbow-animation {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        a {
+            color: #64ffda;
+            text-decoration: none;
+            border: 2px solid #64ffda;
+            padding: 10px 25px;
+            border-radius: 30px;
+            transition: all 0.4s ease;
+            font-size: 1rem;
+            letter-spacing: 1px; /* 增加字母間距 */
+            box-shadow: 0 4px 14px 0 rgba(100, 255, 218, 0.4); /* 按鈕陰影 */
+            background: transparent;
+        }
+
+        a:hover {
+            background-color: #64ffda;
+            color: #0a192f;
+            box-shadow: 0 6px 20px rgba(100, 255, 218, 0.5); /* 滑過時的陰影效果 */
+        }
+    </style>
 </head>
 <body>
-    <h1>Success!!!!</h1>
+    <div class="title"><span class="rainbow-energetic">成功!</span></div>
     <a href="/">返回首頁</a>
 </body>
 </html>
