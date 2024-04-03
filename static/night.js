@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     // 檢查當前時間並啟用夜晚模式
     const hour = new Date().getHours();
-    const isNight = hour >= 18 || hour < 6;
+    const isNight = hour >= 12 || hour < 6;
     const body = document.body;
     const starsContainer = document.getElementById('stars');
 

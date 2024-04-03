@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini Colab</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #00ffea;
+        }
+        #code {
+            width: 80%;
+            height: 200px;
+            margin: 20px auto;
+            display: block;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #00ffea;
+            border: 2px solid #00ffea;
+            padding: 10px;
+            resize: none;
+            outline: none;
+        }
+        button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #00ffea;
+            color: #0f0c29;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #0f0c29;
+            color: #00ffea;
+            border: 2px solid #00ffea;
+        }
+        #result {
+            width: 80%;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid #00ffea;
+            color: #00ffea;
+        }
+    </style>
+    <script type="text/javascript" charset="utf-8">
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        function executeCode() {
+            var code = document.getElementById('code').value;
+            socket.emit('execute_code', {code: code});
+        }
+
+        socket.on('code_result', function(data) {
+            document.getElementById('result').textContent = data.result;
+        });
+    </script>
+</head>
+<body>
+    <textarea id="code">print("Hello, World!")</textarea><br>
+    <button onclick="executeCode()">Run Code</button>
+    <div id="result">Result will appear here...</div>
+</body>
+</html>
