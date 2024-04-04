@@ -9,6 +9,8 @@ import markdown
 import os
 from werkzeug.utils import secure_filename
 import subprocess
+from datetime import datetime
+
 
 #---------前處理---------
 app = Flask(__name__)
@@ -110,21 +112,13 @@ def login():
         result = c.fetchone()
 
         if result:
-            resp = make_response(redirect(url_for('edit_profile', user_id=result['id'])))
-
-            resp.set_cookie('user_id', str(result['id']))
-            
-            resp.set_cookie('user_name', username)
-            return resp
+            session['user_id'] = result['id']
+            session['username'] = username
+            return redirect(url_for('edit_profile', user_id=result['id']))
         else:
             return render_template("login.html", error="無效的使用者名稱或密碼。")
 
     return render_template("login.html")
-
-
-
-
-
 
 
 @app.before_request
@@ -234,11 +228,20 @@ def index():
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
+    if not session.get('user_id'):  # 如果用戶未登入，重定向到登入頁面
+        flash('請先登錄。')
+        return redirect(url_for('login'))
+
     if request.method == "POST":
         file = request.files["file"]
-        filename = os.path.join(UPLOAD_FOLDER, file.filename)
-        file.save(filename)
-        return render_template("upload_success.html", filename=filename)
+        if file:
+            # 確保文件名是安全的
+            filename = secure_filename(file.filename)
+            # 儲存文件時加入用戶 ID 作為文件名的一部分
+            user_id = session['user_id']  # 從 session 中取得用戶 ID
+            save_path = os.path.join(UPLOAD_FOLDER, f"{user_id}_{filename}")
+            file.save(save_path)
+            return render_template("upload_success.html", filename=filename)
     return render_template("upload.html")
 
 @app.route("/math", methods=["GET", "POST"])
@@ -248,15 +251,37 @@ def math():
 
 @app.route("/view/<filename>")
 def view_file(filename):
+    # 解析出原始的文件名和用戶 ID
+    parts = filename.split('_', 1)
+    if len(parts) == 2:
+        user_id, original_filename = parts
+    else:
+        # If there aren't two parts, handle the error appropriately
+        flash('Invalid filename format.')
+        return redirect(url_for('index'))  # Redirect to a safe page
+
+    user_id, original_filename = parts
     markdown_path = os.path.join(UPLOAD_FOLDER, filename)
+
     if os.path.exists(markdown_path):
+        # 從數據庫中獲取用戶名
+        conn = get_db_connection()
+        user = conn.execute('SELECT username FROM users WHERE id = ?', (user_id,)).fetchone()
+        conn.close()
+
+        if user is None:
+            return "User not found."
+
         with open(markdown_path, 'r', encoding='utf-8') as f:
             markdown_text = f.read()
-
             html = Markup(markdown.markdown(markdown_text, extensions=['codehilite', 'fenced_code', 'tables']))
-            return render_template("display.html", content=html)
+
+        # 將用戶名傳遞給模板
+        return render_template("display.html", content=html, username=user['username'], original_filename=original_filename)
     else:
         return "File not found"
+
+
 
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
@@ -274,7 +299,7 @@ def profile(user_id):
 
 @app.route('/edit-profile', methods=['GET', 'POST'])
 def edit_profile():
-    user_id = request.cookies.get('user_id')
+    user_id = session.get('user_id')
     if not user_id:
         flash('請先登錄。')
         return redirect(url_for('login'))
@@ -379,5 +404,41 @@ def handle_send_message_event(data):
 @app.route('/slide')
 def slide():
     return render_template('slide.html')
+
+@app.route('/files')
+def list_md_files():
+    # 獲取 UPLOAD_FOLDER 目錄下的所有 .md 文件
+    md_files = [f for f in os.listdir(UPLOAD_FOLDER) if f.endswith('.md')]
+    
+    # 獲取每個文件的作者和創建時間
+    files_info = []
+    for filename in md_files:
+        # 從文件名中提取用戶 ID
+        user_id, _ = filename.split('_', 1)
+        user_id = user_id.strip()
+        
+        # 從資料庫中獲取用戶名稱
+        conn = get_db_connection()
+        user = conn.execute('SELECT username FROM users WHERE id = ?', (user_id,)).fetchone()
+        conn.close()
+        
+        if user:
+            # 獲取文件的創建時間
+            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            created_at = os.path.getmtime(file_path)
+            created_at = datetime.fromtimestamp(created_at).strftime('%Y-%m-%d %H:%M:%S')
+            
+            # 添加到列表
+            files_info.append({
+                'filename': filename,
+                'author': user['username'],
+                'created_at': created_at
+            })
+    
+    # 根據創建時間進行排序
+    files_info.sort(key=lambda x: x['created_at'], reverse=True)
+    
+    # 呈現模板並傳遞 files_info 列表
+    return render_template('files.html', files=files_info)
 if __name__ == "__main__":
     app.run(debug=True)

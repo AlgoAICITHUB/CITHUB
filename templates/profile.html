@@ -1,78 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-tw">
 <head>
     <meta charset="UTF-8">
-    <title>User Profile</title>
+    <title>個人檔案</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #0056b3; /* 深藍色 */
+            --secondary-color: #495057; /* 深灰色 */
+            --background-color: #e9ecef; /* 淺灰色 */
+            --text-color: #343a40; /* 黑色 */
+            --container-bg-color: #ffffff; /* 白色 */
+            --border-color: #ced4da; /* 邊框色 */
+            --link-hover-color: #00376b; /* 鏈接懸浮色 */
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Noto Sans TC', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f2f5;
+            background-color: var(--background-color);
+            color: var(--text-color);
         }
+
         .container {
-            max-width: 800px;
-            margin: 20px auto;
+            max-width: 960px;
+            margin: 40px auto;
             padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: var(--container-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
         }
+
+
+
         .profile-header {
             display: flex;
             align-items: center;
-            border-bottom: 1px solid #eee;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 20px;
             margin-bottom: 20px;
         }
-        .profile-photo {
-            margin-right: 20px;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            overflow: hidden;
-        }
-        .profile-photo img {
-            width: 100%;
-            height: auto;
-        }
+
         .profile-info h2 {
             margin: 0;
-            padding: 0;
-            font-size: 24px;
+            color: var(--primary-color);
+            font-weight: 700;
         }
+
         .profile-info p {
-            margin: 5px 0;
-            color: #666;
+            margin: 8px 0;
+            color: var(--secondary-color);
+            font-size: 1.1rem;
         }
+
+        .posts h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+            padding-left: 8px;
+        }
+
         .post-item {
+            padding: 15px;
             margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease-in-out;
         }
-        .post-item:last-child {
-            border-bottom: none;
+
+        .post-item:hover {
+            background-color: #e2e6ea;
         }
+
         .post-title {
-            font-size: 20px;
-            color: #333;
             margin: 0 0 10px;
+            color: var(--primary-color);
+            font-weight: 500;
         }
+
         .post-content {
-            color: #666;
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.5;
         }
+
         footer {
             text-align: center;
-            width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: var(--background-color);
+            border-top: 1px solid var(--border-color);
         }
+
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+        }
+
+
     </style>
     <script type="text/x-mathjax-config">
-        MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-      </script>
-      <script type="text/javascript"
-        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-      
-      </script>
+        MathJax.Hub.Config({
+            tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+        });
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </head>
 <body>
     <div class="container">
@@ -80,29 +117,23 @@
             <div class="profile-info">
                 <h2>{{ profile.user }}</h2>
                 <p>{{ profile_bio_html | safe }}</p>
-                
             </div>
         </div>
         <div class="posts">
-            <h3>User's Posts</h3>
+            <h3>用戶的帖子</h3>
             {% for post in posts %}
             <div class="post-item">
-                <h4 class="post-title">{{ post['title'] }}</h4>
-                <p class="post-content">{{ post['content'] }}</p>
+                <h4 class="post-title">{{ post.title }}</h4>
+                <p class="post-content">{{ post.content }}</p>
             </div>
             {% else %}
-            <p>No posts to display.</p>
+            <p>沒有帖子展示。</p>
             {% endfor %}
         </div>
     </div>
-
-    {% if profile %}
-    
-    <footer><a href="{{ url_for('edit_profile', user_id=profile['user_id']) }}">編輯個人資料</a></footer>
-    <footer><a href="/">回首頁</a></footer>
-{% endif %}
-
-
-
+    <footer>
+        <a href="{{ url_for('edit_profile', user_id=profile.user_id) }}">編輯個人資料</a> | 
+        <a href="/">回首頁</a>
+    </footer>
 </body>
 </html>

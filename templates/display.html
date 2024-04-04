@@ -2,44 +2,70 @@
 <html lang="zh-tw">
 <head>
     <meta charset="UTF-8">
-    <title>Markdown 文件內容</title>
-    <script>
-      window.MathJax = {
-        tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']] // 添加對 $...$ 的支持
-        },
-        svg: {
-          fontCache: 'global'
-        }
-      };
-    </script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <!-- MathJax 的配置必須在載入庫之前完成 -->
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link href="https://raw.githubusercontent.com/jwarby/pygments-css/master/native.css" rel="stylesheet">
+    <title>文件列表</title>
     <style>
         body {
-            font-family: 'Roboto', sans-serif; /* 更易於閱讀的字體 */
-            margin: 20px;
-            background-color: #f5f5f5; /* 淺灰色背景 */
-            color: #333; /* 深色文字 */
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #333;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
         }
-
-
-
+        .container {
+            width: 85%;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .post {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #eaeaea;
+        }
+        .post:last-child {
+            border-bottom: none;
+        }
+        .post h2 {
+            color: #3498db;
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+        .post p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
         a {
-            color: #06f;
+            color: #3498db;
             text-decoration: none;
+            font-weight: bold;
         }
-
         a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <h1>Markdown 文件內容</h1>
-    <div>{{ content|safe }}</div>
-    <a href="/upload">返回上傳頁面</a>
+    <div class="container">
+        <h1>文件列表</h1>
+        {% for post in posts %}
+            <div class="post">
+                <h2>{{ post.title }}</h2>
+                <p>作者: {{ post.username }}</p>
+                <p>發布時間: {{ post.created_at }}</p>
+                <a href="{{ url_for('view_file', filename=post.title) }}">閱讀更多</a>
+            </div>
+        {% endfor %}
+    </div>
 </body>
 </html>
