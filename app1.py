@@ -20,10 +20,9 @@ socketio = SocketIO(app)
 db_initialized = False
 db_initialized_c = False
 app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a' #SHA256函數加密
-UPLOAD_FOLDER = r'mdp' #裝Markdown文件用
 
-if not os.path.exists(UPLOAD_FOLDER): #防爆措施
-    os.makedirs(UPLOAD_FOLDER)
+
+
 
 DATABASEC = 'chat.db'
 # 與DATABASE進行溝通用
