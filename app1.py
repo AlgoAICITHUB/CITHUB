@@ -9,8 +9,16 @@ import markdown
 import os
 from werkzeug.utils import secure_filename
 import subprocess
+<<<<<<< HEAD
 from datetime import datetime
 
+=======
+import io
+import sys
+from RestrictedPython import safe_builtins, limited_builtins, utility_builtins
+from RestrictedPython import compile_restricted
+from RestrictedPython.Guards import safe_globals
+>>>>>>> 0d6b98685513353f9ccddc40a57e9292edf8ad87
 
 #---------前處理---------
 app = Flask(__name__)
@@ -404,6 +412,7 @@ def handle_send_message_event(data):
 @app.route('/slide')
 def slide():
     return render_template('slide.html')
+<<<<<<< HEAD
 
 @app.route('/files')
 def list_md_files():
@@ -440,5 +449,57 @@ def list_md_files():
     
     # 呈現模板並傳遞 files_info 列表
     return render_template('files.html', files=files_info)
+=======
+@app.route("/coding")
+def coding():
+    return render_template("coding.html")
+@socketio.on('execute_code')
+def handle_code_execution(data):
+    code = data['code']
+
+    blacklist = ["open", "exec", "eval", "__import__", "os", "sys"]
+    
+
+    if any(keyword in code for keyword in blacklist):
+        result = "執行錯誤: 代碼包含不允許的操作。"
+        socketio.emit('code_result', {'result': result})
+        return
+    
+    if "for" in code and "in range" in code:
+        # 檢查 for 迴圈是否在範圍內
+        start_index = code.index("range")
+        end_index = code.index(")", start_index)
+        range_content = code[start_index:end_index + 1]
+        if "1000" not in range_content:
+            result = "執行錯誤: for 迴圈次數需小於1000。"
+            socketio.emit('code_result', {'result': result})
+            return
+    
+    if "while" in code:
+        # 檢查 while 迴圈是否有終止條件
+        if "True" in code or "False" in code:
+            result = "執行錯誤: while 迴圈應有終止條件。"
+            socketio.emit('code_result', {'result': result})
+            return
+
+    captured_output = io.StringIO()  
+    sys.stdout = captured_output  
+    
+    try:
+
+        exec(code)
+    except Exception as e:
+
+        result = f'執行錯誤: {str(e)}'
+    else:
+        # 獲取執行輸出
+        result = captured_output.getvalue()
+    finally:
+
+        sys.stdout = sys.__stdout__  
+        socketio.emit('code_result', {'result': result})
+
+
+>>>>>>> 0d6b98685513353f9ccddc40a57e9292edf8ad87
 if __name__ == "__main__":
     app.run(debug=True)
