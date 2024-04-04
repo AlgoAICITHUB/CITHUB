@@ -9,16 +9,10 @@ import markdown
 import os
 from werkzeug.utils import secure_filename
 import subprocess
-<<<<<<< HEAD
 from datetime import datetime
-
-=======
 import io
 import sys
-from RestrictedPython import safe_builtins, limited_builtins, utility_builtins
-from RestrictedPython import compile_restricted
-from RestrictedPython.Guards import safe_globals
->>>>>>> 0d6b98685513353f9ccddc40a57e9292edf8ad87
+
 
 #---------前處理---------
 app = Flask(__name__)
@@ -241,53 +235,40 @@ def upload_file():
         return redirect(url_for('login'))
 
     if request.method == "POST":
-        file = request.files["file"]
-        if file:
-            # 確保文件名是安全的
-            filename = secure_filename(file.filename)
-            # 儲存文件時加入用戶 ID 作為文件名的一部分
-            user_id = session['user_id']  # 從 session 中取得用戶 ID
-            save_path = os.path.join(UPLOAD_FOLDER, f"{user_id}_{filename}")
-            file.save(save_path)
-            return render_template("upload_success.html", filename=filename)
+        title = request.form['title']
+        content = request.form['content']
+        user_id = session['user_id']  # 從 session 中取得用戶 ID
+
+        # 將帖子資訊保存到資料庫
+        conn = get_db_connection()
+        conn.execute('INSERT INTO posts (user_id, title, content) VALUES (?, ?, ?)', (user_id, title, content))
+        conn.commit()
+        conn.close()
+
+        return render_template("upload_success.html")  # 或者其他你想重定向到的頁面
+
     return render_template("upload.html")
+
 
 @app.route("/math", methods=["GET", "POST"])
 def math():
     return render_template("lat.html")
 
 
-@app.route("/view/<filename>")
-def view_file(filename):
-    # 解析出原始的文件名和用戶 ID
-    parts = filename.split('_', 1)
-    if len(parts) == 2:
-        user_id, original_filename = parts
-    else:
-        # If there aren't two parts, handle the error appropriately
-        flash('Invalid filename format.')
-        return redirect(url_for('index'))  # Redirect to a safe page
+@app.route("/view/<int:post_id>")
+def view_file(post_id):
+    conn = get_db_connection()
+    post = conn.execute('SELECT p.id, p.title, p.content, u.username FROM posts p JOIN users u ON p.user_id = u.id WHERE p.id = ?', (post_id,)).fetchone()
+    conn.close()
 
-    user_id, original_filename = parts
-    markdown_path = os.path.join(UPLOAD_FOLDER, filename)
+    if post is None:
+        flash('帖子未找到。')
+        return redirect(url_for('index'))
 
-    if os.path.exists(markdown_path):
-        # 從數據庫中獲取用戶名
-        conn = get_db_connection()
-        user = conn.execute('SELECT username FROM users WHERE id = ?', (user_id,)).fetchone()
-        conn.close()
+    html_content = Markup(markdown.markdown(post['content'], extensions=['codehilite', 'fenced_code', 'tables']))
 
-        if user is None:
-            return "User not found."
+    return render_template("display.html", post=post, content=html_content)
 
-        with open(markdown_path, 'r', encoding='utf-8') as f:
-            markdown_text = f.read()
-            html = Markup(markdown.markdown(markdown_text, extensions=['codehilite', 'fenced_code', 'tables']))
-
-        # 將用戶名傳遞給模板
-        return render_template("display.html", content=html, username=user['username'], original_filename=original_filename)
-    else:
-        return "File not found"
 
 
 
@@ -334,6 +315,21 @@ def edit_profile():
         profile_dict = dict(profile) if profile else None
 
         return render_template('edit_profile.html', profile=profile_dict)
+@app.route("/files")
+def list_md_files():
+    conn = get_db_connection()
+    post_rows = conn.execute('''
+    SELECT p.id, p.title, p.content, p.created_at, u.username 
+    FROM posts p
+    JOIN users u ON p.user_id = u.id
+    ORDER BY p.created_at DESC
+    ''').fetchall()
+    conn.close()
+
+    posts = [dict(post) for post in post_rows]  
+    
+    return render_template('files.html', posts=posts)
+
 
 @app.route('/about', methods=["GET", "POST"])
 def about():
@@ -412,44 +408,10 @@ def handle_send_message_event(data):
 @app.route('/slide')
 def slide():
     return render_template('slide.html')
-<<<<<<< HEAD
 
-@app.route('/files')
-def list_md_files():
-    # 獲取 UPLOAD_FOLDER 目錄下的所有 .md 文件
-    md_files = [f for f in os.listdir(UPLOAD_FOLDER) if f.endswith('.md')]
-    
-    # 獲取每個文件的作者和創建時間
-    files_info = []
-    for filename in md_files:
-        # 從文件名中提取用戶 ID
-        user_id, _ = filename.split('_', 1)
-        user_id = user_id.strip()
-        
-        # 從資料庫中獲取用戶名稱
-        conn = get_db_connection()
-        user = conn.execute('SELECT username FROM users WHERE id = ?', (user_id,)).fetchone()
-        conn.close()
-        
-        if user:
-            # 獲取文件的創建時間
-            file_path = os.path.join(UPLOAD_FOLDER, filename)
-            created_at = os.path.getmtime(file_path)
-            created_at = datetime.fromtimestamp(created_at).strftime('%Y-%m-%d %H:%M:%S')
-            
-            # 添加到列表
-            files_info.append({
-                'filename': filename,
-                'author': user['username'],
-                'created_at': created_at
-            })
-    
-    # 根據創建時間進行排序
-    files_info.sort(key=lambda x: x['created_at'], reverse=True)
-    
-    # 呈現模板並傳遞 files_info 列表
-    return render_template('files.html', files=files_info)
-=======
+
+
+
 @app.route("/coding")
 def coding():
     return render_template("coding.html")
@@ -500,6 +462,6 @@ def handle_code_execution(data):
         socketio.emit('code_result', {'result': result})
 
 
->>>>>>> 0d6b98685513353f9ccddc40a57e9292edf8ad87
+
 if __name__ == "__main__":
     app.run(debug=True)

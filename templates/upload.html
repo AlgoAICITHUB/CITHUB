@@ -2,7 +2,7 @@
 <html lang="zh-tw">
 <head>
     <meta charset="UTF-8">
-    <title>上傳 Markdown 文件</title>
+    <title>發布新帖子</title>
     <style type="text/css">
         body {
             font-family: Arial, sans-serif;
@@ -20,6 +20,8 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 1500px;
+            width: 100%;
         }
 
         h1 {
@@ -32,13 +34,16 @@
             text-align: center;
         }
 
-        input[type="file"] {
+        input[type="text"], textarea {
+            width: calc(100% - 20px);
             padding: 10px;
+            margin: 10px 0;
             border: 2px solid #007bff;
             border-radius: 5px;
-            margin-bottom: 20px;
-            cursor: pointer;
-            outline: none;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            box-sizing: border-box;
         }
 
         input[type="submit"] {
@@ -56,27 +61,29 @@
         }
 
         footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: #333;
-    color: #07edea;
-    padding: 20px 0;
-    text-align: center;
-}
-
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: #07edea;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="upload-container">
-        <h1>上傳 Markdown 文件</h1>
-        <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
-            <input type="file" name="file" required>
-            <br>
-            <input type="submit" value="上傳">
+        <h1>發布新文章</h1>
+        <form action="/upload" method="post" class="upload-form">
+            <label for="title">標題：</label><br>
+            <input type="text" id="title" name="title" required><br>
+            <label for="content">內容：</label><br>
+            <textarea id="content" name="content" rows="6" required></textarea><br>
+            <input type="submit" value="發布">
         </form>
     </div>
-    <footer>&copy; Cithub</footer>
+    <footer>Copyright &copy; 2024 Cithub. All rights reserved.</footer>
 </body>
 </html>

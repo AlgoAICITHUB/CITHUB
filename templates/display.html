@@ -2,70 +2,74 @@
 <html lang="zh-tw">
 <head>
     <meta charset="UTF-8">
-    <title>文件列表</title>
+    <title>{{ post['title'] }}</title>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']] // 添加對 $...$ 的支持
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <!-- MathJax 的配置必須在載入庫之前完成 -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://raw.githubusercontent.com/jwarby/pygments-css/master/native.css" rel="stylesheet">
     <style>
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            color: #333;
-            background-color: #f7f7f7;
+            font-family: 'Roboto', sans-serif; /* 更易於閱讀的字體 */
             margin: 0;
-            padding: 0;
+            background-color: #f5f5f5; /* 淺灰色背景 */
+            color: #333; /* 深色文字 */
         }
         .container {
-            width: 85%;
-            margin: 20px auto;
-            padding: 20px;
-            background: #ffffff;
-            border: 1px solid #eaeaea;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 800px; /* 固定容器寬度 */
+            margin: 40px auto; /* 上下邊距，自動左右邊距 */
+            padding: 20px; /* 內邊距 */
+            background-color: #fff; /* 白色背景 */
+            border-radius: 8px; /* 圓角邊框 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 盒子陰影 */
         }
         h1 {
-            border-bottom: 1px solid #eaeaea;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            color: #2c3e50;
+            color: #3498db; /* 標題顏色 */
+            margin-bottom: 20px; /* 標題下邊距 */
         }
-        .post {
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed #eaeaea;
-        }
-        .post:last-child {
-            border-bottom: none;
-        }
-        .post h2 {
-            color: #3498db;
-            font-size: 24px;
-            margin-top: 0;
-            margin-bottom: 5px;
-        }
-        .post p {
-            font-size: 16px;
-            line-height: 1.6;
-            margin: 10px 0;
+        p {
+            font-size: 16px; /* 段落字體大小 */
+            line-height: 1.6; /* 行高 */
+            margin-bottom: 15px; /* 段落下邊距 */
         }
         a {
             color: #3498db;
-            text-decoration: none;
-            font-weight: bold;
+            text-decoration: none; /* 移除下劃線 */
         }
         a:hover {
-            text-decoration: underline;
+            text-decoration: underline; /* 滑鼠懸停時加下劃線 */
         }
+
+        /* 新增華麗特效 */
+        .admin {
+            color: rgb(255, 0, 0); /* 紅色文字 */
+            font-size: 24px; /* 文字大小 */
+            text-shadow: 2px 2px 5px rgba(255, 217, 0, 0.993); /* 文字陰影 */
+            animation: shine 1s infinite alternate; /* 動畫效果 */
+        }
+
+        @keyframes shine {
+            0% { text-shadow: 2px 2px 5px rgba(255, 230, 0, 0.5); } /* 開始時的陰影 */
+            100% { text-shadow: 2px 2px 10px rgb(255, 0, 0); } /* 結束時的陰影 */
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>文件列表</h1>
-        {% for post in posts %}
-            <div class="post">
-                <h2>{{ post.title }}</h2>
-                <p>作者: {{ post.username }}</p>
-                <p>發布時間: {{ post.created_at }}</p>
-                <a href="{{ url_for('view_file', filename=post.title) }}">閱讀更多</a>
-            </div>
-        {% endfor %}
+        <h1>{{ post['title'] }}</h1>
+        <p>作者: {% if post.username == 'admin' %}<span class="admin">{{ post.username }}</span>{% else %}{{ post.username }}{% endif %}</p> <!-- 使用華麗特效 -->
+        <div>{{ content|safe }}</div>
+        <a href="\">回首頁</a>
     </div>
 </body>
 </html>
