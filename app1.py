@@ -226,6 +226,9 @@ def register():
 def index():
     return render_template("index.html")
 
+@app.route("/askew", methods=["GET", "POST"])
+def askew():
+    return render_template("askew.html")
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
@@ -252,6 +255,7 @@ def upload_file():
 @app.route("/math", methods=["GET", "POST"])
 def math():
     return render_template("lat.html")
+
 
 
 @app.route("/view/<int:post_id>")
@@ -329,7 +333,9 @@ def list_md_files():
     
     return render_template('files.html', posts=posts)
 
-
+@app.route('/law', methods=['GET','POST'])
+def law():
+    return render_template('law.html')
 @app.route('/about', methods=["GET", "POST"])
 def about():
     return render_template('about.html')
@@ -460,7 +466,9 @@ def handle_code_execution(data):
         sys.stdout = sys.__stdout__  
         socketio.emit('code_result', {'result': result})
 
-
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 if __name__ == "__main__":
     app.run(debug=True)

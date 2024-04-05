@@ -8,7 +8,6 @@
     <link rel = "stylesheet" href="{{ url_for('static', filename='snow.css') }}">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
-/* 全局設定 */
 body, html {
     margin: 0;
     padding: 0;
@@ -17,14 +16,23 @@ body, html {
     color: #EFEFEF;
     width: 100%;
     height: 100%;
+    /*transform: rotate(-2deg);*/
 }
 
 .container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* 新增 */
     width: auto;
     max-width: 100%;
     margin: 0 auto;
     padding: 20px;
 }
+
+main {
+    flex: 1; /* 新增 */
+}
+
 
 /* 導航條 */
 .navbar {
@@ -118,7 +126,8 @@ body, html {
 /* 頁腳 */
 footer {
     background-color: #0D3B66;
-    color: #CCCCCC;
+   /* color: #CCCCCC;*/
+   color: #07edea;
     text-align: center;
     padding: 10px;
     margin-top: 20px;
@@ -172,6 +181,8 @@ footer {
 }
 
 
+
+
     </style>
 </head>
 <body>
@@ -183,9 +194,11 @@ footer {
             <ul class="nav-links">
                 <a href="/login">登入</a>
                 <a href="/register">註冊</a>
+                <a href="/edit-profile">我的檔案</a>
                 <a href="/upload">上傳文章</a>
                 <a href="/create-repo">程式碼庫</a>
                 <a href="/files">文章庫</a>
+                <a href="/law">行為準則</a>
             </ul>
         </nav>
     </header>
@@ -228,5 +241,7 @@ footer {
 <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
 <script src="{{ url_for('static', filename='snow.js') }}"></script>
 <script src="{{ url_for('static', filename='night.js') }}"></script>
+<script src="{{ url_for('static', filename='index_easter.js') }}"></script>
+
 </body>
 </html>
