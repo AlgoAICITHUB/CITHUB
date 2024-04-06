@@ -12,16 +12,18 @@ import subprocess
 from datetime import datetime
 import io
 import sys
-
-
+from flask_talisman import Talisman
+from flask_wtf.csrf import CSRFProtect
+import bcrypt
 #---------前處理---------
 app = Flask(__name__)
 socketio = SocketIO(app)
 db_initialized = False
 db_initialized_c = False
 app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a' #SHA256函數加密
+Talisman(app)
 
-
+csrf = CSRFProtect(app)
 
 
 DATABASEC = 'chat.db'
@@ -96,31 +98,6 @@ CREATE TABLE IF NOT EXISTS messages (
 
     conn.close()
     print("yes")
-#---------網站主函數---------
-
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form['username']
-        password = request.form['password']
-
-        conn = sqlite3.connect("app.db")
-        conn.row_factory = sqlite3.Row
-        c = conn.cursor()
-
-        c.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-        result = c.fetchone()
-
-        if result:
-            session['user_id'] = result['id']
-            session['username'] = username
-            return redirect(url_for('edit_profile', user_id=result['id']))
-        else:
-            return render_template("login.html", error="無效的使用者名稱或密碼。")
-
-    return render_template("login.html")
-
 
 @app.before_request
 def initialize_database():
@@ -131,6 +108,31 @@ def initialize_database():
     if not db_initialized_c:
         create_chat_sql()
         db_initialized_c = True
+#---------網站主函數---------
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+        
+        conn = sqlite3.connect("app.db")
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        
+        c.execute("SELECT * FROM users WHERE username = ?", (username,))
+        user = c.fetchone()
+
+        if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
+            session['user_id'] = user['id']
+            session['username'] = username
+            return redirect(url_for('edit_profile', user_id=user['id']))
+        else:
+            return render_template("login.html", error="無效的使用者名稱或密碼。")
+    
+    return render_template("login.html")
+
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -141,85 +143,23 @@ def register():
         conn = sqlite3.connect("app.db")
         c = conn.cursor()
         
-
         c.execute("SELECT * FROM users WHERE username = ?", (username,))
         if c.fetchone():
             return "用戶名已存在。"
-
-        # 插入新用戶
-        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
-        user_id = c.lastrowid 
-        success = """
-<!DOCTYPE html>
-<html lang="zh-tw">
-<head>
-    <meta charset="UTF-8">
-    <title>註冊成功</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .success-message {
-            width: 90%;
-            max-width: 400px;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        h1 {
-            color: #4CAF50;
-        }
-
-        p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 30px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-
-        a:hover {
-            background-color: #45a049;
-        }
-    </style>
-</head>
-<body>
-    <div class="success-message">
-        <h1>註冊成功！</h1>
-        <p>恭喜您成功註冊。現在您可以使用新的帳戶進行登錄。</p>
-        <a href="/login">登錄</a>
-    </div>
-</body>
-</html>
-
-
-"""
+        
+        # 使用 bcrypt 來產生密碼的哈希值
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        
+        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
+        user_id = c.lastrowid
 
         c.execute("INSERT INTO profiles (user_id, photo, bio) VALUES (?, '', '')", (user_id,))
 
         conn.commit()
-        return render_template_string(success)
+        return render_template("register_success.html")
     else:
         return render_template("register.html")
+
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -229,7 +169,15 @@ def index():
 @app.route("/askew", methods=["GET", "POST"])
 def askew():
     return render_template("askew.html")
-
+@app.route("/earthquake", methods=["GET", "POST"])
+def earthquake():
+    return render_template("earthquake.html")
+@app.route("/judge", methods=["GET", "POST"])
+def judge():
+    return render_template("judge.html")
+@app.route("/lawmake", methods=["GET", "POST"])
+def lawmake():
+    return render_template("lawmake.html")
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
     if not session.get('user_id'):  # 如果用戶未登入，重定向到登入頁面
@@ -420,6 +368,9 @@ def slide():
 @app.route("/coding")
 def coding():
     return render_template("coding.html")
+@app.route("/shop")
+def shop():
+    return render_template("shop.html")
 @socketio.on('execute_code')
 def handle_code_execution(data):
     code = data['code']
@@ -469,6 +420,10 @@ def handle_code_execution(data):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
+
+@app.route("/adminonly", methods=['GET','POST'])
+def adminonly():
+    return "x"    
 
 if __name__ == "__main__":
     app.run(debug=True)

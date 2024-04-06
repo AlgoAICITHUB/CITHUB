@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-tw" style="height: 100%;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首頁 - CitHub</title>
+    <!--<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">-->
+    <link rel = "stylesheet" href="{{ url_for('static', filename='snow.css') }}">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #1E1E24;
+    color: #EFEFEF;
+    width: 100%;
+    height: 100%;
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* 新增 */
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+main {
+    flex: 1; /* 新增 */
+}
+
+
+/* 導航條 */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0D3B66;
+    padding: 1rem;
+
+}
+
+.nav-links {
+    display: flex;
+}
+
+.nav-links a {
+    margin: 0 10px;
+    color: #EFEFEF;
+    text-decoration: none;
+}
+
+.nav-links a:hover {
+    color: #16DB93;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 24px;
+    color: #16DB93;
+}
+
+@keyframes changeColor {
+    0% { color: red; }
+    20% { color: orange; }
+    40% { color: yellow; }
+    60% { color: rgb(5, 218, 5); }
+    80% { color: rgb(0, 119, 255); }
+    100% { color: rgb(197, 5, 197); }
+  }
+.logo:hover{
+    font-size: 24px;
+    animation: changeColor 1.8s infinite; /* 控制变换颜色的速度 */
+  }
+
+
+
+
+/* 主要內容區域 */
+.hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 50px 0;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.feature {
+    background-color: #0D3B66;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+/* 呼籲行動區域 */
+.call-to-action {
+    text-align: center;
+    margin: 30px 0;
+}
+
+@keyframes shake {
+    10%, 90% {
+        transform: translate3d(-2px, 0, 0);
+    }
+    
+    20%, 80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%, 50%, 70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%, 60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
+
+.btn {
+    background-color: #048BA8;
+    color: #EFEFEF;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background-color: #16DB93;
+}
+
+/* 頁腳 */
+footer {
+    background-color: #0D3B66;
+   /* color: #CCCCCC;*/
+   color: #07edea;
+    text-align: center;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.night-mode {
+  background-color: #000000; /* 深藍色背景代表夜晚 */
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 0 2px #fff;
+  opacity: 0.8;
+  animation: twinkle 2s infinite ease-in-out alternate;
+}
+
+@keyframes twinkle {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+.dLINE, .dLINE2 {
+  position: relative; /* 確保可以相對於它們定位 ::after 偽元素 */
+  display: inline-block; /* 或其他適合的顯示方式，以適應內容 */
+}
+
+.dLINE::after, .dLINE2::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; /* 根據需要調整底線距離元素底部的位置 */
+  left: -10%; /* 向左延伸底線 */
+  width: 120%; /* 增加底線的總長度 */
+  height: 2px; /* 根據需要調整底線的厚度 */
+}
+
+.dLINE::after {
+  background-image: linear-gradient(181deg, #ffa620 0%, #fba11a 50%, transparent 54%, transparent 100%);
+}
+
+.dLINE2::after {
+  background-image: linear-gradient(179deg, #fe619e 0%, #fe619e 50%, transparent 54%, transparent 100%);
+}
+
+
+
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <nav class="navbar">
+            <div class="logo">CitHub</div>
+            <ul class="nav-links">
+                <a href="/login">登入</a>
+                <a href="/register">註冊</a>
+                <a href="/edit-profile">我的檔案</a>
+                <a href="/upload">上傳文章</a>
+                <a href="/create-repo">程式碼庫</a>
+                <a href="/files">文章庫</a>
+                <a href="/law">行為準則</a>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>歡迎來到 CitHub</h1>
+            <p><span class ="dLINE"><span class ="dLINE2">從零開源的異世界冒險</span></span></p>
+            <a href="/about" class="btn">了解更多</a>
+        </section>
+
+        <section class="features">
+            <div class="feature">
+                <h2>無限合作</h2>
+                <p>與夥伴一起開啟、打造並完成一個專案</p>
+            </div>
+            <div class="feature">
+                <h2>項目管理</h2>
+                <p>高效管理你的項目，保持進度和質量。</p>
+            </div>
+            <div class="feature">
+                <h2>學術交流</h2>
+                <p>分享你的想法，腦力激盪，不斷進步。</p>
+            </div>
+        </section>
+
+        <section class="call-to-action">
+            <h2>準備好加入了嗎？</h2>
+            <a href="/register" class="btn">立即註冊</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>Copyright &copy; 2024 Cithub. All rights reserved.</p>
+    </footer>
+</div>
+<div class="snow-container"></div> 
+<div id="stars"></div>
+
+<script src="{{ url_for('static', filename='chatbot.js') }}"></script>
+<script src="{{ url_for('static', filename='snow.js') }}"></script>
+<script src="{{ url_for('static', filename='night.js') }}"></script>
+<script src="{{ url_for('static', filename='index_easter.js') }}"></script>
+<script>
+
+    setTimeout("stopEarthquake()", 1); 
+
+    function stopEarthquake() {
+        document.body.style.animation = "";
+    }
+</script>
+</body>
+</html>

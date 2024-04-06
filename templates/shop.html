@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>科幻稱號商店</title>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background: radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
+        color: #fff;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+    .store-header {
+        color: #00FF00;
+        padding: 20px;
+    }
+    .product-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 20px;
+    }
+    .product {
+        background: rgba(255, 255, 255, 0.1);
+        margin: 10px;
+        padding: 20px;
+        width: calc(33% - 20px);
+        box-shadow: 0 0 15px #00FF00;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+    }
+    .product:hover {
+        transform: scale(1.05);
+    }
+    .product-title {
+        margin-bottom: 15px;
+        color: #FFD700;
+    }
+    .buy-button {
+        display: inline-block;
+        background-color: #FF4500;
+        color: #FFF;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+    .buy-button:hover {
+        background-color: #FF6347;
+    }
+    @media (max-width: 768px) {
+        .product {
+            width: calc(50% - 20px);
+        }
+    }
+    @media (max-width: 480px) {
+        .product {
+            width: 100%;
+        }
+    }
+</style>
+</head>
+<body>
+
+<h1 class="store-header">科幻稱號商店</h1>
+
+<div class="product-container">
+    <div class="product">
+        <div class="product-title">會變色的稱號</div>
+        <a href="#" class="buy-button">購買</a>
+    </div>
+    <div class="product">
+        <div class="product-title">會發光的稱號</div>
+        <a href="#" class="buy-button">購買</a>
+    </div>
+    <div class="product">
+        <div class="product-title">會閃爍的稱號</div>
+        <a href="#" class="buy-button">購買</a>
+    </div>
+    <div class="product">
+        <div class="product-title">跑馬燈稱號</div>
+        <a href="#" class="buy-button">購買</a>
+    </div>
+</div>
+
+</body>
+</html>
