@@ -22,6 +22,7 @@ db_initialized = False
 db_initialized_c = False
 app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a' #SHA256函數加密
 current_color = "white"
+click_count = 0
 
 DATABASEC = 'chat.db'
 # 與DATABASE進行溝通用
@@ -290,7 +291,45 @@ def about():
 @app.route('/comingsoon', methods=["GET", "POST"])
 def comingsoon():
     return render_template("ComingSoon.html")
+@app.route('/pop', methods=["GET", "POST"])
+def pop():
+    return render_template_string('''
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Click Test</title>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+                    socket.on('update_count', function(data) {
+                        document.getElementById('clickCount').innerHTML = 'Clicks: ' + data.count;
+                    });
+                    document.getElementById('clickButton').onclick = function() {
+                        socket.emit('click');
+                    };
+                });
+            </script>
+        </head>
+        <body>
+            <h1>Click Test</h1>
+            <button id="clickButton">Click me!</button>
+            <p id="clickCount">Clicks: 0</p>
+        </body>
+        </html>
+    ''')
 
+@socketio.on('click')
+def handle_click():
+    global click_count
+    click_count += 1
+    socketio.emit('update_count', {'count': click_count})
+@app.route('/esp_feedback', methods=['POST'])
+def esp_feedback():
+    global click_count
+    click_count += 1  
+    socketio.emit('update_count', {'count': click_count})
+    return jsonify({"success": True})
 @app.route('/create-repo', methods=['GET','POST'])
 def create_repo():
     if request.method == 'POST':
@@ -367,6 +406,7 @@ def trigger_color():
     color = request.json.get('color', 'white')  # 默認顏色為白色
     cnt = request.json.get('cnt', 0)  # 默認計數器值為 0
     socketio.emit('update_color', {'color': color, 'cnt': cnt})
+    
     return jsonify({"status": "success", "color": color, "cnt": cnt})
 
 @app.route('/esp_page')
@@ -378,28 +418,39 @@ def esp_page():
     <title>ESP Control Page</title>
     <style>
         .rainbow {
-            /* 定義一個彩虹色的線性漸變背景 */
             background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+            color: white; 
+            font-size: 72px; 
+            text-align: center; 
+            padding: 20px;
         }
+        //https://stackoverflow.com/questions/56418763/creating-the-perfect-rainbow-gradient-in-css
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script type="text/javascript">
         var socket = io.connect('http://' + document.domain + ':' + location.port);
-        
+        console.log(document.domain, location.port)
         socket.on('update_color', function(data) {
+            var content = document.getElementById("content");
             if(data.color === "rainbow") {
-                // 如果接收到的顏色是 "rainbow"，則應用彩虹背景樣式
-                document.body.className = "rainbow";
+                content.className = "rainbow";
+                content.innerHTML = "42"; // 在彩虹背景下顯示 42
             } else {
-                // 否則，使用普通的背景顏色
                 document.body.style.backgroundColor = data.color;
-                document.body.className = ""; // 移除之前可能設置的彩虹背景樣式
+                content.className = "";
+                content.innerHTML = ""; // 清空內容
+            }
+            // 檢查計數器值並顯示警告
+            if(data.cnt == 43) {
+                alert('還要繼續嗎?你已經解開了宇宙謎團了');
             }
         });
+
     </script>
 </head>
 <body>
     <h1>ESP 控制頁面</h1>
+    <div id="content" style="height: 100vh;"></div>
 </body>
 </html>
 

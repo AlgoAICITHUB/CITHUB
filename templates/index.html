@@ -181,6 +181,55 @@ footer {
 }
 
 
+.heart {
+  width: 60px; /* Adjusted for a more subtle effect */
+  height: 60px;
+  background: pink;
+  opacity: 0.5;
+  position: fixed;
+  transform: rotate(45deg);
+  animation: float 5s infinite linear;
+}
+
+.heart::before,
+.heart::after {
+  content: "";
+  background: pink;
+  border-radius: 50%;
+  width: 60px; /* Adjusted to match heart size */
+  height: 60px;
+  position: absolute;
+}
+
+.heart::before {
+  top: -30px; /* Adjusted to match heart size */
+  left: 0;
+}
+
+.heart::after {
+  top: 0;
+  left: 30px; /* Adjusted to match heart size */
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0) rotate(45deg);
+    opacity: 1;
+    bottom: 10px; /* Start below the screen */
+  }
+  100% {
+    transform: translate(0, -100vh) rotate(45deg); /* End above the screen */
+    opacity: 0;
+  }
+}
+
+#valentine {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+}
 
 
     </style>
@@ -234,14 +283,16 @@ footer {
     <footer>
         <p>Copyright &copy; 2024 Cithub. All rights reserved.</p>
     </footer>
+
 </div>
 <div class="snow-container"></div> 
 <div id="stars"></div>
+<div id="valentine"></div>
 
 <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
 <script src="{{ url_for('static', filename='snow.js') }}"></script>
 <script src="{{ url_for('static', filename='night.js') }}"></script>
 <script src="{{ url_for('static', filename='index_easter.js') }}"></script>
-
+<script src="{{ url_for('static', filename='love.js') }}"></script>
 </body>
 </html>
