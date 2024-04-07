@@ -108,27 +108,29 @@ def initialize_database():
         db_initialized_c = True
 #---------網站主函數---------
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
-        
+
         conn = sqlite3.connect("app.db")
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
-        
-        c.execute("SELECT * FROM users WHERE username = ?", (username,))
-        user = c.fetchone()
 
-        if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
-            session['user_id'] = user['id']
+        c.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
+        result = c.fetchone()
+
+        if result:
+            session['user_id'] = result['id']
             session['username'] = username
-            return redirect(url_for('edit_profile', user_id=user['id']))
+            return redirect(url_for('edit_profile', user_id=result['id']))
         else:
             return render_template("login.html", error="無效的使用者名稱或密碼。")
-    
+
     return render_template("login.html")
+
 
 
 
@@ -141,15 +143,14 @@ def register():
         conn = sqlite3.connect("app.db")
         c = conn.cursor()
         
+
         c.execute("SELECT * FROM users WHERE username = ?", (username,))
         if c.fetchone():
             return "用戶名已存在。"
-        
-        # 使用 bcrypt 來產生密碼的哈希值
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        
-        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
-        user_id = c.lastrowid
+
+        # 插入新用戶
+        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+        user_id = c.lastrowid 
 
         c.execute("INSERT INTO profiles (user_id, photo, bio) VALUES (?, '', '')", (user_id,))
 

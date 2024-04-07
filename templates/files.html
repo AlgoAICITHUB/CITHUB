@@ -96,6 +96,23 @@
             0% { text-shadow: 2px 2px 5px rgba(255, 230, 0, 0.5); }
             100% { text-shadow: 2px 2px 10px rgb(255, 0, 0); }
         }
+
+        .Moderator {
+    color: rgb(0, 128, 255); /* 藍色 */
+    font-size: 24px;
+    text-shadow: 2px 2px 5px rgba(0, 128, 255, 0.7); /* 深藍色的陰影 */
+    animation: glow 1s infinite alternate; /* 無限閃爍動畫 */
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 2px 2px 5px rgba(0, 128, 255, 0.7); /* 初始陰影 */
+    }
+    to {
+        text-shadow: 2px 2px 10px rgba(0, 128, 255, 1); /* 最亮的陰影 */
+    }
+}
+
     </style>
 </head>
 <body>
@@ -104,7 +121,16 @@
         {% for post in posts %}
             <div class="post">
                 <h2>{{ post.title }}</h2>
-                <p>作者: {% if post.username == 'admin' %}<span class="admin">{{ post.username }}</span>{% else %}{{ post.username }}{% endif %}</p>
+                <p>作者: 
+                    {% if post.username == 'admin' %}
+                        <span class="admin">{{ post.username }}</span>
+                    {% elif post.username == 'Moderator' %}
+                        <span class="Moderator">{{ post.username }}</span>
+                    {% else %}
+                        {{ post.username }}
+                    {% endif %}
+                </p>
+                
                 <p>發布時間: {{ post.created_at }}</p>
                 <a href="{{ url_for('view_file', post_id=post.id) }}">閱讀更多</a>
             </div>
