@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP32 LED 控制器</title>
+    <style>
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 24px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 9px #999;
+        }
+
+        .button:hover {background-color: #3e8e41}
+
+        .button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+    </style>
+</head>
+<body>
+
+<h2>ESP32 LED 控制</h2>
+
+<!-- 當按鈕被點擊時，向 /toggle_led 發送請求 -->
+<button class="button" onclick="toggleLED()">切換 LED 狀態</button>
+
+<script>
+function toggleLED() {
+    fetch("/toggle_led", {method: "POST"}).then(response => {
+        if (response.ok) {
+            alert("LED狀態已切換！");
+        }
+    });
+}
+</script>
+
+</body>
+</html>

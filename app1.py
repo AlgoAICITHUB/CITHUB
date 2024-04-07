@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify,render_template_string, redirect, url_for, flash,session,make_response
+from flask import Flask, request, render_template, jsonify,render_template_string, redirect, url_for, flash,session,make_response,jsonify
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from markupsafe import Markup
 import sqlite3
@@ -21,10 +21,7 @@ socketio = SocketIO(app)
 db_initialized = False
 db_initialized_c = False
 app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a' #SHA256函數加密
-Talisman(app)
-
-csrf = CSRFProtect(app)
-
+current_color = "white"
 
 DATABASEC = 'chat.db'
 # 與DATABASE進行溝通用
@@ -204,7 +201,9 @@ def upload_file():
 def math():
     return render_template("lat.html")
 
-
+@app.route("/love", methods=["GET", "POST"])
+def love():
+    return render_template("love.html")
 
 @app.route("/view/<int:post_id>")
 def view_file(post_id):
@@ -363,6 +362,51 @@ def slide():
     return render_template('slide.html')
 
 
+@app.route('/trigger_color', methods=['POST'])
+def trigger_color():
+    color = request.json.get('color', 'white')  # 默認顏色為白色
+    cnt = request.json.get('cnt', 0)  # 默認計數器值為 0
+    socketio.emit('update_color', {'color': color, 'cnt': cnt})
+    return jsonify({"status": "success", "color": color, "cnt": cnt})
+
+@app.route('/esp_page')
+def esp_page():
+    return render_template_string('''
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP Control Page</title>
+    <style>
+        .rainbow {
+            /* 定義一個彩虹色的線性漸變背景 */
+            background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script type="text/javascript">
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        
+        socket.on('update_color', function(data) {
+            if(data.color === "rainbow") {
+                // 如果接收到的顏色是 "rainbow"，則應用彩虹背景樣式
+                document.body.className = "rainbow";
+            } else {
+                // 否則，使用普通的背景顏色
+                document.body.style.backgroundColor = data.color;
+                document.body.className = ""; // 移除之前可能設置的彩虹背景樣式
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>ESP 控制頁面</h1>
+</body>
+</html>
+
+''')
+
+
+
 
 
 @app.route("/coding")
@@ -425,5 +469,5 @@ def page_not_found(e):
 def adminonly():
     return "x"    
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
