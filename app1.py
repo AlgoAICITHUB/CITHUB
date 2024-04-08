@@ -15,6 +15,8 @@ import sys
 from flask_talisman import Talisman
 from flask_wtf.csrf import CSRFProtect
 import bcrypt
+import init_db
+import db
 #---------前處理---------
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -37,100 +39,12 @@ def get_db_connection_chat():
 DATABASE = 'app.db'
 
 
-# 設定SQL邏輯
-
-def create_table():
-
-    conn = sqlite3.connect(DATABASE)
-    c = conn.cursor()
-    
-
-    tables = [
-        """CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL
-        );""",
-        """CREATE TABLE IF NOT EXISTS profiles (
-            user_id INTEGER PRIMARY KEY,
-            photo TEXT,
-            bio TEXT,
-            FOREIGN KEY(user_id) REFERENCES users(id)
-        );""",
-        """CREATE TABLE IF NOT EXISTS posts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            title TEXT,
-            content TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(user_id) REFERENCES users(id)
-        );"""
-    ]
-
-    for table in tables:
-        c.execute(table)
-    
-
-    conn.commit()
-    
-
-    conn.close()
-
-def create_chat_sql():
-    conn = sqlite3.connect(DATABASEC)
-    c = conn.cursor()
-    table = """
-CREATE TABLE IF NOT EXISTS messages (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    username TEXT,
-    message TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(user_id) REFERENCES users(id)
-);
-
-"""
-    c.execute(table)
-    conn.commit()
-    
-
-    conn.close()
-    print("yes")
-
-@app.before_request
+@app.before_first_request
 def initialize_database():
-    global db_initialized,db_initialized_c
-    if not db_initialized:
-        create_table()
-        db_initialized = True
-    if not db_initialized_c:
-        create_chat_sql()
-        db_initialized_c = True
+    init_db.create_table()
+    init_db.create_chat_sql()
+
 #---------網站主函數---------
-
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form['username']
-        password = request.form['password']
-
-        conn = sqlite3.connect("app.db")
-        conn.row_factory = sqlite3.Row
-        c = conn.cursor()
-
-        c.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-        result = c.fetchone()
-
-        if result:
-            session['user_id'] = result['id']
-            session['username'] = username
-            return redirect(url_for('edit_profile', user_id=result['id']))
-        else:
-            return render_template("login.html", error="無效的使用者名稱或密碼。")
-
-    return render_template("login.html")
-
 
 
 
@@ -140,26 +54,15 @@ def register():
         username = request.form['username']
         password = request.form['password']
         
-        conn = sqlite3.connect("app.db")
-        c = conn.cursor()
-        
-
-        c.execute("SELECT * FROM users WHERE username = ?", (username,))
-        if c.fetchone():
+        if db.get_user_by_username(username):
             return "用戶名已存在。"
 
-        # 插入新用戶
-        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
-        user_id = c.lastrowid 
+        user_id = db.create_user(username, password)
+        db.create_profile_for_user(user_id)
 
-        c.execute("INSERT INTO profiles (user_id, photo, bio) VALUES (?, '', '')", (user_id,))
-
-        conn.commit()
         return render_template("register_success.html")
     else:
         return render_template("register.html")
-
-
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -177,6 +80,8 @@ def judge():
 @app.route("/lawmake", methods=["GET", "POST"])
 def lawmake():
     return render_template("lawmake.html")
+
+
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
     if not session.get('user_id'):  # 如果用戶未登入，重定向到登入頁面
@@ -294,31 +199,7 @@ def comingsoon():
     return render_template("ComingSoon.html")
 @app.route('/pop', methods=["GET", "POST"])
 def pop():
-    return render_template_string('''
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Click Test</title>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-            <script type="text/javascript">
-                document.addEventListener('DOMContentLoaded', function() {
-                    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-                    socket.on('update_count', function(data) {
-                        document.getElementById('clickCount').innerHTML = 'Clicks: ' + data.count;
-                    });
-                    document.getElementById('clickButton').onclick = function() {
-                        socket.emit('click');
-                    };
-                });
-            </script>
-        </head>
-        <body>
-            <h1>Click Test</h1>
-            <button id="clickButton">Click me!</button>
-            <p id="clickCount">Clicks: 0</p>
-        </body>
-        </html>
-    ''')
+    return render_template('Pop.html')
 
 @socketio.on('click')
 def handle_click():

@@ -53,3 +53,17 @@ html {
         transform: translate(10vw, 100vh);
     }
 }
+
+.snow-ground {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 10vh; 
+    background-color: white;
+    z-index: 99998; 
+    pointer-events: none; 
+    box-shadow: 0 -5px 5px -5px #fff, 
+    0 -10px 10px -5px #fff, 
+    0 -15px 15px -5px #fff;
+}
