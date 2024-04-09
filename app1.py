@@ -63,7 +63,23 @@ def register():
         return render_template("register_success.html")
     else:
         return render_template("register.html")
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
 
+        result = db.validate_user_login(username, password)
+
+        if result:
+            session['user_id'] = result['id']
+            session['username'] = username
+            # 假設 'edit_profile' 是一個有效的視圖函數
+            return redirect(url_for('edit_profile', user_id=result['id']))
+        else:
+            return render_template("login.html", error="無效的使用者名稱或密碼。")
+
+    return render_template("login.html")
 @app.route("/", methods=["GET", "POST"])
 def index():
     return render_template("index.html")
@@ -249,9 +265,9 @@ def list_repos():
 
 @app.route('/discussion')
 def discussion():
-    user_id = request.cookies.get('user_id')
+    user_id = session.get('user_id')
     if user_id:
-        db = get_db_connection_chat()
+        db = get_db_connection()
         recent_messages = db.execute('SELECT username, message, created_at FROM messages ORDER BY created_at DESC LIMIT 50').fetchall()
         db.close()
         messages = [dict(message) for message in recent_messages]
@@ -262,20 +278,24 @@ def discussion():
 
 @socketio.on('send_message')
 def handle_send_message_event(data):
-    user_id = request.cookies.get('user_id')
+    user_id = session.get('user_id')
     if not user_id:
-        return
-    user_name = request.cookies.get('user_name', '匿名')
+        return  # 如果沒有 user_id，不處理消息
+
+    db = get_db_connection()
+    user_row = db.execute('SELECT username FROM users WHERE id = ?', (user_id,)).fetchone()
+    if user_row:
+        user_name = user_row['username']
+    else:
+        user_name = '匿名'  # 如果無法從數據庫找到對應的用戶，則使用匿名
+
     msg = data['msg']
-    
-    # 將Markdown消息轉換為HTML
-    html_msg = markdown.markdown(msg)
-    
-    # 存儲轉換後的HTML消息到數據庫
-    db = get_db_connection_chat()
+    html_msg = markdown.markdown(msg)  # 將 Markdown 消息轉換為 HTML
+
     db.execute('INSERT INTO messages (user_id, username, message) VALUES (?, ?, ?)', (user_id, user_name, html_msg))
     db.commit()
     db.close()
+
     
     emit('announce_message', {'user': user_name, 'msg': html_msg}, broadcast=True)
 @app.route('/slide')
@@ -293,51 +313,7 @@ def trigger_color():
 
 @app.route('/esp_page')
 def esp_page():
-    return render_template_string('''
-<!DOCTYPE html>
-<html>
-<head>
-    <title>ESP Control Page</title>
-    <style>
-        .rainbow {
-            background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-            color: white; 
-            font-size: 72px; 
-            text-align: center; 
-            padding: 20px;
-        }
-        //https://stackoverflow.com/questions/56418763/creating-the-perfect-rainbow-gradient-in-css
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <script type="text/javascript">
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
-        console.log(document.domain, location.port)
-        socket.on('update_color', function(data) {
-            var content = document.getElementById("content");
-            if(data.color === "rainbow") {
-                content.className = "rainbow";
-                content.innerHTML = "42"; // 在彩虹背景下顯示 42
-            } else {
-                document.body.style.backgroundColor = data.color;
-                content.className = "";
-                content.innerHTML = ""; // 清空內容
-            }
-            // 檢查計數器值並顯示警告
-            if(data.cnt == 43) {
-                alert('還要繼續嗎?你已經解開了宇宙謎團了');
-            }
-        });
-
-    </script>
-</head>
-<body>
-    <h1>ESP 控制頁面</h1>
-    <div id="content" style="height: 100vh;"></div>
-</body>
-</html>
-
-''')
-
+    return render_template("esp_page.html")
 
 
 
@@ -400,7 +376,11 @@ def page_not_found(e):
 
 @app.route("/adminonly", methods=['GET','POST'])
 def adminonly():
-    return "x"    
+    user_id = session.get('user_id')
+    if user_id == 2:
+        return render_template('admin-room.html')
+    else:
+        return "x"    
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
