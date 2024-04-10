@@ -77,6 +77,26 @@ main {
     animation: changeColor 1.8s infinite; /* 控制变换颜色的速度 */
   }
 
+  
+  @keyframes meteor {
+  0% {
+    transform: scale(0) translateX(0px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2) translateX(300px) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+.meteor {
+  position: absolute;
+  bottom: 100%;
+  background: linear-gradient(45deg, #ffffff, #0000ff);
+  opacity: 0;
+  animation: meteor 2s linear infinite;
+}
+
 
 
 
@@ -318,7 +338,9 @@ footer {
 .day-mode .mode-toggle:hover {
     background-color: var(--accent-color-day);
 }
-
+#iframe {
+  display: none;
+}
 
     </style>
 </head>
@@ -380,17 +402,29 @@ footer {
     <button id="toggleSnowfall">開始下雪</button>
     <a href="/askew" class="btn">askew</a>
     <a href="/earthquake" class="btn">地震</a>
+    <button id="toggle-music">播放/暫停音樂</button>
+    <button id="skip-video">跳過</button>
+    <button id="prev-video">上一個</button>
+    <button id="shuffle">隨機播放</button>
+
 
 </div>
 <div class="snow-container"></div> 
 <div id="stars"></div>
 <div id="valentine"></div>
+<div id="meteor"></div>
+<iframe id="youtube-music" width="100" height="100" src="https://www.youtube.com/embed/videoseries?list=PLCk35gMt8AuHW6H872uOCR8aDJKDNcQr1&enablejsapi=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
+
+
+  
 <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
 <script src="{{ url_for('static', filename='snow.js') }}"></script>
 <script src="{{ url_for('static', filename='night_ad.js') }}"></script>
 <script src="{{ url_for('static', filename='index_easter.js') }}"></script>
 <script src="{{ url_for('static', filename='love_ad.js') }}"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+
 <script>function toggleMode() {
   document.body.classList.toggle('day-mode');
 }
@@ -398,6 +432,44 @@ footer {
 // 假設你有一個按鈕來切換模式
 const toggleButton = document.getElementById('mode-toggle-button');
 toggleButton.addEventListener('click', toggleMode);
+
+
+var player;
+
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('youtube-music', {
+        events: {
+            'onReady': onPlayerReady
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    document.getElementById('toggle-music').addEventListener('click', function() {
+        var state = player.getPlayerState();
+        if (state === YT.PlayerState.PLAYING) {
+            player.pauseVideo();
+        } else {
+            player.playVideo();
+        }
+    });
+
+    document.getElementById('skip-video').addEventListener('click', function() {
+        player.nextVideo();
+    });
+    document.getElementById('prev-video').addEventListener('click', function() {
+        player.previousVideo();
+    });
+    document.getElementById('shuffle').addEventListener('click', function() {
+        var isShuffle = player.getShuffle();
+        player.setShuffle(!isShuffle);
+    });
+}
+
+
+
+
+
 </script>
 </body>
 </html>

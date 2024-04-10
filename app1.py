@@ -26,23 +26,20 @@ app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e
 current_color = "white"
 click_count = 0
 
-DATABASEC = 'chat.db'
+
 # 與DATABASE進行溝通用
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
-def get_db_connection_chat():
-    conn = sqlite3.connect(DATABASEC)
-    conn.row_factory = sqlite3.Row
-    return conn
+
 DATABASE = 'app.db'
 
 
 @app.before_first_request
 def initialize_database():
     init_db.create_table()
-    init_db.create_chat_sql()
+    init_db.create_chat_db()
 
 #---------網站主函數---------
 
@@ -82,7 +79,11 @@ def login():
     return render_template("login.html")
 @app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template("index.html")
+    user_id = session.get('user_id')
+    if user_id == 2:
+        return render_template("admin-room.html")
+    else:
+        return render_template("index.html")
 
 @app.route("/askew", methods=["GET", "POST"])
 def askew():
@@ -263,41 +264,7 @@ def list_repos():
     repos = [d for d in os.listdir(repo_directory) if os.path.isdir(os.path.join(repo_directory, d))]
     return render_template('list_repos.html', repos=repos)
 
-@app.route('/discussion')
-def discussion():
-    user_id = session.get('user_id')
-    if user_id:
-        db = get_db_connection()
-        recent_messages = db.execute('SELECT username, message, created_at FROM messages ORDER BY created_at DESC LIMIT 50').fetchall()
-        db.close()
-        messages = [dict(message) for message in recent_messages]
-        return render_template('discussion.html', messages=messages)
-    else:
-        flash('請先登錄才能進入討論室。')
-        return redirect(url_for('login'))
 
-@socketio.on('send_message')
-def handle_send_message_event(data):
-    user_id = session.get('user_id')
-    if not user_id:
-        return  # 如果沒有 user_id，不處理消息
-
-    db = get_db_connection()
-    user_row = db.execute('SELECT username FROM users WHERE id = ?', (user_id,)).fetchone()
-    if user_row:
-        user_name = user_row['username']
-    else:
-        user_name = '匿名'  # 如果無法從數據庫找到對應的用戶，則使用匿名
-
-    msg = data['msg']
-    html_msg = markdown.markdown(msg)  # 將 Markdown 消息轉換為 HTML
-
-    db.execute('INSERT INTO messages (user_id, username, message) VALUES (?, ?, ?)', (user_id, user_name, html_msg))
-    db.commit()
-    db.close()
-
-    
-    emit('announce_message', {'user': user_name, 'msg': html_msg}, broadcast=True)
 @app.route('/slide')
 def slide():
     return render_template('slide.html')
@@ -320,7 +287,41 @@ def esp_page():
 
 @app.route("/coding")
 def coding():
-    return render_template("coding.html")
+    user_id = session.get('user_id')
+    if user_id:
+        return render_template("coding.html")
+    else:
+        return render_template_string("""
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Forbidden</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <script>
+    window.onload = function() {
+        Swal.fire({
+            title: '您沒有受到邀請',
+            text: '請試著去拿到邀請',
+            icon: 'warning',
+            confirmButtonText: '我已瞭解',
+            confirmButtonColor: '#d33', 
+        }).then((result) => {
+            if (result.value) {
+                window.location.href = '/';
+            }
+        });
+
+    };
+    </script>
+</body>
+</html>
+
+
+""")
 @app.route("/shop")
 def shop():
     return render_template("shop.html")
@@ -377,10 +378,38 @@ def page_not_found(e):
 @app.route("/adminonly", methods=['GET','POST'])
 def adminonly():
     user_id = session.get('user_id')
-    if user_id == 2:
-        return render_template('admin-room.html')
+    if user_id == 2 or user_id == 3:
+        return render_template('index.html')
     else:
-        return "x"    
+        return render_template_string("""
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Forbidden</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <script>
+    window.onload = function() {
+        Swal.fire({
+            title: '禁止進入！',
+            text: '立即停止您的行為！任何未經授權的進入嘗試都將遭到無上法典的制裁。',
+            icon: 'error',
+            confirmButtonText: '我已瞭解',
+            confirmButtonColor: '#d33', 
+        }).then((result) => {
+            if (result.value) {
+                window.location.href = '/';
+            }
+        });
+
+    };
+    </script>
+</body>
+</html>
+""")
 
 if __name__ == '__main__':
+    init_db.create_chat_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
