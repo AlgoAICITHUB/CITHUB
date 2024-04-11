@@ -1,0 +1,18 @@
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+// 確保頁面內容加載完成後顯示警告
+document.addEventListener('DOMContentLoaded', function() {
+  Swal.fire({
+    title: '禁止進入!',
+    text: '您無權訪問此部分內容。請立即離開!',
+    icon: 'error',
+    confirmButtonText: '我明白了',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    allowEnterKey: false
+  });
+});
+</script>

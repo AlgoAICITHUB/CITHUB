@@ -352,8 +352,11 @@ footer {
             <div class="logo">CitHub</div>
             <ul class="nav-links">
                 <a href="/login">登入</a>
+                <a href="/logout">登出</a>
                 <a href="/register">註冊</a>
-                <a href="/edit-profile">我的檔案</a>
+                <a href="/profilem">我的檔案</a>
+                <a href="/edit-profile">編輯檔案</a>
+                <a href="#" onclick="goToProfile()">別人檔案</a>
                 <a href="/upload">上傳文章</a>
                 <a href="/create-repo">程式碼庫</a>
                 <a href="/files">文章庫</a>
@@ -470,6 +473,20 @@ function onPlayerReady(event) {
 
 
 
+</script>
+<script>
+    function goToProfile() {
+        // 提示用戶輸入userid
+        var userid = prompt("請輸入userid:");
+
+        if (userid) {
+            // 構造跳轉的URL
+            var profileUrl = "/profile/" + userid;
+            
+            // 實現頁面跳轉
+            window.location.href = profileUrl;
+        }
+    }
 </script>
 </body>
 </html>
