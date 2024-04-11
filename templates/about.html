@@ -5,73 +5,57 @@
     <title>了解更多 - CitHub</title>
     <style>
         body {
-    font-family: system-ui, -apple-system, sans-serif;
-    padding: 20px;
-    background: #232526; /* 深沉的漸變背景 */
-    background: linear-gradient(to right, #232526, #414345);
-    color: #f5f5f5;
-    text-align: center;
-    margin: 0;
-    overflow-x: hidden;
-}
+            font-family: '微軟正黑體', sans-serif;
+            padding: 20px;
+            background: #232526;
+            color: #f5f5f5;
+            text-align: center;
+            margin: 0;
+            overflow-x: hidden;
+        }
 
-.container {
-    max-width: 800px;
-    margin: auto;
-    overflow: hidden;
-    padding-bottom: 2rem;
-}
+        .container {
+            max-width: 800px;
+            margin: auto;
+            overflow: hidden;
+            padding-bottom: 2rem;
+        }
 
-.iframe-container {
-    position: relative;
-    width: 100%; /* 確保容器寬度為視窗的100% */
-    height: 0; /* 初始高度設為0 */
-    padding-top: 56.25%; /* 16:9 的寬高比（9 / 16 = 0.5625） */
-    overflow: hidden;
-}
+        h1, h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #66fcf1;
+            text-shadow: 0 0 8px rgba(102, 252, 241, 0.7);
+        }
 
-.iframe-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
+        p {
+            text-align: justify;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
 
-h1, h2 {
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
-    color: #66fcf1;
-    text-shadow: 0 0 8px rgba(102, 252, 241, 0.7);
-}
+        .link {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #1f2833;
+            color: #45a29e;
+            border: 2px solid #66fcf1;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-p {
-    text-align: justify;
-    line-height: 1.6;
-    margin-bottom: 1rem;
-}
+        .link:hover, .link:focus {
+            background-color: #0b0c10;
+            color: #66fcf1;
+        }
 
-.link {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 1rem;
-    background-color: #1f2833;
-    color: #45a29e;
-    border: 2px solid #66fcf1;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: background-color 0.3s, color 0.3s;
-}
+        .section {
+            margin: 2rem 0;
+        }
 
-.link:hover, .link:focus {
-    background-color: #0b0c10;
-    color: #66fcf1;
-}
-
-.section {
-    margin: 2rem 0;
-}
-a {
+        a {
             color: #64ffda;
             text-decoration: none;
             border: 2px solid #64ffda;
@@ -79,33 +63,32 @@ a {
             border-radius: 30px;
             transition: all 0.4s ease;
             font-size: 1rem;
-            letter-spacing: 1px; /* 增加字母間距 */
-            box-shadow: 0 4px 14px 0 rgba(100, 255, 218, 0.4); /* 按鈕陰影 */
+            letter-spacing: 1px;
+            box-shadow: 0 4px 14px 0 rgba(100, 255, 218, 0.4);
             background: transparent;
         }
 
         a:hover {
             background-color: #64ffda;
             color: #0a192f;
-            box-shadow: 0 6px 20px rgba(100, 255, 218, 0.5); /* 滑過時的陰影效果 */
+            box-shadow: 0 6px 20px rgba(100, 255, 218, 0.5);
         }
+
 
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to CitHub</h1>
-        <p>歡迎來到 CitHub，這是一個專為高中生打造的開源程式碼網站，我們致力於為年輕的程式設計師提供一個安全、友好的學習和交流平台。</p>
-        <div class="section">
-            <h2>平台特色</h2>
-            <p>CitHub類似於Github，我們使用Git作為版本控制工具。與其他平台不同的是，我們專注於簡化使用流程，提供純粹的Pull、Commit和Push功能，讓你專注於代碼的創作和分享。</p>
-            <p>此外，我們鼓勵創新和合作。你可以輕鬆地在這裡創建項目，邀請其他用戶進行共同開發，並參與社區活動和討論。無論你是剛入門的新手還是經驗豐富的開發者，都能在 CitHub 找到適合你的項目和夥伴。</p>
-            <p>快來加入我們的行列，一起探索開源世界的無限可能性！</p>
-            <a href="/slide">了解更多</a>
-            <a href="/">首頁</a>
-        </div>
+<div class="container">
+    <h1>Welcome to CitHub</h1>
+    <p>歡迎來到 CitHub，這是一個專為高中生打造的開源程式碼網站，我們致力於為年輕的程式設計師提供一個安全、友好的學習和交流平台。在這裡，你可以盡情探索程式的世界，發揮你的創意，與志同道合的朋友們一同進步。</p>
+    <div class="section">
+        <h2>平台特色</h2>
+        <p>CitHub類似於Github，我們期望可以打造一個輕鬆、和平、安全的開源程式社群!</p>
+        <p>我們鼓勵創新和合作。你可以在合乎社群守則的前提下輕鬆地在這裡創建項目，邀請其他用戶進行共同開發，並參與社區活動和討論。無論你是剛入門的新手還是經驗豐富的開發者，都能在 CitHub 找到適合你的項目和夥伴。</p>
+        <p>快來加入我們的行列，一起探索開源世界的無限可能性！</p>
+        <a href="/slide">了解更多</a>
+        <a href="/">首頁</a>
     </div>
-    
-
+</div>
 </body>
 </html>

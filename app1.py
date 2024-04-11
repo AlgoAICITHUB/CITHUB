@@ -12,11 +12,9 @@ import subprocess
 from datetime import datetime
 import io
 import sys
-from flask_talisman import Talisman
-from flask_wtf.csrf import CSRFProtect
-import bcrypt
 import init_db
 import db
+
 #---------前處理---------
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -159,7 +157,14 @@ def profile(user_id):
         profile_bio_html = "No bio available."
 
     return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html)
-
+@app.route('/profilem', methods=['GET','POST'])
+def profilem():
+    user_id = session.get('user_id')
+    return profile(user_id)
+@app.route('/logout', methods=['POST','GET'])
+def logout():
+    session.clear()
+    return render_template('logout.html')
 @app.route('/edit-profile', methods=['GET', 'POST'])
 def edit_profile():
     user_id = session.get('user_id')
