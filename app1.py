@@ -17,7 +17,7 @@ import db
 
 #---------前處理---------
 app = Flask(__name__)
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 db_initialized = False
 db_initialized_c = False
 app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a' #SHA256函數加密
@@ -69,7 +69,6 @@ def login():
         if result:
             session['user_id'] = result['id']
             session['username'] = username
-            # 假設 'edit_profile' 是一個有效的視圖函數
             return redirect(url_for('edit_profile', user_id=result['id']))
         else:
             return render_template("login.html", error="無效的使用者名稱或密碼。")
@@ -89,39 +88,32 @@ def askew():
 @app.route("/earthquake", methods=["GET", "POST"])
 def earthquake():
     return render_template("earthquake.html")
-@app.route("/judge", methods=["GET", "POST"])
-def judge():
-    return render_template("judge.html")
-@app.route("/lawmake", methods=["GET", "POST"])
-def lawmake():
-    return render_template("lawmake.html")
+
 
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
-    if not session.get('user_id'):  # 如果用戶未登入，重定向到登入頁面
+    if not session.get('user_id'): 
         flash('請先登錄。')
         return redirect(url_for('login'))
 
     if request.method == "POST":
         title = request.form['title']
         content = request.form['content']
-        user_id = session['user_id']  # 從 session 中取得用戶 ID
+        user_id = session['user_id'] 
 
-        # 將帖子資訊保存到資料庫
+
         conn = get_db_connection()
         conn.execute('INSERT INTO posts (user_id, title, content) VALUES (?, ?, ?)', (user_id, title, content))
         conn.commit()
         conn.close()
 
-        return render_template("upload_success.html")  # 或者其他你想重定向到的頁面
+        return render_template("upload_success.html") 
 
     return render_template("upload.html")
 
 
-@app.route("/math", methods=["GET", "POST"])
-def math():
-    return render_template("lat.html")
+
 
 @app.route("/love", methods=["GET", "POST"])
 def love():
@@ -234,40 +226,6 @@ def esp_feedback():
     click_count += 1  
     socketio.emit('update_count', {'count': click_count})
     return jsonify({"success": True})
-@app.route('/create-repo', methods=['GET','POST'])
-def create_repo():
-    if request.method == 'POST':
-        repo_name = request.form['repo_name']
-        license_type = request.form['license_type']
-        readme_contents = request.form.get('readme_contents', '')
-
-        repo_path = os.path.join('repositories', repo_name)
-
-        if not os.path.exists(repo_path):
-            os.makedirs(repo_path)
-
-        # 初始化 git 倉庫
-        subprocess.run(['git', 'init', repo_path])
-
-        # 創建 LICENSE
-        if license_type != 'No License':
-            with open(os.path.join(repo_path, 'LICENSE'), 'w') as f:
-                f.write(f"This is a placeholder for the {license_type} license.")
-
-        # 創建 README
-        if readme_contents:
-            with open(os.path.join(repo_path, 'README.md'), 'w') as f:
-                f.write(readme_contents)
-
-        return '倉庫創建成功，包含選定的 License 和自定義 README。'
-    else:
-        return render_template('create_repo.html')
-
-@app.route('/repos')
-def list_repos():
-    repo_directory = 'repositories'
-    repos = [d for d in os.listdir(repo_directory) if os.path.isdir(os.path.join(repo_directory, d))]
-    return render_template('list_repos.html', repos=repos)
 
 
 @app.route('/slide')
@@ -327,9 +285,7 @@ def coding():
 
 
 """)
-@app.route("/shop")
-def shop():
-    return render_template("shop.html")
+
 @socketio.on('execute_code')
 def handle_code_execution(data):
     code = data['code']
@@ -343,7 +299,7 @@ def handle_code_execution(data):
         return
     
     if "for" in code and "in range" in code:
-        # 檢查 for 迴圈是否在範圍內
+
         start_index = code.index("range")
         end_index = code.index(")", start_index)
         range_content = code[start_index:end_index + 1]
@@ -353,7 +309,7 @@ def handle_code_execution(data):
             return
     
     if "while" in code:
-        # 檢查 while 迴圈是否有終止條件
+
         if "True" in code or "False" in code:
             result = "執行錯誤: while 迴圈應有終止條件。"
             socketio.emit('code_result', {'result': result})
