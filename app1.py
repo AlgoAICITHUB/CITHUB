@@ -14,6 +14,8 @@ import io
 import sys
 import init_db
 import db
+import requests
+from dotenv import load_dotenv
 
 #---------前處理---------
 app = Flask(__name__)
@@ -34,8 +36,7 @@ def get_db_connection():
 DATABASE = 'app.db'
 
 
-@app.before_first_request
-def initialize_database():
+with app.app_context():
     init_db.create_table()
     init_db.create_chat_db()
 
@@ -74,6 +75,48 @@ def login():
             return render_template("login.html", error="無效的使用者名稱或密碼。")
 
     return render_template("login.html")
+
+@app.route('/oauth2callback', methods=["GET", "POST"])
+def google_account():
+    # 向 Google 發送 POST 請求以交換授權碼為訪問令牌
+    load_dotenv()
+    payload = {
+        'client_id': os.getenv('client_id'),
+        'client_secret': os.getenv('client_secret'),
+        'code': request.args.get('code'),
+        'redirect_uri': 'http://127.0.0.1:5000/oauth2callback',
+        'grant_type': 'authorization_code'
+    }
+    response = requests.post("https://oauth2.googleapis.com/token", data=payload)
+
+    # 處理 Google 返回的 JSON 格式的回應
+    if response.status_code == 200:
+        access_token = response.json()['access_token']
+        # 使用 access_token 向 Google 發送請求以獲取使用者資訊
+        user_info_response = requests.get('https://www.googleapis.com/oauth2/v1/userinfo', headers={'Authorization': f'Bearer {access_token}'})
+        user_info = user_info_response.json()
+        username = user_info['name']
+        password = user_info['id']
+        
+        #已經登過（登入）
+        if db.get_user_by_username(username):
+            result = db.validate_user_login(username, password)
+            if result:
+                session['user_id'] = result['id']
+                session['username'] = username
+                return redirect(url_for('edit_profile', user_id=result['id']))
+            else:
+                return render_template("login.html", error="無效的使用者名稱或密碼。")
+        
+        #沒登入過（註冊）
+        user_id = db.create_user(username, password)
+        db.create_profile_for_user(user_id)
+
+        return render_template("register_success.html")
+    else:
+        return render_template('404.html'), 404
+
+        
 @app.route("/", methods=["GET", "POST"])
 def index():
     user_id = session.get('user_id')

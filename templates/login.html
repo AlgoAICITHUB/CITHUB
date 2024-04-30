@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登入</title>
+    <title>登入頁面</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -21,6 +21,7 @@
         </div>
         <button type="submit">登入</button>
     </form>
+    <br></br><a href="https://accounts.google.com/o/oauth2/auth?client_id=474559934367-lb544etuur5u27a8jeetol7s5alkp2b9.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:5000/oauth2callback&response_type=code&scope=email%20profile"><button>使用 Google登入</button></a>
 </div>
 </body>
 </html>
