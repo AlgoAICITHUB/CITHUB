@@ -117,14 +117,16 @@ def google_account():
         return render_template('404.html'), 404
 
         
-@app.route("/", methods=["GET", "POST"])
+@app.route("/index", methods=["GET", "POST"])
 def index():
     user_id = session.get('user_id')
     if user_id == 2:
         return render_template("admin-room.html")
     else:
         return render_template("index.html")
-
+@app.route("/",methods=["GET", "POST"])
+def open():
+    return render_template("open.html")
 @app.route("/askew", methods=["GET", "POST"])
 def askew():
     return render_template("askew.html")
