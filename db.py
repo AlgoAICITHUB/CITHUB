@@ -14,9 +14,9 @@ def get_user_by_username(username):
     conn.close()
     return user
 
-def create_user(username, password):
+def create_user(username, password,email):
     conn = get_db_connection()
-    conn.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+    conn.execute("INSERT INTO users (username, password,email) VALUES (?, ?,?)", (username, password,email))
     conn.commit()
     user_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
     conn.close()

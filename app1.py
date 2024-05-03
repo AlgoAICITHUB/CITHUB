@@ -37,7 +37,6 @@ DATABASE = 'app.db'
 @app.before_first_request
 def initialize_database():
     init_db.create_table()
-    init_db.create_chat_db()
 
 #---------網站主函數---------
 
@@ -48,11 +47,12 @@ def register():
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
+        email = request.form['email']
         
         if db.get_user_by_username(username):
             return "用戶名已存在。"
 
-        user_id = db.create_user(username, password)
+        user_id = db.create_user(username, password,email)
         db.create_profile_for_user(user_id)
 
         return render_template("register_success.html")
@@ -211,8 +211,7 @@ def about():
 @app.route('/comingsoon', methods=["GET", "POST"])
 def comingsoon():
     return render_template("ComingSoon.html")
-@app.route('/pop', methods=["GET", "POST"])
-def pop():
+
     return render_template('Pop.html')
 
 @socketio.on('click')
@@ -372,5 +371,4 @@ def adminonly():
 """)
 
 if __name__ == '__main__':
-    init_db.create_chat_db()
     app.run(host='0.0.0.0', port=5000, debug=True)

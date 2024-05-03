@@ -16,7 +16,6 @@ body, html {
     color: #EFEFEF;
     width: 100%;
     height: 100%;
-    /*transform: rotate(-2deg);*/
 }
 
 .container {
@@ -159,14 +158,14 @@ footer {
   }
 }
 .dLINE, .dLINE2 {
-  position: relative; /* 確保可以相對於它們定位 ::after 偽元素 */
-  display: inline-block; /* 或其他適合的顯示方式，以適應內容 */
+  position: relative;
+  display: inline-block; 
 }
 
 .dLINE::after, .dLINE2::after {
   content: '';
   position: absolute;
-  bottom: -3px; /* 根據需要調整底線距離元素底部的位置 */
+  bottom: -3px; 
   left: -10%; /* 向左延伸底線 */
   width: 120%; /* 增加底線的總長度 */
   height: 2px; /* 根據需要調整底線的厚度 */
@@ -331,6 +330,7 @@ footer {
             <ul class="nav-links">
                 <a href="/login">登入</a>
                 <a href="/register">註冊</a>
+                <a href="/logout">登出</a>
                 <a href="/profilem">我的檔案</a>
                 <a href="/edit-profile">編輯檔案</a>
                 <a href="#" onclick="goToProfile()">別人檔案</a>
@@ -393,6 +393,20 @@ footer {
 // 假設你有一個按鈕來切換模式
 const toggleButton = document.getElementById('mode-toggle-button');
 toggleButton.addEventListener('click', toggleMode);
+</script>
+<script>
+    function goToProfile() {
+        // 提示用戶輸入userid
+        var userid = prompt("請輸入userid:");
+
+        if (userid) {
+            // 構造跳轉的URL
+            var profileUrl = "/profile/" + userid;
+            
+            // 實現頁面跳轉
+            window.location.href = profileUrl;
+        }
+    }
 </script>
 </body>
 </html>
