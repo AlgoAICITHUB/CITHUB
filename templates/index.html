@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>首頁 - CitHub</title>
     <!--<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">-->
-    <link rel = "stylesheet" href="{{ url_for('static', filename='snow.css') }}">
     <link rel = "icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <style>
 body, html {
@@ -73,7 +72,7 @@ main {
   }
 .logo:hover{
     font-size: 24px;
-    animation: changeColor 1.8s infinite; /* 控制变换颜色的速度 */
+    animation: changeColor 1.8s infinite; 
   }
 
 
@@ -136,27 +135,9 @@ footer {
   background-color: #000000; /* 深藍色背景代表夜晚 */
 }
 
-.star {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background-color: white;
-  border-radius: 50%;
-  box-shadow: 0 0 2px #fff;
-  opacity: 0.8;
-  animation: twinkle 2s infinite ease-in-out alternate;
-}
 
-@keyframes twinkle {
-  0% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1.5);
-    opacity: 0;
-  }
-}
+
+
 .dLINE, .dLINE2 {
   position: relative;
   display: inline-block; 

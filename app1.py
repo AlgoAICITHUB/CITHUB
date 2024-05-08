@@ -10,8 +10,6 @@ import os
 from werkzeug.utils import secure_filename
 import subprocess
 from datetime import datetime
-import io
-import sys
 import init_db
 import db
 import requests
@@ -59,6 +57,7 @@ def register():
         return render_template("register_success.html")
     else:
         return render_template("register.html")
+    
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":

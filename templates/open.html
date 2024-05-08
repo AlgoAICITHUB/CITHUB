@@ -43,7 +43,7 @@
 </style>
 </head>
 <body>
-<img src="{{ url_for('static', filename='Citlogo.png') }}" class="logo" id="logo">
+<img src="{{ url_for('static', filename='cithub.png') }}" class="logo" id="logo">
 <div class="spinner" id="spinner"></div>
 
 <script>
@@ -52,27 +52,27 @@
         setTimeout(() => {
             logo.style.opacity = 1;
             logo.style.transform = 'translate(-50%, -50%) scale(1.2)';
-        }, 500);
+        }, 200);
 
         setTimeout(() => {
             logo.style.opacity = 0;
             logo.style.transform = 'translate(-50%, -50%) scale(1)';
-        }, 4500);
+        }, 2500);
 
         setTimeout(() => {
             const spinner = document.getElementById('spinner');
             spinner.style.display = 'block';
             spinner.style.opacity = 1;
-        }, 4700);
+        }, 2700);
 
         setTimeout(() => {
             const spinner = document.getElementById('spinner');
-            spinner.style.opacity = 0; // Spinner 淡出
-        }, 6000);
+            spinner.style.opacity = 0; 
+        }, 4000);
 
         setTimeout(() => {
-            window.location.href = '/index'; // 使用 Flask 的 url_for 來指向首頁
-        }, 6500);
+            window.location.href = '/index'; 
+        }, 5500);
     };
 </script>
 </body>
