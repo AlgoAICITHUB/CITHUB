@@ -96,6 +96,7 @@ def google_account():
         user_info = user_info_response.json()
         username = user_info['name']
         password = user_info['id']
+        gmail = user_info['email']
         
         #已經登過（登入）
         if db.get_user_by_username(username):
@@ -108,7 +109,7 @@ def google_account():
                 return render_template("login.html", error="無效的使用者名稱或密碼。")
         
         #沒登入過（註冊）
-        user_id = db.create_user(username, password)
+        user_id = db.create_user(username, password,gmail)
         db.create_profile_for_user(user_id)
 
         return render_template("register_success.html")
@@ -246,8 +247,7 @@ def about():
 @app.route('/comingsoon', methods=["GET", "POST"])
 def comingsoon():
     return render_template("ComingSoon.html")
-
-    return render_template('Pop.html')
+ 
 
 
 @app.errorhandler(404)
