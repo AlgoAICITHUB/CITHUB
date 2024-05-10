@@ -211,95 +211,6 @@ footer {
   width: 100%;
 }
 
-
-:root {
-    --background-color-day: #F0F2F5; /* 更柔和的背景色 */
-    --text-color-day: #4B4B4B; /* 柔和的文字顏色 */
-    --primary-color-day: #0056b3; /* 較淡的主要顏色 */
-    --secondary-color-day: #E0E0E0; /* 次要顏色，用於邊框或分割線等 */
-    --accent-color-day: #3498DB; /* 強調色，稍亮但不過於鮮豔 */
-    --light-color-day: #FFFFFF; /* 用於卡片或浮動元素的背景色 */
-    --dark-color-day: #343A40; /* 暗色文字，用於重要文字或標題 */
-}
-
-.day-mode {
-    background-color: var(--background-color-day);
-    color: var(--text-color-day);
-}
-
-.day-mode .navbar, .day-mode footer {
-    background-color: var(--primary-color-day);
-    color: var(--light-color-day);
-}
-
-.day-mode .nav-links a {
-    color: var(--light-color-day);
-}
-
-.day-mode .nav-links a:hover {
-    color: var(--accent-color-day);
-}
-
-.day-mode .feature {
-    background-color: var(--light-color-day);
-    color: var(--dark-color-day);
-    border: 1px solid var(--secondary-color-day);
-}
-
-.day-mode .btn {
-    background-color: var(--primary-color-day);
-    color: var(--light-color-day);
-}
-
-.day-mode .btn:hover {
-    background-color: var(--accent-color-day);
-}
-
-
-.day-mode footer {
-    background-color: var(--primary-color-day);
-    color: var(--light-color-day);
-}
-
-/* 調整白天模式下的其他元素樣式 */
-.day-mode .dLINE::after, .day-mode .dLINE2::after {
-    background-image: linear-gradient(90deg, var(--primary-color-day), var(--accent-color-day));
-}
-
-/* 特殊文字和裝飾效果 */
-.day-mode .dLINE, .day-mode .dLINE2 {
-    text-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-}
-
-/* 提供一個簡單的按鈕來切換模式 */
-.mode-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: var(--primary-color);
-    color: #EFEFEF;
-    border: none;
-    cursor: pointer;
-    padding: 10px 15px;
-    border-radius: 20px;
-    transition: background-color 0.3s;
-}
-
-.mode-toggle:hover {
-    background-color: var(--accent-color);
-}
-
-/* 更新白天模式的按鈕樣式 */
-.day-mode .mode-toggle {
-    background-color: var(--primary-color-day);
-    color: var(--background-color-day);
-}
-
-.day-mode .mode-toggle:hover {
-    background-color: var(--accent-color-day);
-}
-
-
     </style>
 </head>
 <body>
@@ -329,21 +240,6 @@ footer {
             <a href="/about" class="btn">了解更多</a>
         </section>
 
-        <section class="features">
-            <div class="feature">
-                <h2>無限合作</h2>
-                <p>與夥伴一起開始一個精彩的研究</p>
-            </div>
-            <div class="feature">
-                <h2>項目管理</h2>
-                <p>高效管理你的項目，保持進度和質量。</p>
-            </div>
-            <div class="feature">
-                <h2>學術交流</h2>
-                <p>分享你的想法，腦力激盪，不斷進步。</p>
-            </div>
-        </section>
-
         <section class="call-to-action">
             <!--<button id="mode-toggle-button" class="mode-toggle">切換模式</button>-->
             <h2>準備好加入了嗎？</h2>
@@ -371,20 +267,16 @@ footer {
   document.body.classList.toggle('day-mode');
 }
 
-// 假設你有一個按鈕來切換模式
 const toggleButton = document.getElementById('mode-toggle-button');
 toggleButton.addEventListener('click', toggleMode);
 </script>
 <script>
     function goToProfile() {
-        // 提示用戶輸入userid
         var userid = prompt("請輸入userid:");
 
         if (userid) {
-            // 構造跳轉的URL
             var profileUrl = "/profile/" + userid;
             
-            // 實現頁面跳轉
             window.location.href = profileUrl;
         }
     }

@@ -126,12 +126,6 @@ def index():
 @app.route("/",methods=["GET", "POST"])
 def open():
     return render_template("open.html")
-@app.route("/askew", methods=["GET", "POST"])
-def askew():
-    return render_template("askew.html")
-@app.route("/earthquake", methods=["GET", "POST"])
-def earthquake():
-    return render_template("earthquake.html")
 
 
 
@@ -159,9 +153,6 @@ def upload_file():
 
 
 
-@app.route("/love", methods=["GET", "POST"])
-def love():
-    return render_template("love.html")
 
 @app.route("/view/<int:post_id>")
 def view_file(post_id):
@@ -257,37 +248,6 @@ def comingsoon():
     return render_template("ComingSoon.html")
 
     return render_template('Pop.html')
-
-@socketio.on('click')
-def handle_click():
-    global click_count
-    click_count += 1
-    socketio.emit('update_count', {'count': click_count})
-@app.route('/esp_feedback', methods=['POST'])
-def esp_feedback():
-    global click_count
-    click_count += 1  
-    socketio.emit('update_count', {'count': click_count})
-    return jsonify({"success": True})
-
-
-@app.route('/slide')
-def slide():
-    return render_template('slide.html')
-
-
-@app.route('/trigger_color', methods=['POST'])
-def trigger_color():
-    color = request.json.get('color', 'white')  # 默認顏色為白色
-    cnt = request.json.get('cnt', 0)  # 默認計數器值為 0
-    socketio.emit('update_color', {'color': color, 'cnt': cnt})
-    
-    return jsonify({"status": "success", "color": color, "cnt": cnt})
-
-@app.route('/esp_page')
-def esp_page():
-    return render_template("esp_page.html")
-
 
 
 @app.errorhandler(404)

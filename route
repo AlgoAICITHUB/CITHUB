@@ -1,0 +1,25 @@
+1. `/register` - 用於註冊用戶。
+2. `/login` - 用於用戶登錄。
+3. `/oauth2callback` - Google OAuth 回調 URL。
+4. `/index` - 主頁 (不同身份的使用者會看到不同的主頁)。
+5. `/` (根 URL) - 打開 `open.html` 模板頁面。
+6. `/askew` - 加載 `askew.html` 模板頁面。
+7. `/earthquake` - 加載 `earthquake.html` 模板頁面。
+8. `/upload` - 用戶上傳文件的頁面。
+9. `/love` - 加載 `love.html` 模板頁面。
+10. `/view/<int:post_id>` - 查看特定帖子。
+11. `/profile/<int:user_id>` - 查看特定用戶的個人資料。
+12. `/profilem` - 查看當前登錄用戶的個人資料。
+13. `/logout` - 用戶登出。
+14. `/edit-profile` - 編輯當前用戶的個人資料。
+15. `/files` - 列出所有帖子。
+16. `/law` - 加載 `law.html` 模板頁面。
+17. `/about` - 加載 `about.html` 模板頁面。
+18. `/comingsoon` - 加載 `ComingSoon.html` 模板頁面。
+19. `/slide` - 加載 `slide.html` 模板頁面。
+20. `/esp_feedback` - 用於處理 `ESP` 點擊反饋，返回 JSON 響應。
+21. `/trigger_color` - 用於更新顏色和計數，返回 JSON 響應。
+22. `/esp_page` - 加載 `esp_page.html` 模板頁面。
+23. `/adminonly` - 只有特定的用戶可以訪問的管理頁面。
+24. `@socketio.on('click')` - 用於處理點擊事件的 SocketIO 事件處理函數。
+25. `@app.errorhandler(404)` - 處理 404 錯誤並返回 `404.html`。
