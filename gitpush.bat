@@ -1,14 +1,14 @@
 @echo off
 if "%1" == "" (
-    echo 訊息!!
-    echo 方法: gitpush "訊息"
+    echo message!!
+    echo method: gitpush "msseage"
     exit /b 1
 )
-echo 添加中
+echo Adding...
 git add .
-echo 訊息 %1
+echo Message: %1
 git commit -m %1
-echo 推送
+echo pushing
 git push
-echo 檢查
+echo checkout
 git pull
