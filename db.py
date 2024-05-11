@@ -32,3 +32,9 @@ def validate_user_login(username, password):
     user = conn.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password)).fetchone()
     conn.close()
     return user
+
+def validate_user_email(username, email):
+    conn = get_db_connection()
+    user = conn.execute("SELECT * FROM users WHERE username = ? AND email = ?", (username, email)).fetchone()
+    conn.close()
+    return user

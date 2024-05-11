@@ -289,5 +289,16 @@ def adminonly():
 </html>
 """)
 
+
+@app.route("/forget", methods=["GET", "POST"])
+def forget():
+    if request.method == "POST":
+        email = request.form["email"]
+        username = request.form["username"]
+        if db.validate_user_email(username,email):
+            return render_template_string(email)
+        else:
+            return "x"
+    return render_template("forget.html")
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
