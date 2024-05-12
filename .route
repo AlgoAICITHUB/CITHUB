@@ -1,0 +1,120 @@
+{
+    "Cithub member":[
+        {
+            "Name": "黃鈺翔",
+            "Discord":"tudo_huang"
+        }
+    ]
+    "routes": [
+        {
+            "path": "/",
+            "method": "GET",
+            "handler": "open",
+            "description": "開場"
+        }
+        {
+            "path": "/index",
+            "method": "GET",
+            "handler": "index",
+            "description": "首頁"
+        },
+        {
+            "path":"/register",
+            "method": "GET,POST",
+            "handler": "register",
+            "description": "註冊",
+        },
+        {
+            "path": "/login",
+            "method": "GET,POST",
+            "handler": "login",
+            "description": "登入"
+        },
+        {
+            "path": "/oauth2callback",
+            "method": "GET,POST",
+            "handler": "google_account",
+            "description": "Google登入",
+        },
+        {
+            "path": "/upload",
+            "method": "GET,POST",
+            "handler": "upload",
+            "description": "上傳文件",
+        },
+        {
+            "path": "/view/<int:post_id>",
+            "method": "GET",
+            "handler": "view_file",
+            "description": "查看文章",
+
+        },
+        {
+            "path": "/profile/<int:user_id>",
+            "method": "GET",
+            "handler": "profile",
+            "description": "查看檔案",
+        },
+        {
+            "path": "/profilem",
+            "method": "GET",
+            "handler": "profilem",
+            "description": "查看自己的檔案",
+        },
+        {
+            "path": "/logout",
+            "method": "GET,POST",
+            "handler": "logout",
+            "description": "登出",
+        },
+        {
+            "path": "/edit_profile",
+            "method": "GET,POST",
+            "handler": "edit_profile",
+            "description": "編輯自己的檔案"
+        },
+        {
+            "path":"/files",
+            "method": "GET,POST",
+            "handler": "list_md_files",
+            "description": "列出文章",
+
+        },
+        {
+            "path":"/law",
+            "method": "GET,POST",
+            "handler": "law",
+            "description": "查看規則",
+        },
+        {
+            "path":"/about",
+            "method": "GET",
+            "handler": "about",
+            "description": "關於",
+        },
+        {
+            "path":"/comingsoon",
+            "method": "GET",
+            "handler": "comingsoon",
+            "description": "即將到來",
+        },
+        {
+            "path":"errorhandler(404)",
+            "method": "e",
+            "handler":"page_not_found",
+            "description": "404",
+        },
+        {
+            "path":"/adminonly",
+            "method": "GET",
+            "handler": "adminonly",
+            "description": "SECRET",
+        },
+        {
+            "path":"/forget",
+            "method": "GET,POST",
+            "handler": "forget",
+            "description": "忘記密碼",
+        }
+    ]
+}
