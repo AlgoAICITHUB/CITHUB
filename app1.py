@@ -232,7 +232,8 @@ def view_file(post_id):
         flash('帖子未找到。')
         return redirect(url_for('index'))
 
-    html_content = Markup(markdown.markdown(post['content'], extensions=['codehilite', 'fenced_code', 'tables']))
+    html_content = Markup(markdown.markdown(post['content'], extensions=['extra', 'codehilite', 'fenced_code', 'tables']))
+
 
     return render_template("display.html", post=post, content=html_content)
 
