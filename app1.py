@@ -241,7 +241,16 @@ def view_file(post_id):
 
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
+    conn = get_db_connection()
+    post_rows = conn.execute('''
+    SELECT p.id, p.title, p.content, p.created_at, u.username 
+    FROM posts p
+    JOIN users u ON p.user_id = u.id
+    ORDER BY p.created_at DESC
+    ''').fetchall()
+    conn.close()
 
+    posts = [dict(post) for post in post_rows]  
     db = get_db_connection()
     user_profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
     db.close()
@@ -251,9 +260,10 @@ def profile(user_id):
     else:
         profile_bio_html = "No bio available."
 
-    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html)
+    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html,posts=posts)
 @app.route('/profilem', methods=['GET','POST'])
 def profilem():
+
     user_id = session.get('user_id')
     return profile(user_id)
 @app.route('/logout', methods=['POST','GET'])
