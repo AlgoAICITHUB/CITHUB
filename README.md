@@ -1,11 +1,9 @@
 # FlaskWEB
 
-```bash
-pip install -r requirements.txt
-```
+2024 IZCC Friday放課-- Flask網頁成發。
 
+網頁主題: Cithub 一個輕鬆的學術blog討論社區
 
-```bash
-python app1.py
-```
-$\(a + b\)$
+## Cithub 一個輕鬆的學術blog討論社區
+成員:
+    
