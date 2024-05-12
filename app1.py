@@ -195,7 +195,30 @@ def upload_file():
 
     return render_template("upload.html")
 
+@app.route('/edit/<int:post_id>', methods=['GET', 'POST'])
+def edit_post(post_id):
+    conn = get_db_connection()
+    post = conn.execute('SELECT * FROM posts WHERE id = ?', (post_id,)).fetchone()
 
+    if post is None:
+        flash('文章未找到。')
+        return redirect(url_for('list_md_files'))
+
+    if session.get('user_id') != post['user_id']:
+        flash('您無權編輯這篇文章。')
+        return redirect(url_for('list_md_files'))
+
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        conn.execute('UPDATE posts SET title = ?, content = ? WHERE id = ?', (title, content, post_id))
+        conn.commit()
+        conn.close()
+        flash('文章更新成功！')
+        return redirect(url_for('list_md_files'))
+
+    conn.close()
+    return render_template('edit.html', post=post)
 
 
 
