@@ -1,0 +1,16 @@
+2024-05-12 17:06:46,121 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/
+2024-05-12 17:06:51,668 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/index
+2024-05-12 18:37:34,982 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/login
+2024-05-12 18:37:34,995 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/static/style.css
+2024-05-12 18:37:35,099 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/static/favicon.ico
+2024-05-12 18:37:39,166 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/login
+2024-05-12 18:37:39,173 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/edit-profile?user_id=1
+2024-05-12 18:37:40,446 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/edit-profile?user_id=1
+2024-05-12 18:37:40,452 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/profile/1
+2024-05-12 18:37:41,662 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/index
+2024-05-12 18:37:41,683 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/static/snow.js
+2024-05-12 18:37:41,685 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/static/chatbot.js
+2024-05-12 18:37:41,687 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/static/night.js
+2024-05-12 18:37:41,695 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/static/index_easter.js
+2024-05-12 18:37:41,698 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/static/love.js
+2024-05-12 18:38:08,099 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:5000/about

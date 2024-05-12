@@ -14,6 +14,9 @@ import init_db
 import db
 import requests
 from dotenv import load_dotenv
+import time
+import logging
+from concurrent.futures import ThreadPoolExecutor
 
 #---------前處理---------
 app = Flask(__name__)
@@ -36,6 +39,47 @@ DATABASE = 'app.db'
 
 with app.app_context():
     init_db.create_table()
+
+request_count = {}
+RATE_LIMIT = 100  
+TIME_WINDOW = 60  
+
+@app.before_request
+def rate_limit():
+    ip = request.remote_addr
+    now = time.time()
+    if ip not in request_count:
+        request_count[ip] = []
+
+    # 清理過期的時間戳
+    request_count[ip] = [timestamp for timestamp in request_count[ip] if now - timestamp < TIME_WINDOW]
+
+    # 檢查當前時間窗口內的請求次數是否超過限制
+    if len(request_count[ip]) >= RATE_LIMIT:
+        return jsonify({"message": "請求過於頻繁，請稍後再試。"}), 429
+
+    # 增加當前時間戳
+    request_count[ip].append(now)
+logger = logging.getLogger('async_logger')
+logger.setLevel(logging.INFO)
+fh = logging.FileHandler('async_app.log')
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+logger.addHandler(fh)
+
+# 創建一個 ThreadPoolExecutor 用於異步日誌記錄
+executor = ThreadPoolExecutor(max_workers=2)
+
+def log_message(message):
+    logger.info(message)
+
+@app.before_request
+def log_request_info():
+    # 將日誌記錄任務提交給線程池
+    executor.submit(log_message, f"IP: {request.remote_addr}, URL: {request.url}")
+
+
+
 
 #---------網站主函數---------
 
