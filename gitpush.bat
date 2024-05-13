@@ -5,6 +5,8 @@ if "%1" == "" (
     exit /b 1
 )
 echo Adding...
+git config --global user.email %2
+git config --global user.name %3
 git add .
 echo Message: %1
 git commit -m %1

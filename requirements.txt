@@ -1,7 +1,6 @@
 
 Flask
 MarkupSafe
-sqlite3
 torch
 tensorflow
 markdown
