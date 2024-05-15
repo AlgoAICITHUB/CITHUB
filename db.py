@@ -38,3 +38,9 @@ def validate_user_email(username, email):
     user = conn.execute("SELECT * FROM users WHERE username = ? AND email = ?", (username, email)).fetchone()
     conn.close()
     return user
+
+def update_user_password(username, password):
+    conn = get_db_connection()
+    conn.execute("UPDATE users SET password = ? WHERE username = ?", (password, username))
+    conn.commit()
+    conn.close()
