@@ -205,7 +205,6 @@ def view_file(post_id):
 
 
 
-
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
     conn = get_db_connection()
@@ -213,8 +212,9 @@ def profile(user_id):
     SELECT p.id, p.title, p.content, p.created_at, u.username 
     FROM posts p
     JOIN users u ON p.user_id = u.id
+    WHERE p.user_id = ?
     ORDER BY p.created_at DESC
-    ''').fetchall()
+    ''', (user_id,)).fetchall()
     conn.close()
 
     posts = [dict(post) for post in post_rows]  
@@ -227,7 +227,8 @@ def profile(user_id):
     else:
         profile_bio_html = "No bio available."
 
-    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html,posts=posts)
+    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html, posts=posts)
+
 @app.route('/profilem', methods=['GET','POST'])
 def profilem():
 
@@ -266,6 +267,7 @@ def edit_profile():
         profile_dict = dict(profile) if profile else None
 
         return render_template('edit_profile.html', profile=profile_dict)
+"""
 @app.route("/files")
 def list_md_files():
     conn = get_db_connection()
@@ -280,7 +282,33 @@ def list_md_files():
     posts = [dict(post) for post in post_rows]  
     
     return render_template('files.html', posts=posts)
+"""
+@app.route("/files")
+def list_md_files():
+    query = request.args.get('query', '')
+    conn = get_db_connection()
+    
+    if query:
+        post_rows = conn.execute('''
+        SELECT p.id, p.title, p.content, p.created_at, u.username 
+        FROM posts p
+        JOIN users u ON p.user_id = u.id
+        WHERE p.title LIKE ?
+        ORDER BY p.created_at DESC
+        ''', ('%' + query + '%',)).fetchall()
+    else:
+        post_rows = conn.execute('''
+        SELECT p.id, p.title, p.content, p.created_at, u.username 
+        FROM posts p
+        JOIN users u ON p.user_id = u.id
+        ORDER BY p.created_at DESC
+        ''').fetchall()
+    
+    conn.close()
 
+    posts = [dict(post) for post in post_rows]  
+    
+    return render_template('files.html', posts=posts, query=query)
 @app.route('/law', methods=['GET','POST'])
 def law():
     return render_template('law.html')
