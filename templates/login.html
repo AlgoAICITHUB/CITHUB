@@ -6,6 +6,13 @@
     <title>登入頁面</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel = "icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+        #gmail_icon{ 
+            margin-bottom:-5px ;
+            margin-right: 5px;
+            height: 20px;
+        }
+    </style>
 </head>
 <body>
 
@@ -23,7 +30,7 @@
         <button type="submit">登入</button>
         <a href="/forget">忘記密碼</a>
     </form>
-    <br></br><a href="https://accounts.google.com/o/oauth2/auth?client_id=474559934367-lb544etuur5u27a8jeetol7s5alkp2b9.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:5000/oauth2callback&response_type=code&scope=email%20profile"><button>使用 Google登入</button></a>
+    <br><a href="https://accounts.google.com/o/oauth2/auth?client_id=474559934367-lb544etuur5u27a8jeetol7s5alkp2b9.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:5000/oauth2callback&response_type=code&scope=email%20profile"><button><svg id="gmail_icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20h3a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-3v16z"></path><path d="M5 20h3V4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1z"></path><path d="M16 4l-4 4l-4-4"></path><path d="M4 6.5l8 7.5l8-7.5"></path></g></svg>使用 Google登入</button></a>
 </div>
 </body>
 </html>
