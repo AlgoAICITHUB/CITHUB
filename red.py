@@ -29,7 +29,3 @@ def test_sql_injection():
 # 執行測試
 if __name__ == "__main__":
     test_sql_injection()
-
-# 執行測試
-if __name__ == "__main__":
-    test_sql_injection()
