@@ -21,6 +21,9 @@
                 <input type="checkbox" id="checkbox" name="checkbox" value="checked" onchange="checkCheckbox()">
                 <a href="/law">使用規則</a>
             </div>
+            {% if error %}
+                <p>{{error}}</p>
+            {% endif %}
             <input type="submit" id="submitBtn" value="註冊" disabled>
         </form>
     </div>
