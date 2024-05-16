@@ -59,7 +59,12 @@ def register():
         email = request.form['email']
         
         if db.get_user_by_username(username):
-            return "用戶名已存在。"
+            error="用戶名已被使用過"
+            return render_template("register.html",error=error)
+        
+        if db.get_user_by_email(email):
+            error="電子郵件已被使用過"
+            return render_template("register.html",error=error)
 
         user_id = db.create_user(username, password,email)
         db.create_profile_for_user(user_id)

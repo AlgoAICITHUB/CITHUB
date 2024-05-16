@@ -14,6 +14,12 @@ def get_user_by_username(username):
     conn.close()
     return user
 
+def get_user_by_email(email):
+    conn = get_db_connection()
+    user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
+    conn.close()
+    return user
+
 def create_user(username, password,email):
     conn = get_db_connection()
     conn.execute("INSERT INTO users (username, password,email) VALUES (?, ?,?)", (username, password,email))
