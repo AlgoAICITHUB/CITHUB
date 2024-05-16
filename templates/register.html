@@ -3,7 +3,12 @@
 <head>
     <title>註冊</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style3.css') }}">
-    <link rel = "icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+        #checkbox {
+            margin-right: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -12,8 +17,24 @@
             用戶名：<input type="text" name="username" required><br>
             密碼：<input type="password" name="password" required><br>
             Gmail:<input type="email" name="email" required><br>
-            <input type="submit" value="註冊">
+            <div>
+                <input type="checkbox" id="checkbox" name="checkbox" value="checked" onchange="checkCheckbox()">
+                <a href="/law">使用規則</a>
+            </div>
+            <input type="submit" id="submitBtn" value="註冊" disabled>
         </form>
     </div>
+
+    <script>
+        function checkCheckbox() {
+            var checkbox = document.getElementById("checkbox");
+            var submitBtn = document.getElementById("submitBtn");
+            if (checkbox.checked) {
+                submitBtn.removeAttribute("disabled");
+            } else {
+                submitBtn.setAttribute("disabled", "disabled");
+            }
+        }
+    </script>
 </body>
 </html>
