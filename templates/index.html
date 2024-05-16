@@ -224,15 +224,15 @@ footer {
         <nav class="navbar">
             <div class="logo">CitHub</div>
             <ul class="nav-links">
-                <a href="#" onclick="goToProfile()">搜尋文章</a>
+                <a href="#" onclick="goToProfile()">搜尋使用者</a>
                 <a href="/files">文章列表</a>
                 {%if not session.get('username')%}
                   <a href="/register">註冊</a>
                   <a href="/login">登入</a>
                 {% else %}
-                  <a href="/profilem">{{session.get('username')}}</a>
                   <a href="/upload">上傳文章</a>
                   <a href="/logout">登出</a>
+                  <a href="/profilem">{{session.get('username')}}</a>
                 {% endif %}
             </ul>
         </nav>
