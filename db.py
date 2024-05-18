@@ -30,7 +30,7 @@ def create_user(username, password,email):
 
 def create_profile_for_user(user_id):
     conn = get_db_connection()
-    conn.execute("INSERT INTO profiles (user_id, photo, bio) VALUES (?, '', '')", (user_id,))
+    conn.execute("INSERT INTO profiles (user_id, bio) VALUES (?, '')", (user_id,))
     conn.commit()
     conn.close()
 def validate_user_login(username, password):

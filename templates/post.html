@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ post['title'] }}</title>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']] // 添加對 $...$ 的支持
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <!-- MathJax 的配置必須在載入庫之前完成 -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://raw.githubusercontent.com/jwarby/pygments-css/master/native.css" rel="stylesheet">
+    <link rel = "icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif; /* 更易於閱讀的字體 */
+            margin: 0;
+            background-color: #f5f5f5; /* 淺灰色背景 */
+            color: #333; /* 深色文字 */
+        }
+        .container {
+            max-width: 800px; /* 固定容器寬度 */
+            margin: 40px auto; /* 上下邊距，自動左右邊距 */
+            padding: 20px; /* 內邊距 */
+            background-color: #fff; /* 白色背景 */
+            border-radius: 8px; /* 圓角邊框 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 盒子陰影 */
+        }
+        h1 {
+            color: #3498db; /* 標題顏色 */
+            margin-bottom: 20px; /* 標題下邊距 */
+        }
+        p {
+            font-size: 16px; /* 段落字體大小 */
+            line-height: 1.6; /* 行高 */
+            margin-bottom: 15px; /* 段落下邊距 */
+        }
+        a {
+            color: #3498db;
+            text-decoration: none; /* 移除下劃線 */
+        }
+        a:hover {
+            text-decoration: underline; /* 滑鼠懸停時加下劃線 */
+        }
+
+        /* 新增華麗特效 */
+        .admin {
+            color: rgb(255, 0, 0); /* 紅色文字 */
+            font-size: 24px; /* 文字大小 */
+            text-shadow: 2px 2px 5px rgba(255, 217, 0, 0.993); /* 文字陰影 */
+            animation: shine 1s infinite alternate; /* 動畫效果 */
+        }
+
+        @keyframes shine {
+            0% { text-shadow: 2px 2px 5px rgba(255, 230, 0, 0.5); } /* 開始時的陰影 */
+            100% { text-shadow: 2px 2px 10px rgb(255, 0, 0); } /* 結束時的陰影 */
+        }
+
+        .Moderator {
+            color: rgb(0, 128, 255); /* 藍色 */
+            font-size: 24px;
+            text-shadow: 2px 2px 5px rgba(0, 128, 255, 0.7); /* 深藍色的陰影 */
+            animation: glow 1s infinite alternate; /* 無限閃爍動畫 */
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 2px 2px 5px rgba(0, 128, 255, 0.7); /* 初始陰影 */
+            }
+            to {
+                text-shadow: 2px 2px 10px rgba(0, 128, 255, 1); /* 最亮的陰影 */
+            }
+        }
+        
+        img {
+            max-width: 100%; /* 使圖像不超過其容器寬度 */
+            height: auto; /* 保持圖像的原始寬高比 */
+        }
+        
+        /* 代碼塊樣式 */
+        pre {
+            background-color: #f8f8f8; /* 設置背景顏色 */
+            border: 1px solid #ccc; /* 邊框 */
+            padding: 10px; /* 內邊距 */
+            overflow: auto; /* 長代碼滾動 */
+        }
+
+        /* 列表樣式 */
+        ul, ol {
+            padding-left: 20px; /* 調整列表的縮進 */
+        }
+        
+        textarea {
+    width: 100%; 
+    height: 150px; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    background-color: #f9f9f9; 
+    font-family: 'Roboto', sans-serif; 
+    font-size: 16px; 
+    color: #333; 
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); 
+    resize: both; 
+    margin-bottom: 15px; 
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; 
+}
+
+textarea:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(50, 152, 219, 0.5); 
+    outline: none; 
+}
+
+button {
+    display: inline-block; 
+    padding: 10px 20px; 
+    font-size: 16px; 
+    font-family: 'Roboto', sans-serif; 
+    color: #fff; 
+    background-color: #3498db; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; 
+}
+
+button:hover {
+    background-color: #2980b9; 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+}
+
+button:focus {
+    outline: none; 
+    box-shadow: 0 0 5px rgba(50, 152, 219, 0.5); 
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ post['title'] }}</h1>
+        <p>作者: 
+            {% if post.username == 'admin' %}
+                <span class="admin">{{ post.username }}</span>
+            {% elif post.username == 'Moderator' %}
+                <span class="Moderator">{{ post.username }}</span>
+            {% else %}
+                {{ post.username }}
+            {% endif %}
+        </p>
+        <div>{{ content|safe }}</div>
+        <a href="/index">回首頁</a>
+
+        <div class="comments-section">
+            <h2>評論</h2>
+            {% for comment in comments %}
+                <div class="comment">
+                    <p><strong>{{ comment.username }}</strong>: {{ comment.content }}</p>
+                    <p><small>{{ comment.created_at }}</small></p>
+                </div>
+            {% endfor %}
+
+            {% if session.get('user_id') %}
+                <form method="post">
+                    <textarea name="content" placeholder="添加評論..." required></textarea>
+                    <button type="submit">提交</button>
+                </form>
+            {% else %}
+                <p>請 <a href="{{ url_for('login') }}">登錄</a> 以發表評論。</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

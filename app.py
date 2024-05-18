@@ -191,27 +191,10 @@ def edit_post(post_id):
     conn.close()
     return render_template('edit.html', post=post)
 
-
-
-@app.route("/view/<int:post_id>")
-def view_file(post_id):
-    conn = get_db_connection()
-    post = conn.execute('SELECT p.id, p.title, p.content, u.username FROM posts p JOIN users u ON p.user_id = u.id WHERE p.id = ?', (post_id,)).fetchone()
-    conn.close()
-
-    if post is None:
-        flash('帖子未找到。')
-        return redirect(url_for('index'))
-
-    html_content = Markup(markdown.markdown(post['content'], extensions=['extra', 'codehilite', 'fenced_code', 'tables']))
-
-
-    return render_template("display.html", post=post, content=html_content)
-
-@app.route('/post/<int:post_id>', methods=['GET', 'POST'])
+@app.route('/view/<int:post_id>', methods=['GET', 'POST'])
 def view_post(post_id):
     conn = get_db_connection()
-    post = conn.execute('SELECT * FROM posts WHERE id = ?', (post_id,)).fetchone()
+    post = conn.execute('SELECT p.*, u.username FROM posts p JOIN users u ON p.user_id = u.id WHERE p.id = ?', (post_id,)).fetchone()
     comments = conn.execute('SELECT c.*, u.username FROM comments c JOIN users u ON c.user_id = u.id WHERE c.post_id = ? ORDER BY c.created_at ASC', (post_id,)).fetchall()
     conn.close()
 
@@ -233,8 +216,14 @@ def view_post(post_id):
             flash('請先登錄。')
             return redirect(url_for('login'))
 
-    return render_template('post.html', post=post, comments=comments)
+    html_content = Markup(markdown.markdown(post['content'], extensions=['extra', 'codehilite', 'fenced_code', 'tables']))
 
+    return render_template('post.html', post=post, content=html_content, comments=comments)
+
+
+@app.route("/termOfUse")
+def termOfUse():
+    return render_template('term_of_use.html')
 
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
