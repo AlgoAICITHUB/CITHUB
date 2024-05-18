@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify,render_template_string, redirect, url_for, flash,session,make_response,jsonify
+from flask import Flask, request, render_template, jsonify,render_template_string, redirect, url_for, flash,session,make_response,jsonify,send_from_directory
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from markupsafe import Markup
 import sqlite3
@@ -208,6 +208,32 @@ def view_file(post_id):
 
     return render_template("display.html", post=post, content=html_content)
 
+@app.route('/post/<int:post_id>', methods=['GET', 'POST'])
+def view_post(post_id):
+    conn = get_db_connection()
+    post = conn.execute('SELECT * FROM posts WHERE id = ?', (post_id,)).fetchone()
+    comments = conn.execute('SELECT c.*, u.username FROM comments c JOIN users u ON c.user_id = u.id WHERE c.post_id = ? ORDER BY c.created_at ASC', (post_id,)).fetchall()
+    conn.close()
+
+    if post is None:
+        flash('帖子未找到。')
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        content = request.form['content']
+        user_id = session.get('user_id')
+        if user_id:
+            conn = get_db_connection()
+            conn.execute('INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)', (post_id, user_id, content))
+            conn.commit()
+            conn.close()
+            flash('評論已添加。')
+            return redirect(url_for('view_post', post_id=post_id))
+        else:
+            flash('請先登錄。')
+            return redirect(url_for('login'))
+
+    return render_template('post.html', post=post, comments=comments)
 
 
 @app.route('/profile/<int:user_id>')
@@ -325,7 +351,24 @@ def about():
 def comingsoon():
     return render_template("ComingSoon.html")
  
+@app.route('/video')
+def video():
+    video_path = 'static/'
+    return send_from_directory(video_path, 'HelloCITHUB.mp4')
+@app.route('/stats')
+def stats():
+    conn = get_db_connection()
+    most_popular_posts = conn.execute('''
+    SELECT p.id, p.title, COUNT(c.id) as comment_count
+    FROM posts p
+    LEFT JOIN comments c ON p.id = c.post_id
+    GROUP BY p.id
+    ORDER BY comment_count DESC
+    LIMIT 5
+    ''').fetchall()
+    conn.close()
 
+    return render_template('stats.html', most_popular_posts=most_popular_posts)
 
 @app.errorhandler(404)
 def page_not_found(e):

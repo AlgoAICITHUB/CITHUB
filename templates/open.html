@@ -1,69 +1,50 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Welcome</title>
-<link rel = "icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-<style>
-    body, html {
-        height: 100%;
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background-color: #333;
-        color: white;
-    }
-    .logo {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 200px;
-        opacity: 0;
-        transition: opacity 2s, transform 2s;
-    }
-    .spinner {
-        border: 8px solid #f3f3f3; /* Light grey */
-        border-top: 8px solid #3498db; /* Blue */
-        border-radius: 50%;
-        width: 80px;
-        height: 80px;
-        animation: spin 2s linear infinite;
-        position: absolute;
-        top: 60%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        display: none; /* 初始隱藏 */
-        transition: opacity 2s;
-        opacity: 0; /* 初始透明度為 0 */
-    }
-    @keyframes spin {
-        0% { transform: translate(-50%, -50%) rotate(0deg); }
-        100% { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manim Animation</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        .video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
 </head>
 <body>
-<img src="{{ url_for('static', filename='cithub.png') }}" class="logo" id="logo">
-<div class="spinner" id="spinner"></div>
+    <div class="video-container">
+        <video id="intro-video" width="640" height="480" autoplay muted>
+            <source src="{{ url_for('video') }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
 
-<script>
-    window.onload = () => {
-        const logo = document.getElementById('logo');
-        setTimeout(() => {
-            logo.style.opacity = 1;
-            logo.style.transform = 'translate(-50%, -50%) scale(1.2)';
-        }, 200);
+    <script>
+        const video = document.getElementById('intro-video');
+        video.onended = function() {
 
-        setTimeout(() => {
-            logo.style.opacity = 0;
-            logo.style.transform = 'translate(-50%, -50%) scale(1)';
-        }, 2500);
+            window.location.href = "/index";
+        };
 
-
-        setTimeout(() => {
-            window.location.href = '/index'; 
-        }, 4500);
-    };
-</script>
+        window.onload = function() {
+            setTimeout(function() {
+                video.play();
+            }, 100);
+        };
+    </script>
 </body>
 </html>
