@@ -15,8 +15,12 @@ import db
 import requests
 from dotenv import load_dotenv
 import time
+import secrets
+import string
 import rate_limiting
 import logging_setup
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from flask_mail import Mail, Message
 #---------前處理---------
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -25,8 +29,14 @@ db_initialized_c = False
 app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a' #SHA256函數加密
 current_color = "white"
 click_count = 0
-
-
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'ttako015@gmail.com'
+app.config['MAIL_PASSWORD'] = 'dleo aszx ehqy bvpt'
+app.config['SECRET_KEY'] = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a'
+s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+mail = Mail(app)
 # 與DATABASE進行溝通用
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
@@ -333,16 +343,74 @@ def adminonly():
 </html>
 """)
 
-
 @app.route("/forget", methods=["GET", "POST"])
 def forget():
     if request.method == "POST":
-        email = request.form["email"]
-        username = request.form["username"]
-        if db.validate_user_email(username,email):
-            return render_template_string(email)
+        input_data = request.form["username_or_email"]
+
+        if '@' in input_data:
+            email = input_data
+            username = db.get_username_from_email(email)
         else:
-            return "x"
+            username = input_data
+            email = db.get_email_from_username(username)
+
+        if username and email:
+            session['username'] = username
+            token = s.dumps(email, salt='email-confirm')
+            confirm_url = url_for('confirm_email', token=token, _external=True)
+            html = render_template_string('''
+            <p>Hi {{ username }},</p>
+            <p>To reset your password, click the following link:</p>
+            <p><a href="{{ confirm_url }}">Reset Password</a></p>
+            ''', username=username, confirm_url=confirm_url)
+            msg = Message(subject="Password Reset Request",
+                          sender=app.config['MAIL_USERNAME'],
+                          recipients=[email],
+                          html=html)
+            mail.send(msg)
+            return redirect('/changepassword')
     return render_template("forget.html")
+
+
+@app.route("/changepassword", methods=["GET", "POST"])
+def changepassword():
+    random_cookie_value = session.get('random_cookie_value')
+    verified = request.cookies.get('verified')
+    if verified and random_cookie_value and verified == random_cookie_value:
+        if request.method == "POST":
+            password1 = request.form['password1']
+            password2 = request.form['password2']
+            if password1 == password2:
+                username = session.get('username')
+                db.update_user_password(username, password1)
+                return redirect('/login')
+            else:
+                alert_message = "密碼不一致!"
+                return render_template("change_password.html", alert_message=alert_message)
+        return render_template("change_password.html")
+    else:
+        return render_template("waitcheck.html")
+    
+def generate_random_string(length):
+    characters = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(characters) for _ in range(length))
+
+@app.route('/confirm/<token>', methods=["GET"])
+def confirm_email(token):
+    try:
+        email = s.loads(token, salt='email-confirm', max_age=900)
+        resp = make_response('<h1>Email verified successfully!</h1>')
+        random_cookie_value = generate_random_string(30) 
+        session['random_cookie_value'] = random_cookie_value  # 將隨機cookie值存儲到會話(session)中
+        resp.set_cookie('verified', random_cookie_value, max_age=900)
+        
+        return resp
+    except SignatureExpired:
+        return render_template('link_expired.html')
+
+
+#####################################################
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+#2024/5/18

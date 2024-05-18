@@ -1,7 +1,7 @@
 from flask import request, jsonify
 import time
 
-RATE_LIMIT = 100
+RATE_LIMIT = 1000
 TIME_WINDOW = 60
 request_count = {}
 
