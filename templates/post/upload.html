@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8">
+    <title>發布新文章</title>
+    <link rel = "icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style type="text/css">
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .upload-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 1500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+
+        .upload-form {
+            text-align: center;
+        }
+
+        input[type="text"], textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #02e1e9;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: #07edea;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h1>發布新文章</h1>
+        <form action="/upload" method="post" class="upload-form">
+            <label for="title">標題：</label><br>
+            <input type="text" id="title" name="title" required><br>
+            <label for="content">內容：</label><br>
+            <textarea id="content" name="content" rows="6" required></textarea><br>
+            <input type="submit" value="發布">
+        </form>
+    </div>
+    <footer>Copyright &copy; 2024 Cithub. All rights reserved.</footer>
+</body>
+</html>

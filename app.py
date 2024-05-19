@@ -79,9 +79,9 @@ def register():
         user_id = db.create_user(username, password,email)
         db.create_profile_for_user(user_id)
 
-        return render_template("registerOp.html")
+        return render_template("IN_out/registerOp.html")
     else:
-        return render_template("register.html")
+        return render_template("IN_out/register.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -96,9 +96,9 @@ def login():
             session['username'] = username
             return redirect(url_for('edit_profile', user_id=result['id']))
         else:
-            return render_template("login.html", error="無效的使用者名稱或密碼。")
+            return render_template("IN_out/login.html", error="無效的使用者名稱或密碼。")
 
-    return render_template("login.html")
+    return render_template("IN_out/login.html")
 
 @app.route('/oauth2callback', methods=["GET", "POST"])
 def google_account():
@@ -131,13 +131,13 @@ def google_account():
                 session['username'] = username
                 return redirect(url_for('edit_profile', user_id=result['id']))
             else:
-                return render_template("login.html", error="無效的使用者名稱或密碼。")
+                return render_template("IN_out/login.html", error="無效的使用者名稱或密碼。")
         
         #沒登入過（註冊）
         user_id = db.create_user(username, password,gmail)
         db.create_profile_for_user(user_id)
 
-        return render_template("register_success.html")
+        return render_template("IN_out/register_success.html")
     else:
         return render_template('404.html'), 404
 
@@ -159,7 +159,7 @@ def serve_video(video_name):
     return send_from_directory(video_path, f"{video_name}.mp4")
 @app.route("/regSuc",methods=["GET", "POST"])
 def regSuc():
-    return render_template("register_success.html")
+    return render_template("IN_out/register_success.html")
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
@@ -178,9 +178,9 @@ def upload_file():
         conn.commit()
         conn.close()
 
-        return render_template("upload_success.html") 
+        return render_template("post/upload_success.html") 
 
-    return render_template("upload.html")
+    return render_template("post/upload.html")
 
 @app.route('/edit/<int:post_id>', methods=['GET', 'POST'])
 def edit_post(post_id):
@@ -205,7 +205,7 @@ def edit_post(post_id):
         return redirect(url_for('list_md_files'))
 
     conn.close()
-    return render_template('edit.html', post=post)
+    return render_template('post/edit.html', post=post)
 
 @app.route('/view/<int:post_id>', methods=['GET', 'POST'])
 def view_post(post_id):
@@ -234,12 +234,12 @@ def view_post(post_id):
 
     html_content = Markup(markdown.markdown(post['content'], extensions=['extra', 'codehilite', 'fenced_code', 'tables']))
 
-    return render_template('post.html', post=post, content=html_content, comments=comments)
+    return render_template('post/post.html', post=post, content=html_content, comments=comments)
 
 
 @app.route("/termOfUse")
 def termOfUse():
-    return render_template('term_of_use.html')
+    return render_template('IN_out/term_of_use.html')
 
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
@@ -273,7 +273,7 @@ def profilem():
 @app.route('/logout', methods=['POST','GET'])
 def logout():
     session.clear()
-    return render_template('logout.html')
+    return render_template('IN_out/logout.html')
 @app.route('/edit-profile', methods=['GET', 'POST'])
 def edit_profile():
     user_id = session.get('user_id')
@@ -344,14 +344,16 @@ def list_md_files():
 
     posts = [dict(post) for post in post_rows]  
     
-    return render_template('files.html', posts=posts, query=query)
+    return render_template('post/files.html', posts=posts, query=query)
 @app.route('/law', methods=['GET','POST'])
 def law():
     return render_template('law.html')
 @app.route('/about', methods=["GET", "POST"])
 def about():
     return render_template('about.html')
-
+@app.route('/slide', methods=['GET', "POST"])
+def slide():
+    return render_template('about_open.html')
 @app.route('/comingsoon', methods=["GET", "POST"])
 def comingsoon():
     return render_template("ComingSoon.html")
@@ -424,7 +426,7 @@ def forget():
                           html=html)
             mail.send(msg)
             return redirect('/changepassword')
-    return render_template("forget.html")
+    return render_template("IN_out/forget.html")
 
 
 @app.route("/changepassword", methods=["GET", "POST"])
@@ -443,9 +445,9 @@ def changepassword():
             else:
                 alert_message = "密碼不一致!"
                 return render_template("change_password.html", alert_message=alert_message)
-        return render_template("change_password.html")
+        return render_template("IN_out/change_password.html")
     else:
-        return render_template("waitcheck.html")
+        return render_template("IN_out/waitcheck.html")
     
 def generate_random_string(length):
     characters = string.ascii_letters + string.digits
@@ -467,7 +469,7 @@ def confirm_email(token):
         
         return resp
     except SignatureExpired:
-        return render_template('link_expired.html')
+        return render_template('IN_out/link_expired.html')
 
 
 #####################################################

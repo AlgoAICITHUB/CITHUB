@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manim Animation</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        .video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video id="intro-video" width="640" height="480" autoplay muted>
+            <source src="{{ url_for('serve_video', video_name='Cithub') }}" type="video/mp4">
+
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <script>
+        const video = document.getElementById('intro-video');
+        video.onended = function() {
+
+            window.location.href = "/index";
+        };
+
+        window.onload = function() {
+            setTimeout(function() {
+                video.play();
+            }, 100);
+        };
+    </script>
+</body>
+</html>
