@@ -413,11 +413,7 @@ def forget():
             session['username'] = username
             token = s.dumps(email, salt='email-confirm')
             confirm_url = url_for('confirm_email', token=token, _external=True)
-            html = render_template_string('''
-            <p>Hi {{ username }},</p>
-            <p>To reset your password, click the following link:</p>
-            <p><a href="{{ confirm_url }}">Reset Password</a></p>
-            ''', username=username, confirm_url=confirm_url)
+            html = render_template('reset_password_email.html', username=username, confirm_url=confirm_url)
             msg = Message(subject="Password Reset Request",
                           sender=app.config['MAIL_USERNAME'],
                           recipients=[email],
@@ -460,7 +456,7 @@ def delete_cookie():
 def confirm_email(token):
     try:
         email = s.loads(token, salt='email-confirm', max_age=900)
-        resp = make_response('<h1>Email verified successfully!</h1>')
+        resp = make_response(render_template("reset_success.html"))
         random_cookie_value = generate_random_string(30) 
         session['random_cookie_value'] = random_cookie_value  # 將隨機cookie值存儲到會話(session)中
         resp.set_cookie('verified', random_cookie_value, max_age=900)
@@ -473,4 +469,3 @@ def confirm_email(token):
 #####################################################
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-#2024/5/18
