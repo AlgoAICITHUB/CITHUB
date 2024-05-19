@@ -116,7 +116,13 @@
     <div class="container">
         <div class="profile-header">
             <div class="profile-info">
+
+                {% if profile.user == ctf%}
+                <h2>cithubCTF{sp3CI41_N4Me}</h2>
+            {% else %}
                 <h2>{{ profile.user }}</h2>
+            {% endif %}
+                
                 <p>{{ profile_bio_html | safe }}</p>
             </div>
         </div>

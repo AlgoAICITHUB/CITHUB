@@ -462,7 +462,12 @@ def delete_cookie():
 def confirm_email(token):
     try:
         email = s.loads(token, salt='email-confirm', max_age=900)
-        resp = make_response('<h1>Email verified successfully!</h1>')
+        text = """
+        <h1 style="text-align: center;">Email verified successfully!</h1>
+        <br><a href="/changepassword style="text-aling:center">Change Password</a>
+
+        """
+        resp = make_response(text)
         random_cookie_value = generate_random_string(30) 
         session['random_cookie_value'] = random_cookie_value  # 將隨機cookie值存儲到會話(session)中
         resp.set_cookie('verified', random_cookie_value, max_age=900)
