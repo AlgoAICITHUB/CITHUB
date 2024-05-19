@@ -1,0 +1,28 @@
+<style>
+    h1 {
+        margin: 2px 0;
+    }
+
+    a {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    div.container {
+        display: flex;
+        align-items: center;
+    }
+
+    h2 {
+        margin: 0;
+    }
+</style>
+
+<h1>Link Expired!<br>
+    Please visit the website to reset.</h1>
+<a href="http://127.0.0.1:5000/forget" style="display: inline-block;">
+    <div class="container">
+        <img src="{{ url_for('static', filename='cithub.png') }}" alt="Cithub" style="width: 50px; height: auto;">
+        <h2>Cithub</h2>
+    </div>
+</a>

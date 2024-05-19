@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>忘記密碼</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel = "icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 <body>
 
@@ -13,14 +13,9 @@
     <form id="loginForm" method="post">
         <h2>忘記密碼</h2>
         <div class="input-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+            <label for="username_or_email">使用者名稱或Email:</label>
+            <input type="text" id="username_or_email" name="username_or_email" placeholder="username or email" required>
         </div>
-        <div class="input-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-
         <button type="submit">送出</button>
     </form>
     <br><a href="https://accounts.google.com/o/oauth2/auth?client_id=474559934367-lb544etuur5u27a8jeetol7s5alkp2b9.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:5000/oauth2callback&response_type=code&scope=email%20profile"><button>使用 Google 登入</button></a>
