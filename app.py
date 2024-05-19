@@ -384,7 +384,8 @@ def changepassword():
             if password1 == password2:
                 username = session.get('username')
                 db.update_user_password(username, password1)
-                return redirect('/login')
+                resp = delete_cookie()
+                return resp
             else:
                 alert_message = "密碼不一致!"
                 return render_template("change_password.html", alert_message=alert_message)
@@ -396,6 +397,11 @@ def generate_random_string(length):
     characters = string.ascii_letters + string.digits
     return ''.join(secrets.choice(characters) for _ in range(length))
 
+def delete_cookie():
+    resp = make_response(redirect('/login'))
+    resp.set_cookie('verified', '', expires=0)
+    return resp
+    
 @app.route('/confirm/<token>', methods=["GET"])
 def confirm_email(token):
     try:
