@@ -28,7 +28,8 @@
 <body>
     <div class="video-container">
         <video id="intro-video" width="640" height="480" autoplay muted>
-            <source src="{{ url_for('/video/HelloCITHUB.mp4') }}" type="video/mp4">
+            <source src="{{ url_for('serve_video', video_name='HelloCITHUB') }}" type="video/mp4">
+
             Your browser does not support the video tag.
         </video>
     </div>
