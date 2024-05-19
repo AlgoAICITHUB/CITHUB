@@ -69,10 +69,10 @@ def register():
         user_id = db.create_user(username, password,email)
         db.create_profile_for_user(user_id)
 
-        return render_template("register_success.html")
+        return render_template("registerOp.html")
     else:
         return render_template("register.html")
-    
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -143,7 +143,13 @@ def index():
 def open():
     return render_template("open.html")
 
-
+@app.route('/video/<video_name>', methods=["GET"])
+def serve_video(video_name):
+    video_path = 'static/'
+    return send_from_directory(video_path, f"{video_name}.mp4")
+@app.route("/regSuc",methods=["GET", "POST"])
+def regSuc():
+    return render_template("register_success.html")
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
@@ -340,63 +346,10 @@ def about():
 def comingsoon():
     return render_template("ComingSoon.html")
  
-@app.route('/video')
-def video():
-    video_path = 'static/'
-    return send_from_directory(video_path, 'HelloCITHUB.mp4')
-@app.route('/stats')
-def stats():
-    conn = get_db_connection()
-    most_popular_posts = conn.execute('''
-    SELECT p.id, p.title, COUNT(c.id) as comment_count
-    FROM posts p
-    LEFT JOIN comments c ON p.id = c.post_id
-    GROUP BY p.id
-    ORDER BY comment_count DESC
-    LIMIT 5
-    ''').fetchall()
-    conn.close()
-
-    return render_template('stats.html', most_popular_posts=most_popular_posts)
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
-
-@app.route("/adminonly", methods=['GET','POST'])
-def adminonly():
-    user_id = session.get('user_id')
-    if user_id == 2 or user_id == 3:
-        return render_template('index.html')
-    else:
-        return render_template_string("""
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <title>Forbidden</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
-<body>
-    <script>
-    window.onload = function() {
-        Swal.fire({
-            title: '禁止進入！',
-            text: '立即停止您的行為！任何未經授權的進入嘗試都將遭到無上法典的制裁。',
-            icon: 'error',
-            confirmButtonText: '我已瞭解',
-            confirmButtonColor: '#d33', 
-        }).then((result) => {
-            if (result.value) {
-                window.location.href = '/';
-            }
-        });
-
-    };
-    </script>
-</body>
-</html>
-""")
 
 
 @app.route("/forget", methods=["GET", "POST"])

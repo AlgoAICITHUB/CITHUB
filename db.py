@@ -33,6 +33,7 @@ def create_profile_for_user(user_id):
     conn.execute("INSERT INTO profiles (user_id, bio) VALUES (?, '')", (user_id,))
     conn.commit()
     conn.close()
+
 def validate_user_login(username, password):
     conn = get_db_connection()
     user = conn.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password)).fetchone()

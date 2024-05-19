@@ -17,18 +17,18 @@
             用戶名：<input type="text" name="username" required><br>
             密碼：<input type="password" name="password" required><br>
             Gmail:<input type="email" name="email" required><br>
-            <!--
+
             <div>
                 <input type="checkbox" id="checkbox" name="checkbox" value="checked" onchange="checkCheckbox()">
-                <a href="/law"></a>
-            </div>-->
+                <a href="/law">法規</a>
+            </div>
             {% if error %}
                 <p>{{error}}</p>
             {% endif %}
-            <input type="submit" id="submitBtn" value="註冊" disabled>
+            <input type="submit" id="submitBtn" value="註冊" >
         </form>
     </div>
-
+<!--
     <script>
         function checkCheckbox() {
             var checkbox = document.getElementById("checkbox");
@@ -40,5 +40,7 @@
             }
         }
     </script>
+-->
+
 </body>
 </html>

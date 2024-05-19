@@ -28,7 +28,7 @@
 <body>
     <div class="video-container">
         <video id="intro-video" width="640" height="480" autoplay muted>
-            <source src="{{ url_for('/video/HelloCITHUB.mp4') }}" type="video/mp4">
+            <source src="{{ url_for('/video/WelcomeNewUser.mp4') }}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
     </div>
@@ -37,7 +37,7 @@
         const video = document.getElementById('intro-video');
         video.onended = function() {
 
-            window.location.href = "/index";
+            window.location.href = "/regSuc";
         };
 
         window.onload = function() {
