@@ -51,3 +51,15 @@ def update_user_password(username, password):
     conn.execute("UPDATE users SET password = ? WHERE username = ?", (password, username))
     conn.commit()
     conn.close()
+
+def get_username_from_email(email):
+    conn = get_db_connection()
+    user = conn.execute("SELECT username FROM users WHERE email = ?", (email,)).fetchone()
+    conn.close()
+    return user[0] if user else None
+
+def get_email_from_username(username):
+    conn = get_db_connection()
+    user = conn.execute("SELECT email FROM users WHERE username = ?", (username,)).fetchone()
+    conn.close()
+    return user[0] if user else None
