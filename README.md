@@ -54,3 +54,10 @@
 - /forget
 ### Safety
 We made a simple ddos(denial-of-service attack) prevent system to interrupt too many requests from same and different IPs. Also, we used simple technique to stop common SQL injection from stealing our members profile.
+
+## Contributer
+感謝所有參與本專案製作的人
+
+<a href="https://github.com/tudohuang/Flaskweb/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=tudohuang/Flaskweb" />
+</a>
