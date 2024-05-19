@@ -29,18 +29,27 @@
         .notification a {
             display: inline-block;
             text-decoration: none;
-            margin-top: 20px;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-left: -18px;
+        }
+        .notification a:hover {
+            background-color: #0056b3;
         }
         .notification .container {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-left: -25px;
-            margin-top: -35px;
+            margin-top: 20px;
         }
         .notification .container img {
             width: 70px; /* 調整圖片大小 */
             height: auto;
+            margin-right: 15px;
         }
         .notification .container h2 {
             margin: 0;
@@ -54,13 +63,9 @@
 </head>
 <body>
     <div class="notification">
-        <h1>連結已過期！<br>請訪問網站以重置密碼。</h1>
-        <a href="http://127.0.0.1:5000/forget">
-            <div class="container">
-                <img src="{{ url_for('static', filename='cithub.png') }}" alt="Cithub">
-                <h2>Cithub</h2>
-            </div>
-        </a>
+        <h1>郵件驗證成功！</h1>
+        <p>您的郵件已成功驗證，請返回網頁重置密碼。</p>
+        <a href="http://127.0.0.1:5000/changepassword">返回網頁</a>
     </div>
 </body>
 </html>

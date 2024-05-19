@@ -1,46 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-tw">
 <head>
-    <title>註冊</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style3.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>註冊頁面</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <style>
-        #checkbox {
-            margin-right: 5px;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
+
+<div class="login-container">
+    <form id="registerForm" method="post">
         <h2>註冊</h2>
-        <form method="post">
-            用戶名：<input type="text" name="username" required><br>
-            密碼：<input type="password" name="password" required><br>
-            Gmail:<input type="email" name="email" required><br>
+        <div class="input-group">
+            <label for="username">用戶名：</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="input-group">
+            <label for="password">密碼：</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="input-group">
+            <label for="email">Gmail：</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        {% if error %}
+            <p style="color: red; font-size: 14px;">{{ error }}</p>
+        {% endif %}
+        <button type="submit" id="submitBtn">註冊</button>
+    </form>
+</div>
 
-            <div>
-                <input type="checkbox" id="checkbox" name="checkbox" value="checked" onchange="checkCheckbox()">
-                <a href="/law">法規</a>
-            </div>
-            {% if error %}
-                <p>{{error}}</p>
-            {% endif %}
-            <input type="submit" id="submitBtn" value="註冊" >
-        </form>
-    </div>
-<!--
-    <script>
-        function checkCheckbox() {
-            var checkbox = document.getElementById("checkbox");
-            var submitBtn = document.getElementById("submitBtn");
-            if (checkbox.checked) {
-                submitBtn.removeAttribute("disabled");
-            } else {
-                submitBtn.setAttribute("disabled", "disabled");
-            }
-        }
-    </script>
--->
-
+<style>
+    button {
+        width: 100%;
+        padding: 10px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    button:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+</style>
 </body>
 </html>
