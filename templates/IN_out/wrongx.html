@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Forbidden</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <script>
+    window.onload = function() {
+        Swal.fire({
+            title: '無法註冊！',
+            text: '請同意條款再行註冊',
+            icon: 'error',
+            confirmButtonText: '我已瞭解',
+            confirmButtonColor: '#d33', 
+        }).then((result) => {
+            if (result.value) {
+                window.location.href = '/';
+            }
+        });
+
+    };
+    </script>
+</body>
+</html>

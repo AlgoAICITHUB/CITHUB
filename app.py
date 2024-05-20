@@ -457,7 +457,7 @@ def delete_cookie():
     resp = make_response(redirect('/login'))
     resp.set_cookie('verified', '', expires=0)
     return resp
-    
+
 @app.route('/confirm/<token>', methods=["GET"])
 def confirm_email(token):
     try:
@@ -471,7 +471,9 @@ def confirm_email(token):
     except SignatureExpired:
         return render_template('IN_out/link_expired.html')
 
-
+@app.route("/noIn")
+def no():
+    return render_template("wrongx.html")
 #####################################################
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
