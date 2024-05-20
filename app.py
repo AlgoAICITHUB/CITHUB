@@ -473,7 +473,7 @@ def confirm_email(token):
 
 @app.route("/noIn")
 def no():
-    return render_template("wrongx.html")
+    return render_template("IN_out/wrongx.html")
 #####################################################
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

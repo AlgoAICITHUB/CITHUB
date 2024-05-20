@@ -323,3 +323,16 @@
 2024-05-20 15:13:26,187 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/login
 2024-05-20 15:13:26,301 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/static/style.css
 2024-05-20 15:13:53,474 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/video/HelloCITHUB
+2024-05-20 15:34:57,833 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/changepassword
+2024-05-20 15:34:57,930 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/static/style4.css
+2024-05-20 15:34:58,021 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/static/favicon.ico
+2024-05-20 15:35:05,593 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/video/HelloCITHUB
+2024-05-20 15:35:07,212 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/
+2024-05-20 15:35:07,311 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/video/HelloCITHUB
+2024-05-20 15:35:07,454 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/video/HelloCITHUB
+2024-05-20 15:35:10,872 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/index
+2024-05-20 15:35:10,964 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/static/snow.js
+2024-05-20 15:35:10,998 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/static/night.js
+2024-05-20 15:35:11,079 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/static/favicon.ico
+2024-05-20 15:36:45,785 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/termOfUse
+2024-05-20 15:36:49,635 - async_logger - INFO - IP: 127.0.0.1, URL: http://199a-203-64-138-253.ngrok-free.app/noIn
