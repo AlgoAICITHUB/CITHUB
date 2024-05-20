@@ -70,11 +70,11 @@ def register():
         
         if db.get_user_by_username(username):
             error="用戶名已被使用過"
-            return render_template("register.html",error=error)
+            return render_template("IN_out/register.html",error=error)
         
         if db.get_user_by_email(email):
             error="電子郵件已被使用過"
-            return render_template("register.html",error=error)
+            return render_template("IN_out/register.html",error=error)
 
         user_id = db.create_user(username, password,email)
         db.create_profile_for_user(user_id)
@@ -458,7 +458,7 @@ def delete_cookie():
 def confirm_email(token):
     try:
         email = s.loads(token, salt='email-confirm', max_age=900)
-        resp = make_response('<h1>Email verified successfully!</h1>')
+        resp = make_response(render_template("reset_success.html"))
         random_cookie_value = generate_random_string(30) 
         session['random_cookie_value'] = random_cookie_value  # 將隨機cookie值存儲到會話(session)中
         resp.set_cookie('verified', random_cookie_value, max_age=900)
