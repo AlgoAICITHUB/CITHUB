@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>個人檔案</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel = "icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <style>
         :root {
             --primary-color: #0056b3; /* 深藍色 */
             --secondary-color: #495057; /* 深灰色 */
-            --background-color: #e9ecef; /* 淺灰色 */
+            --background-color: #f8f9fa; /* 背景灰色 */
             --text-color: #343a40; /* 黑色 */
             --container-bg-color: #ffffff; /* 白色 */
             --border-color: #ced4da; /* 邊框色 */
@@ -22,27 +22,44 @@
             padding: 0;
             background-color: var(--background-color);
             color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 960px;
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
             margin: 40px auto;
             padding: 20px;
             background-color: var(--container-bg-color);
             border: 1px solid var(--border-color);
             border-radius: 0.5rem;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease-in-out;
         }
 
+        .profile-sidebar {
+            width: 300px;
+            padding: 20px;
+            border-right: 1px solid var(--border-color);
+        }
 
+        .profile-content {
+            flex: 1;
+            padding: 20px;
+        }
 
         .profile-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-header img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
             margin-bottom: 20px;
         }
 
@@ -68,7 +85,8 @@
         .post-item {
             padding: 15px;
             margin-bottom: 20px;
-            background-color: #f8f9fa;
+            background-color: var(--container-bg-color);
+            border: 1px solid var(--border-color);
             border-radius: 0.5rem;
             transition: background-color 0.3s ease-in-out;
         }
@@ -95,41 +113,41 @@
             padding: 10px;
             background-color: var(--background-color);
             border-top: 1px solid var(--border-color);
+            width: 100%;
         }
 
         footer a {
             color: var(--primary-color);
             text-decoration: none;
             transition: color 0.2s ease-in-out;
+            margin: 0 10px;
         }
-
-
     </style>
-    <script type="text/x-mathjax-config">
-        MathJax.Hub.Config({
-            tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
-        });
-    </script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </head>
 <body>
     <div class="container">
-        <div class="profile-header">
-            <div class="profile-info">
-                <h2>{{ profile.user }}</h2>
-                <p>{{ profile_bio_html | safe }}</p>
+        <div class="profile-sidebar">
+            <div class="profile-header">
+
+                <div class="profile-info">
+                    <h2>{{ profile.user }}</h2>
+                    <h1>{{ profile_bio_html | safe }}</h1>
+
+                </div>
             </div>
         </div>
-        <div class="posts">
-            <h3>用戶的帖子</h3>
-            {% for post in posts %}
-            <div class="post-item">
-                <h4 class="post-title">{{ post.title }}</h4>
-                <p class="post-content">{{ post.content }}</p>
+        <div class="profile-content">
+            <div class="posts">
+                <h3>用戶的帖子</h3>
+                {% for post in posts %}
+                <div class="post-item">
+                    <h4 class="post-title">{{ post.title }}</h4>
+                    <p class="post-content">{{ post.content }}</p>
+                </div>
+                {% else %}
+                <p>沒有帖子展示。</p>
+                {% endfor %}
             </div>
-            {% else %}
-            <p>沒有帖子展示。</p>
-            {% endfor %}
         </div>
     </div>
     <footer>
