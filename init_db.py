@@ -1,4 +1,3 @@
-# database.py
 import sqlite3
 
 DATABASE = 'app.db'
@@ -25,10 +24,11 @@ def create_table():
         """
         CREATE TABLE IF NOT EXISTS posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
+            user_id INTEGER NOT NULL,
             title TEXT NOT NULL,
             content TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            likes INTEGER DEFAULT 0,
             FOREIGN KEY (user_id) REFERENCES users (id)
         )
         """,
@@ -48,6 +48,7 @@ def create_table():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER,
             bio TEXT,
+            photo TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users (id)
         )

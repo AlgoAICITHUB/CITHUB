@@ -15,6 +15,7 @@
     </script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="share.js"></script>
     <link href="https://raw.githubusercontent.com/jwarby/pygments-css/master/native.css" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <style>
@@ -130,7 +131,26 @@
             {% endif %}
         </p>
         <div>{{ content|safe }}</div>
+        
+        <div class="actions">
+            <!--
+            <form action="{{ url_for('like_post', post_id=post['id']) }}" method="post" style="display:inline;">
+                <button type="submit">按讚 ({{ post['likes'] }})</button>
+            </form>-->
+            <button type="button" onclick="openShareModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                分享
+            </button>
+        </div>
+
         <a href="/index">回首頁</a>
+        
         <div class="comments-section">
             <h2>評論</h2>
             {% for comment in comments %}
@@ -149,5 +169,58 @@
             {% endif %}
         </div>
     </div>
+    <div id="overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0, 0, 0, 0.5); z-index:999;"></div>
+    <div id="shareModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); padding:20px; background:white; border:1px solid #ccc; z-index:1000;">
+        <h3>分享此帖子</h3>
+        <button onclick="shareTo('gmail')">分享到 Gmail</button>
+        <button onclick="shareTo('facebook')">分享到 Facebook</button>
+        <button onclick="shareTo('discord')">分享到 Discord</button>
+        <button onclick="shareTo('line')">分享到 LINE</button>
+        <button onclick="copyUrl()">複製網址</button>
+        <button onclick="closeShareModal()">關閉</button>
+    </div>
+
+    <script>
+        function openShareModal() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('shareModal').style.display = 'block';
+        }
+        
+        function closeShareModal() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('shareModal').style.display = 'none';
+        }
+        
+        function shareTo(platform) {
+            const url = window.location.href;
+            let shareUrl = '';
+        
+            switch(platform) {
+                case 'gmail':
+                    shareUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=&body=${encodeURIComponent(url)}`;
+                    break;
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                    break;
+                case 'discord':
+                    shareUrl = `https://discord.com/channels/@me?url=${encodeURIComponent(url)}`;
+                    break;
+                case 'line':
+                    shareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`;
+                    break;
+            }
+        
+            window.open(shareUrl, '_blank');
+        }
+        
+        function copyUrl() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('網址已複製到剪貼簿');
+            });
+        }
+        </script>
+
 </body>
+
 </html>

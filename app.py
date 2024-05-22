@@ -1,69 +1,72 @@
-from flask import Flask, request, render_template, jsonify,render_template_string, redirect, url_for, flash,session,make_response,jsonify,send_from_directory
+from flask import (
+    Flask, request, render_template, jsonify, render_template_string, 
+    redirect, url_for, flash, session, make_response, send_from_directory
+)
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from markupsafe import Markup
 import sqlite3
-import json
 from markdown.extensions.codehilite import CodeHiliteExtension
 from markdown.extensions.tables import TableExtension
 import markdown
 import os
 from werkzeug.utils import secure_filename
-import subprocess
 from datetime import datetime
 import init_db
 import db
 import requests
 from dotenv import load_dotenv
-import time
 import secrets
 import string
 import rate_limiting
 import logging_setup
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask_mail import Mail, Message
-from datetime import datetime, timedelta
-import random
-from flask_dance.contrib.discord import make_discord_blueprint, discord
+
 #---------前處理---------
+# 初始化應用程式和配置
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
-db_initialized = False
-db_initialized_c = False
-app.secret_key = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a' #SHA256函數加密
-current_color = "white"
-click_count = 0
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'cithubOfficial@gmail.com'
-#app.config['MAIL_PASSWORD'] = 'dleo aszx ehqy bvpt'
-app.config['MAIL_PASSWORD'] = 'kmyi oqcx gciq sgxx'
-app.config['SECRET_KEY'] = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a'
+DATABASE = 'app.db'
+UPLOAD_FOLDER = 'static/uploads'
+app.config.update(
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_PORT=587,
+    MAIL_USE_TLS=True,
+    MAIL_USERNAME='cithubOfficial@gmail.com',
+    MAIL_PASSWORD='kmyi oqcx gciq sgxx',
+    SECRET_KEY='b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a',
+    UPLOAD_FOLDER=UPLOAD_FOLDER
+)
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 mail = Mail(app)
-# 與DATABASE進行溝通用
+rate_limiting.setup_rate_limiting(app)
+logging_setup.setup_logging(app)
+ALLOWED_EXTENSIONS = {"png","jpg","jpeg","gif"}
+# 初始化資料庫
+with app.app_context():
+    init_db.create_table()
+
+# 功能函數
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
 
-DATABASE = 'app.db'
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-with app.app_context():
-    init_db.create_table()
+def generate_random_string(length):
+    characters = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(characters) for _ in range(length))
 
-rate_limiting.setup_rate_limiting(app)
-
-
-logging_setup.setup_logging(app)
-chosen_numbers = set()
-
-
-
-
+def delete_cookie():
+    resp = make_response(redirect('/login'))
+    resp.set_cookie('verified', '', expires=0)
+    return resp
 #---------網站主函數---------
 
 
+# Register & Login & Logout
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -87,6 +90,9 @@ def register():
     else:
         return render_template("IN_out/register.html")
 
+@app.route("/termOfUse")
+def termOfUse():
+    return render_template('IN_out/term_of_use.html')
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -146,25 +152,142 @@ def google_account():
     else:
         return render_template('404.html'), 404
 
-        
-@app.route("/index", methods=["GET", "POST"])
-def index():
-    user_id = session.get('user_id')
-    if user_id == 2:
-        return render_template("admin-room.html")
-    else:
-        return render_template("index.html")
-@app.route("/",methods=["GET", "POST"])
-def open():
-    return render_template("open.html")
-
-@app.route('/video/<video_name>', methods=["GET"])
-def serve_video(video_name):
-    video_path = 'static/'
-    return send_from_directory(video_path, f"{video_name}.mp4")
 @app.route("/regSuc",methods=["GET", "POST"])
 def regSuc():
     return render_template("IN_out/register_success.html")
+
+@app.route("/forget", methods=["GET", "POST"])
+def forget():
+    if request.method == "POST":
+        input_data = request.form["username_or_email"]
+
+        if '@' in input_data:
+            email = input_data
+            username = db.get_username_from_email(email)
+        else:
+            username = input_data
+            email = db.get_email_from_username(username)
+
+        if username and email:
+            session['username'] = username
+            token = s.dumps(email, salt='email-confirm')
+            confirm_url = url_for('confirm_email', token=token, _external=True)
+            html = render_template('reset_password_email.html', username=username, confirm_url=confirm_url)
+            msg = Message(subject="Password Reset Request",
+                          sender=app.config['MAIL_USERNAME'],
+                          recipients=[email],
+                          html=html)
+            mail.send(msg)
+            return redirect('/changepassword')
+    return render_template("IN_out/forget.html")
+
+@app.route("/changepassword", methods=["GET", "POST"])
+def changepassword():
+    random_cookie_value = session.get('random_cookie_value')
+    verified = request.cookies.get('verified')
+    if verified and random_cookie_value and verified == random_cookie_value:
+        if request.method == "POST":
+            password1 = request.form['password1']
+            password2 = request.form['password2']
+            if password1 == password2:
+                username = session.get('username')
+                db.update_user_password(username, password1)
+                resp = delete_cookie()
+                return resp
+            else:
+                alert_message = "密碼不一致!"
+                return render_template("IN_out/change_password.html", alert_message=alert_message)
+        return render_template("IN_out/change_password.html")
+    else:
+        return render_template("IN_out/waitcheck.html")
+    
+
+@app.route('/confirm/<token>', methods=["GET"])
+def confirm_email(token):
+    try:
+        email = s.loads(token, salt='email-confirm', max_age=900)
+        resp = make_response(render_template("IN_out/reset_success.html"))
+        random_cookie_value = generate_random_string(30) 
+        session['random_cookie_value'] = random_cookie_value  # 將隨機cookie值存儲到會話(session)中
+        resp.set_cookie('verified', random_cookie_value, max_age=900)
+        
+        return resp
+    except SignatureExpired:
+        return render_template('IN_out/link_expired.html')
+
+@app.route('/logout', methods=['POST','GET'])
+def logout():
+    session.clear()
+    return render_template('IN_out/logout.html')
+
+# Profiles
+
+@app.route('/profile/<int:user_id>')
+def profile(user_id):
+    conn = get_db_connection()
+    post_rows = conn.execute('''
+    SELECT p.id, p.title, p.content, p.created_at, u.username 
+    FROM posts p
+    JOIN users u ON p.user_id = u.id
+    WHERE p.user_id = ?
+    ORDER BY p.created_at DESC
+    ''', (user_id,)).fetchall()
+    conn.close()
+
+    posts = [dict(post) for post in post_rows]  
+    db = get_db_connection()
+    user_profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
+    db.close()
+    
+    if user_profile and user_profile['bio']:
+        profile_bio_html = markdown.markdown(user_profile['bio'], extensions=['codehilite', 'fenced_code', 'tables'])
+    if user_profile and user_profile['photo']:
+        user_photo = user_profile['photo']
+    else:
+        profile_bio_html = "No bio available."
+
+    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html, posts=posts,photo = user_photo)
+
+@app.route('/profilem', methods=['GET','POST'])
+def profilem():
+
+    user_id = session.get('user_id')
+    return profile(user_id)
+
+@app.route('/edit-profile', methods=['GET', 'POST'])
+def edit_profile():
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('請先登錄。')
+        return redirect(url_for('login'))
+
+    db = get_db_connection()
+    if request.method == 'POST':
+        bio = request.form.get('bio')
+        file = request.files.get('file')
+        if bio:
+            db.execute('UPDATE profiles SET bio = ? WHERE user_id = ?', (bio, user_id))
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            file_url = url_for('static', filename='uploads/' + filename)
+            db.execute('UPDATE profiles SET photo = ? WHERE user_id = ?', (file_url, user_id))
+        db.commit()
+        db.close()
+        flash('個人資料更新成功！')
+        return redirect(url_for('profile', user_id=user_id))
+    else:
+        profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
+        db.close()
+
+        if not profile:
+            flash('未找到指定的個人資料。')
+            return redirect(url_for('index'))
+
+        profile_dict = dict(profile) if profile else None
+        return render_template('edit_profile.html', profile=profile_dict)
+# Posts
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
@@ -241,89 +364,6 @@ def view_post(post_id):
 
     return render_template('post/post.html', post=post, content=html_content, comments=comments)
 
-
-@app.route("/termOfUse")
-def termOfUse():
-    return render_template('IN_out/term_of_use.html')
-
-@app.route('/profile/<int:user_id>')
-def profile(user_id):
-    conn = get_db_connection()
-    post_rows = conn.execute('''
-    SELECT p.id, p.title, p.content, p.created_at, u.username 
-    FROM posts p
-    JOIN users u ON p.user_id = u.id
-    WHERE p.user_id = ?
-    ORDER BY p.created_at DESC
-    ''', (user_id,)).fetchall()
-    conn.close()
-
-    posts = [dict(post) for post in post_rows]  
-    db = get_db_connection()
-    user_profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
-    db.close()
-
-    if user_profile and user_profile['bio']:
-        profile_bio_html = markdown.markdown(user_profile['bio'], extensions=['codehilite', 'fenced_code', 'tables'])
-    else:
-        profile_bio_html = "No bio available."
-
-    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html, posts=posts)
-
-@app.route('/profilem', methods=['GET','POST'])
-def profilem():
-
-    user_id = session.get('user_id')
-    return profile(user_id)
-@app.route('/logout', methods=['POST','GET'])
-def logout():
-    session.clear()
-    return render_template('IN_out/logout.html')
-@app.route('/edit-profile', methods=['GET', 'POST'])
-def edit_profile():
-    user_id = session.get('user_id')
-    if not user_id:
-        flash('請先登錄。')
-        return redirect(url_for('login'))
-    
-    db = get_db_connection()
-    if request.method == 'POST':
-        bio = request.form.get('bio')
-
-        db.execute('UPDATE profiles SET bio = ? WHERE user_id = ?', (bio, user_id))
-        db.commit()
-        db.close()
-
-        flash('個人資料更新成功！')
-        return redirect(url_for('profile',user_id=user_id))
-
-    else:
-        profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
-        db.close()
-
-        if not profile:
-            flash('未找到指定的個人資料。')
-            return redirect(url_for('index'))
-
-        profile_dict = dict(profile) if profile else None
-
-        return render_template('edit_profile.html', profile=profile_dict)
-"""
-@app.route("/files")
-def list_md_files():
-    conn = get_db_connection()
-    post_rows = conn.execute('''
-    SELECT p.id, p.title, p.content, p.created_at, u.username 
-    FROM posts p
-    JOIN users u ON p.user_id = u.id
-    ORDER BY p.created_at DESC
-    ''').fetchall()
-    conn.close()
-
-    posts = [dict(post) for post in post_rows]  
-    
-    return render_template('files.html', posts=posts)
-"""
 @app.route("/files")
 def list_md_files():
     query = request.args.get('query', '')
@@ -350,20 +390,86 @@ def list_md_files():
     posts = [dict(post) for post in post_rows]  
     
     return render_template('post/files.html', posts=posts, query=query)
+
+@app.route('/like/<int:post_id>', methods=['POST'])
+def like_post(post_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('請先登錄。')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    conn.execute('UPDATE posts SET likes = likes + 1 WHERE id = ?', (post_id,))
+    conn.commit()
+    conn.close()
+    
+    return redirect(url_for('view_post', post_id=post_id))
+
+@app.route('/share/<int:post_id>', methods=['POST'])
+def share_post(post_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('請先登錄。')
+        return redirect(url_for('login'))
+    
+    # 此處可以添加分享邏輯，比如記錄分享次數或者其他分享功能
+    flash('帖子已成功分享！')
+    
+    return redirect(url_for('view_post', post_id=post_id))
+# Main
+@app.route("/index", methods=["GET", "POST"])
+def index():
+    user_id = session.get('user_id')
+    if user_id == 2:
+        return render_template("admin-room.html")
+    else:
+        return render_template("index.html")
+
+@app.route("/",methods=["GET", "POST"])
+def open():
+    return render_template("open.html")
+
 @app.route('/law', methods=['GET','POST'])
 def law():
     return render_template('law.html')
+
 @app.route('/about', methods=["GET", "POST"])
 def about():
     return render_template('about.html')
+
 @app.route('/slide', methods=['GET', "POST"])
 def slide():
     return render_template('about_open.html')
+
+@app.route('/countdown', methods=['GET'])
+def countdown():
+    now = datetime.now()
+    target_date = datetime(2025, 1, 18)
+
+    # 計算差異
+    difference = target_date - now
+    now_time = now.strftime("%Y/%m/%d")
+    difference_time = difference
+    total_seconds = int(difference.total_seconds())
+    days, remainder = divmod(total_seconds, 86400)  
+    hours, remainder = divmod(remainder, 3600)  
+    minutes, seconds = divmod(remainder, 60)  
+    target_time = target_date.strftime("%Y/%m/%d")
+    return render_template('countdown.html',now_time=now_time,day=days,hours=hours,minutes=minutes,seconds=seconds,target_time=target_time)
+
+@app.route("/noIn")
+def no():
+    return render_template("IN_out/wrongx.html")
+# Assist
+@app.route('/video/<video_name>', methods=["GET"])
+def serve_video(video_name):
+    video_path = 'static/'
+    return send_from_directory(video_path, f"{video_name}.mp4")
+
 @app.route('/comingsoon', methods=["GET", "POST"])
 def comingsoon():
     return render_template("ComingSoon.html")
  
-
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
@@ -403,132 +509,9 @@ def adminonly():
 </html>
 """)
 
-
-@app.route("/forget", methods=["GET", "POST"])
-def forget():
-    if request.method == "POST":
-        input_data = request.form["username_or_email"]
-
-        if '@' in input_data:
-            email = input_data
-            username = db.get_username_from_email(email)
-        else:
-            username = input_data
-            email = db.get_email_from_username(username)
-
-        if username and email:
-            session['username'] = username
-            token = s.dumps(email, salt='email-confirm')
-            confirm_url = url_for('confirm_email', token=token, _external=True)
-            html = render_template('reset_password_email.html', username=username, confirm_url=confirm_url)
-            msg = Message(subject="Password Reset Request",
-                          sender=app.config['MAIL_USERNAME'],
-                          recipients=[email],
-                          html=html)
-            mail.send(msg)
-            return redirect('/changepassword')
-    return render_template("IN_out/forget.html")
-
-
-@app.route("/changepassword", methods=["GET", "POST"])
-def changepassword():
-    random_cookie_value = session.get('random_cookie_value')
-    verified = request.cookies.get('verified')
-    if verified and random_cookie_value and verified == random_cookie_value:
-        if request.method == "POST":
-            password1 = request.form['password1']
-            password2 = request.form['password2']
-            if password1 == password2:
-                username = session.get('username')
-                db.update_user_password(username, password1)
-                resp = delete_cookie()
-                return resp
-            else:
-                alert_message = "密碼不一致!"
-                return render_template("IN_out/change_password.html", alert_message=alert_message)
-        return render_template("IN_out/change_password.html")
-    else:
-        return render_template("IN_out/waitcheck.html")
-    
-def generate_random_string(length):
-    characters = string.ascii_letters + string.digits
-    return ''.join(secrets.choice(characters) for _ in range(length))
-
-def delete_cookie():
-    resp = make_response(redirect('/login'))
-    resp.set_cookie('verified', '', expires=0)
-    return resp
-    
-@app.route('/confirm/<token>', methods=["GET"])
-def confirm_email(token):
-    try:
-        email = s.loads(token, salt='email-confirm', max_age=900)
-        resp = make_response(render_template("IN_out/reset_success.html"))
-        random_cookie_value = generate_random_string(30) 
-        session['random_cookie_value'] = random_cookie_value  # 將隨機cookie值存儲到會話(session)中
-        resp.set_cookie('verified', random_cookie_value, max_age=900)
-        
-        return resp
-    except SignatureExpired:
-        return render_template('IN_out/link_expired.html')
-
-
-
-
-
-
-
-@app.route('/countdown', methods=['GET'])
-def countdown():
-    now = datetime.now()
-    target_date = datetime(2025, 1, 18)
-
-    # 計算差異
-    difference = target_date - now
-    now_time = now.strftime("%Y/%m/%d")
-    difference_time = difference
-    total_seconds = int(difference.total_seconds())
-    days, remainder = divmod(total_seconds, 86400)  
-    hours, remainder = divmod(remainder, 3600)  
-    minutes, seconds = divmod(remainder, 60)  
-    target_time = target_date.strftime("%Y/%m/%d")
-    return render_template('countdown.html',now_time=now_time,day=days,hours=hours,minutes=minutes,seconds=seconds,target_time=target_time)
-
-@app.route('/generate', methods=['POST'])
-def generate_numbers():
-    min_value = int(request.form.get('min', 1))
-    max_value = int(request.form.get('max', 35))
-    count = int(request.form.get('count', 1))
-    
-    if min_value > max_value:
-        return jsonify({'error': 'Min value cannot be greater than Max value.'})
-    
-    weighted_pool = set(range(min_value, max_value + 1)) - chosen_numbers
-    if count > len(weighted_pool):
-        count = len(weighted_pool)
-    
-    # 將集合轉換為列表
-    weighted_pool_list = list(weighted_pool)
-
-    # 從列表中隨機選取數字
-    new_numbers = random.sample(weighted_pool_list, count)
-    chosen_numbers.update(new_numbers)
-    return jsonify({'numbers': list(new_numbers), 'chosen': list(chosen_numbers)})
-
-
-@app.route('/random')
-def randomx():
-    return render_template('random.html')
-
-@app.route('/clear_all', methods=['POST'])
-def clear_all():
-    global chosen_numbers
-    chosen_numbers.clear()
-    return jsonify({'status': 'All numbers cleared'})
-@app.route("/noIn")
-def no():
-    return render_template("IN_out/wrongx.html")
 #####################################################
 if __name__ == '__main__':
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+        os.makedirs(app.config['UPLOAD_FOLDER'])
     app.run(debug=True,port=9999,host="0.0.0.0")
 #2024/5/18
