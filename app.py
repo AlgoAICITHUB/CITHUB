@@ -21,6 +21,9 @@ import rate_limiting
 import logging_setup
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask_mail import Mail, Message
+from datetime import datetime, timedelta
+import random
+from flask_dance.contrib.discord import make_discord_blueprint, discord
 #---------前處理---------
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -32,8 +35,9 @@ click_count = 0
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'ttako015@gmail.com'
-app.config['MAIL_PASSWORD'] = 'dleo aszx ehqy bvpt'
+app.config['MAIL_USERNAME'] = 'cithubOfficial@gmail.com'
+#app.config['MAIL_PASSWORD'] = 'dleo aszx ehqy bvpt'
+app.config['MAIL_PASSWORD'] = 'kmyi oqcx gciq sgxx'
 app.config['SECRET_KEY'] = 'b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a'
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 mail = Mail(app)
@@ -45,7 +49,6 @@ def get_db_connection():
 
 DATABASE = 'app.db'
 
-
 with app.app_context():
     init_db.create_table()
 
@@ -53,6 +56,7 @@ rate_limiting.setup_rate_limiting(app)
 
 
 logging_setup.setup_logging(app)
+chosen_numbers = set()
 
 
 
@@ -82,6 +86,7 @@ def register():
         return render_template("IN_out/registerOp.html")
     else:
         return render_template("IN_out/register.html")
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -415,11 +420,7 @@ def forget():
             session['username'] = username
             token = s.dumps(email, salt='email-confirm')
             confirm_url = url_for('confirm_email', token=token, _external=True)
-            html = render_template_string('''
-            <p>Hi {{ username }},</p>
-            <p>To reset your password, click the following link:</p>
-            <p><a href="{{ confirm_url }}">Reset Password</a></p>
-            ''', username=username, confirm_url=confirm_url)
+            html = render_template('reset_password_email.html', username=username, confirm_url=confirm_url)
             msg = Message(subject="Password Reset Request",
                           sender=app.config['MAIL_USERNAME'],
                           recipients=[email],
@@ -444,7 +445,7 @@ def changepassword():
                 return resp
             else:
                 alert_message = "密碼不一致!"
-                return render_template("change_password.html", alert_message=alert_message)
+                return render_template("IN_out/change_password.html", alert_message=alert_message)
         return render_template("IN_out/change_password.html")
     else:
         return render_template("IN_out/waitcheck.html")
@@ -457,12 +458,12 @@ def delete_cookie():
     resp = make_response(redirect('/login'))
     resp.set_cookie('verified', '', expires=0)
     return resp
-
+    
 @app.route('/confirm/<token>', methods=["GET"])
 def confirm_email(token):
     try:
         email = s.loads(token, salt='email-confirm', max_age=900)
-        resp = make_response('<h1>Email verified successfully!</h1>')
+        resp = make_response(render_template("IN_out/reset_success.html"))
         random_cookie_value = generate_random_string(30) 
         session['random_cookie_value'] = random_cookie_value  # 將隨機cookie值存儲到會話(session)中
         resp.set_cookie('verified', random_cookie_value, max_age=900)
@@ -471,10 +472,63 @@ def confirm_email(token):
     except SignatureExpired:
         return render_template('IN_out/link_expired.html')
 
+
+
+
+
+
+
+@app.route('/countdown', methods=['GET'])
+def countdown():
+    now = datetime.now()
+    target_date = datetime(2025, 1, 18)
+
+    # 計算差異
+    difference = target_date - now
+    now_time = now.strftime("%Y/%m/%d")
+    difference_time = difference
+    total_seconds = int(difference.total_seconds())
+    days, remainder = divmod(total_seconds, 86400)  
+    hours, remainder = divmod(remainder, 3600)  
+    minutes, seconds = divmod(remainder, 60)  
+    target_time = target_date.strftime("%Y/%m/%d")
+    return render_template('countdown.html',now_time=now_time,day=days,hours=hours,minutes=minutes,seconds=seconds,target_time=target_time)
+
+@app.route('/generate', methods=['POST'])
+def generate_numbers():
+    min_value = int(request.form.get('min', 1))
+    max_value = int(request.form.get('max', 35))
+    count = int(request.form.get('count', 1))
+    
+    if min_value > max_value:
+        return jsonify({'error': 'Min value cannot be greater than Max value.'})
+    
+    weighted_pool = set(range(min_value, max_value + 1)) - chosen_numbers
+    if count > len(weighted_pool):
+        count = len(weighted_pool)
+    
+    # 將集合轉換為列表
+    weighted_pool_list = list(weighted_pool)
+
+    # 從列表中隨機選取數字
+    new_numbers = random.sample(weighted_pool_list, count)
+    chosen_numbers.update(new_numbers)
+    return jsonify({'numbers': list(new_numbers), 'chosen': list(chosen_numbers)})
+
+
+@app.route('/random')
+def randomx():
+    return render_template('random.html')
+
+@app.route('/clear_all', methods=['POST'])
+def clear_all():
+    global chosen_numbers
+    chosen_numbers.clear()
+    return jsonify({'status': 'All numbers cleared'})
 @app.route("/noIn")
 def no():
     return render_template("IN_out/wrongx.html")
 #####################################################
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True,port=9999,host="0.0.0.0")
 #2024/5/18

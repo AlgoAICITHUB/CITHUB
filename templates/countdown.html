@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025學測Countdown</title>
+    <style type="text/css">
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(to right, #93cb11, #25c6fc);
+        }
+    </style>
+</head>
+<body>
+    <h1>2025學測Countdown</h1>
+    <h2>現在時間: <span id="current-time"></span></h2>
+    <h2>學測時間: {{ target_time }}</h2>
+    <h2>距離學測還有: <span id="time-left"></span></h2>
+
+    <script>
+        function updateTime() {
+            var now = new Date();
+            var targetDate = new Date("{{ target_time }}");
+            var difference = targetDate - now;
+
+            var seconds = Math.floor(difference / 1000);
+            var minutes = Math.floor(seconds / 60);
+            var hours = Math.floor(minutes / 60);
+            var days = Math.floor(hours / 24);
+
+            seconds %= 60;
+            minutes %= 60;
+            hours %= 24;
+
+            document.getElementById('current-time').textContent = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+            document.getElementById('time-left').textContent = days + "天 " + hours + "小時 " + minutes + "分鐘 " + seconds + "秒";
+        }
+
+        // Update time every second
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>

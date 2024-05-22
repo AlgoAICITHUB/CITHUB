@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .notification {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .notification h1 {
+            margin: 20px 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .notification a {
+            display: inline-block;
+            text-decoration: none;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-left: -18px;
+        }
+        .notification a:hover {
+            background-color: #0056b3;
+        }
+        .notification .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .notification .container img {
+            width: 70px; /* 調整圖片大小 */
+            height: auto;
+            margin-right: 15px;
+        }
+        .notification .container h2 {
+            margin: 0;
+            font-size: 24px; /* 調整文字大小 */
+            color: #007BFF;
+        }
+        .notification:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="notification">
+        <h1>郵件驗證成功！</h1>
+        <p>您的郵件已成功驗證，請返回網頁重置密碼。</p>
+        <a href="http://127.0.0.1:5000/changepassword">返回網頁</a>
+    </div>
+</body>
+</html>
