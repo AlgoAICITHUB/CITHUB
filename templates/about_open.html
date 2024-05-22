@@ -23,21 +23,33 @@
             height: 100%;
             object-fit: cover;
         }
+        .mute-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
     <div class="video-container">
-        <video id="intro-video" width="640" height="480" autoplay >
+        <video id="intro-video" width="640" height="480" autoplay muted>
             <source src="{{ url_for('serve_video', video_name='CITHUBIntro') }}" type="video/mp4">
-
             Your browser does not support the video tag.
         </video>
+        <button class="mute-button" id="mute-button">Unmute</button>
     </div>
 
     <script>
         const video = document.getElementById('intro-video');
-        video.onended = function() {
+        const muteButton = document.getElementById('mute-button');
 
+        video.onended = function() {
             window.location.href = "/index";
         };
 
@@ -46,6 +58,16 @@
                 video.play();
             }, 100);
         };
+
+        muteButton.addEventListener('click', function() {
+            if (video.muted) {
+                video.muted = false;
+                muteButton.textContent = 'Mute';
+            } else {
+                video.muted = true;
+                muteButton.textContent = 'Unmute';
+            }
+        });
     </script>
 </body>
 </html>
