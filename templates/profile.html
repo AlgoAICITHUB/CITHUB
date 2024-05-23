@@ -38,12 +38,14 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: hidden;
         }
 
         .container {
             display: flex;
             flex: 1;
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 40px auto;
             padding: 20px;
             background-color: var(--container-bg-color);
@@ -145,6 +147,7 @@
                 <div class="profile-info">
                     <img src={{photo}} alt="User's head" />
                     <h2>{{ profile.user }}</h2>
+                    <h2>{{user_name}}</h2>
                     <h1>{{ profile_bio_html | safe }}</h1>
 
                 </div>

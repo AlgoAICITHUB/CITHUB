@@ -7,309 +7,320 @@
     <!--<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">-->
     <link rel = "icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <style>
-body, html {
-    margin: 0;
-    padding: 0;
-    font-family: 'Roboto', sans-serif;
-    background-color: #1E1E24;
-    color: #EFEFEF;
-    width: 100%;
-    height: 100%;
-}
-
-.container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh; /* 新增 */
-    width: auto;
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-main {
-    flex: 1; /* 新增 */
-}
-
-
-/* 導航條 */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #0D3B66;
-    padding: 1rem;
-
-}
-
-.nav-links {
-    display: flex;
-}
-
-.nav-links a {
-    margin: 0 10px;
-    color: #EFEFEF;
-    text-decoration: none;
-}
-
-.nav-links a:hover {
-    color: #16DB93;
-}
-
-.logo {
-    font-weight: bold;
-    font-size: 24px;
-    color: #16DB93;
-}
-
-@keyframes changeColor {
-    0% { color: red; }
-    20% { color: orange; }
-    40% { color: yellow; }
-    60% { color: rgb(5, 218, 5); }
-    80% { color: rgb(0, 119, 255); }
-    100% { color: rgb(197, 5, 197); }
-  }
-.logo:hover{
-    font-size: 24px;
-    animation: changeColor 1.8s infinite; 
-  }
-
-
-
-
-/* 主要內容區域 */
-.hero {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    text-align: center;
-    padding: 50px 0;
-}
-
-.features {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding: 20px 0;
-}
-
-.feature {
-    background-color: #0D3B66;
-    padding: 20px;
-    border-radius: 5px;
-}
-
-/* 呼籲行動區域 */
-.call-to-action {
-    text-align: center;
-    margin: 30px 0;
-}
-
-.btn {
-    background-color: #048BA8;
-    color: #EFEFEF;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.3s;
-}
-
-.btn:hover {
-    background-color: #16DB93;
-}
-
-/* 頁腳 */
-footer {
-    background-color: #0D3B66;
-   /* color: #CCCCCC;*/
-   color: #07edea;
-    text-align: center;
-    padding: 10px;
-    margin-top: 20px;
-}
-
-.night-mode {
-  background-color: #000000; /* 深藍色背景代表夜晚 */
-}
-
-
-
-
-.dLINE, .dLINE2 {
-  position: relative;
-  display: inline-block; 
-}
-
-.dLINE::after, .dLINE2::after {
-  content: '';
-  position: absolute;
-  bottom: -3px; 
-  left: -10%; /* 向左延伸底線 */
-  width: 120%; /* 增加底線的總長度 */
-  height: 2px; /* 根據需要調整底線的厚度 */
-}
-
-.dLINE::after {
-  background-image: linear-gradient(181deg, #ffa620 0%, #fba11a 50%, transparent 54%, transparent 100%);
-}
-
-.dLINE2::after {
-  background-image: linear-gradient(179deg, #fe619e 0%, #fe619e 50%, transparent 54%, transparent 100%);
-}
-
-
-.heart {
-  width: 60px; /* Adjusted for a more subtle effect */
-  height: 60px;
-  background: pink;
-  opacity: 0.5;
-  position: fixed;
-  transform: rotate(45deg);
-  animation: float 5s infinite linear;
-}
-
-.heart::before,
-.heart::after {
-  content: "";
-  background: pink;
-  border-radius: 50%;
-  width: 60px; /* Adjusted to match heart size */
-  height: 60px;
-  position: absolute;
-}
-
-.heart::before {
-  top: -30px; /* Adjusted to match heart size */
-  left: 0;
-}
-
-.heart::after {
-  top: 0;
-  left: 30px; /* Adjusted to match heart size */
-}
-
-#law{
-  color:#16DB93;
-}
-
-@keyframes float {
-  0% {
-    transform: translate(0, 0) rotate(45deg);
-    opacity: 1;
-    bottom: 10px; /* Start below the screen */
-  }
-  100% {
-    transform: translate(0, -100vh) rotate(45deg); /* End above the screen */
-    opacity: 0;
-  }
-}
-
-#valentine {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-}
-
-
-
-/******************************************************************************************************************/
-
-:root {
-    --background-color-day: #F0F2F5; /* 更柔和的背景色 */
-    --text-color-day: #4B4B4B; /* 柔和的文字顏色 */
-    --primary-color-day: #0056b3; /* 較淡的主要顏色 */
-    --secondary-color-day: #E0E0E0; /* 次要顏色，用於邊框或分割線等 */
-    --accent-color-day: #3498DB; /* 強調色，稍亮但不過於鮮豔 */
-    --light-color-day: #FFFFFF; /* 用於卡片或浮動元素的背景色 */
-    --dark-color-day: #343A40; /* 暗色文字，用於重要文字或標題 */
-}
-
-.day-mode {
-    background-color: var(--background-color-day);
-    color: var(--text-color-day);
-}
-
-.day-mode .navbar, .day-mode footer {
-    background-color: var(--primary-color-day);
-    color: var(--light-color-day);
-}
-
-.day-mode .nav-links a {
-    color: var(--light-color-day);
-}
-
-.day-mode .nav-links a:hover {
-    color: var(--accent-color-day);
-}
-
-.day-mode .feature {
-    background-color: var(--light-color-day);
-    color: var(--dark-color-day);
-    border: 1px solid var(--secondary-color-day);
-}
-
-.day-mode .btn {
-    background-color: var(--primary-color-day);
-    color: var(--light-color-day);
-}
-
-.day-mode .btn:hover {
-    background-color: var(--accent-color-day);
-}
-
-
-.day-mode footer {
-    background-color: var(--primary-color-day);
-    color: var(--light-color-day);
-}
-
-/* 調整白天模式下的其他元素樣式 */
-.day-mode .dLINE::after, .day-mode .dLINE2::after {
-    background-image: linear-gradient(90deg, var(--primary-color-day), var(--accent-color-day));
-}
-
-/* 特殊文字和裝飾效果 */
-.day-mode .dLINE, .day-mode .dLINE2 {
-    text-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-}
-
-/* 提供一個簡單的按鈕來切換模式 */
-.mode-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: var(--primary-color);
-    color: #EFEFEF;
-    border: none;
-    cursor: pointer;
-    padding: 10px 15px;
-    border-radius: 20px;
-    transition: background-color 0.3s;
-}
-
-.mode-toggle:hover {
-    background-color: var(--accent-color);
-}
-
-/* 更新白天模式的按鈕樣式 */
-.day-mode .mode-toggle {
-    background-color: var(--primary-color-day);
-    color: var(--background-color-day);
-}
-
-.day-mode .mode-toggle:hover {
-    background-color: var(--accent-color-day);
-}
-#iframe {
-  display: none;
-}
-
-    </style>
+      body, html {
+          margin: 0;
+          padding: 0;
+          font-family: 'Roboto', sans-serif;
+          background-color: #1E1E24;
+          color: #EFEFEF;
+          width: 100%;
+          height: 100%;
+      }
+      
+      .container {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          width: auto;
+          max-width: 100%;
+          margin: 0 auto;
+          padding: 20px;
+      }
+      
+      main {
+          flex: 1;
+      }
+      
+      /* 導航條 */
+      .navbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: #0D3B66;
+          padding: 1rem;
+      }
+      
+      .nav-links {
+          display: flex;
+          align-items: center; /* 使導航項目垂直居中 */
+      }
+      
+      .nav-links a {
+          margin: 0 10px;
+          color: #EFEFEF;
+          text-decoration: none;
+      }
+      
+      .nav-links a:hover {
+          color: #16DB93;
+      }
+      
+      .logo {
+          font-weight: bold;
+          font-size: 24px;
+          color: #16DB93;
+      }
+      
+      @keyframes changeColor {
+          0% { color: red; }
+          20% { color: orange; }
+          40% { color: yellow; }
+          60% { color: rgb(5, 218, 5); }
+          80% { color: rgb(0, 119, 255); }
+          100% { color: rgb(197, 5, 197); }
+      }
+      
+      .logo:hover {
+          font-size: 24px;
+          animation: changeColor 1.8s infinite; 
+      }
+      
+      /* 調整圖片樣式 */
+      .nav-links img {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+          margin-left: 10px; /* 增加圖片和文字之間的間距 */
+          border: 2px solid #EFEFEF; /* 圓形邊框 */
+          vertical-align: middle; /* 使圖片垂直居中 */
+      }
+      
+      /* 主要內容區域 */
+      .hero {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          text-align: center;
+          padding: 50px 0;
+      }
+      
+      .features {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+          padding: 20px 0;
+      }
+      
+      .feature {
+          background-color: #0D3B66;
+          padding: 20px;
+          border-radius: 5px;
+      }
+      
+      /* 呼籲行動區域 */
+      .call-to-action {
+          text-align: center;
+          margin: 30px 0;
+      }
+      
+      .btn {
+          background-color: #048BA8;
+          color: #EFEFEF;
+          padding: 10px 20px;
+          border: none;
+          cursor: pointer;
+          border-radius: 5px;
+          transition: background 0.3s;
+      }
+      
+      .btn:hover {
+          background-color: #16DB93;
+      }
+      
+      /* 頁腳 */
+      footer {
+          background-color: #0D3B66;
+          color: #07edea;
+          text-align: center;
+          padding: 10px;
+          margin-top: 20px;
+      }
+      
+      .night-mode {
+        background-color: #000000; /* 深藍色背景代表夜晚 */
+      }
+      
+      .dLINE, .dLINE2 {
+        position: relative;
+        display: inline-block; 
+      }
+      
+      .dLINE::after, .dLINE2::after {
+        content: '';
+        position: absolute;
+        bottom: -3px; 
+        left: -10%; /* 向左延伸底線 */
+        width: 120%; /* 增加底線的總長度 */
+        height: 2px; /* 根據需要調整底線的厚度 */
+      }
+      
+      .dLINE::after {
+        background-image: linear-gradient(181deg, #ffa620 0%, #fba11a 50%, transparent 54%, transparent 100%);
+      }
+      
+      .dLINE2::after {
+        background-image: linear-gradient(179deg, #fe619e 0%, #fe619e 50%, transparent 54%, transparent 100%);
+      }
+      
+      .heart {
+        width: 60px; /* Adjusted for a more subtle effect */
+        height: 60px;
+        background: pink;
+        opacity: 0.5;
+        position: fixed;
+        transform: rotate(45deg);
+        animation: float 5s infinite linear;
+      }
+      
+      .heart::before,
+      .heart::after {
+        content: "";
+        background: pink;
+        border-radius: 50%;
+        width: 60px; /* Adjusted to match heart size */
+        height: 60px;
+        position: absolute;
+      }
+      
+      .heart::before {
+        top: -30px; /* Adjusted to match heart size */
+        left: 0;
+      }
+      
+      .heart::after {
+        top: 0;
+        left: 30px; /* Adjusted to match heart size */
+      }
+      
+      #law{
+        color:#16DB93;
+      }
+      
+      @keyframes float {
+        0% {
+          transform: translate(0, 0) rotate(45deg);
+          opacity: 1;
+          bottom: 10px; /* Start below the screen */
+        }
+        100% {
+          transform: translate(0, -100vh) rotate(45deg); /* End above the screen */
+          opacity: 0;
+        }
+      }
+      
+      #valentine {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+      }
+      
+      img {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+          margin-left: 10px; /* 增加圖片和文字之間的間距 */
+          border: 2px solid #EFEFEF; /* 圓形邊框 */
+          vertical-align: middle; /* 使圖片垂直居中 */
+      }
+      
+      /******************************************************************************************************************/
+      
+      :root {
+          --background-color-day: #F0F2F5; /* 更柔和的背景色 */
+          --text-color-day: #4B4B4B; /* 柔和的文字顏色 */
+          --primary-color-day: #0056b3; /* 較淡的主要顏色 */
+          --secondary-color-day: #E0E0E0; /* 次要顏色，用於邊框或分割線等 */
+          --accent-color-day: #3498DB; /* 強調色，稍亮但不過於鮮豔 */
+          --light-color-day: #FFFFFF; /* 用於卡片或浮動元素的背景色 */
+          --dark-color-day: #343A40; /* 暗色文字，用於重要文字或標題 */
+      }
+      
+      .day-mode {
+          background-color: var(--background-color-day);
+          color: var(--text-color-day);
+      }
+      
+      .day-mode .navbar, .day-mode footer {
+          background-color: var(--primary-color-day);
+          color: var(--light-color-day);
+      }
+      
+      .day-mode .nav-links a {
+          color: var(--light-color-day);
+      }
+      
+      .day-mode .nav-links a:hover {
+          color: var(--accent-color-day);
+      }
+      
+      .day-mode .feature {
+          background-color: var(--light-color-day);
+          color: var(--dark-color-day);
+          border: 1px solid var(--secondary-color-day);
+      }
+      
+      .day-mode .btn {
+          background-color: var(--primary-color-day);
+          color: var(--light-color-day);
+      }
+      
+      .day-mode .btn:hover {
+          background-color: var(--accent-color-day);
+      }
+      
+      .day-mode footer {
+          background-color: var(--primary-color-day);
+          color: var(--light-color-day);
+      }
+      
+      /* 調整白天模式下的其他元素樣式 */
+      .day-mode .dLINE::after, .day-mode .dLINE2::after {
+          background-image: linear-gradient(90deg, var(--primary-color-day), var(--accent-color-day));
+      }
+      
+      /* 特殊文字和裝飾效果 */
+      .day-mode .dLINE, .day-mode .dLINE2 {
+          text-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+      }
+      
+      /* 提供一個簡單的按鈕來切換模式 */
+      .mode-toggle {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background-color: var(--primary-color);
+          color: #EFEFEF;
+          border: none;
+          cursor: pointer;
+          padding: 10px 15px;
+          border-radius: 20px;
+          transition: background-color 0.3s;
+      }
+      
+      .mode-toggle:hover {
+          background-color: var(--accent-color);
+      }
+      
+      /* 更新白天模式的按鈕樣式 */
+      .day-mode .mode-toggle {
+          background-color: var(--primary-color-day);
+          color: var(--background-color-day);
+      }
+      
+      .day-mode .mode-toggle:hover {
+          background-color: var(--accent-color-day);
+      }
+      
+      #iframe {
+          display: none;
+      }
+      </style>
+      
 </head>
 <body>
 
@@ -326,7 +337,9 @@ footer {
                 {% else %}
                   <a href="/upload">上傳文章</a>
                   <a href="/logout">登出</a>
-                  <a href="/profilem">{{session.get('username')}}</a>
+                  <!--<a href="/profilem">{{session.get('username')}}</a>-->
+                  <a href="/profilem"><img src="{{photo}}"></a>
+                  
                 {% endif %}
             </ul>
         </nav>
@@ -352,7 +365,7 @@ footer {
 
 </div>
 <footer>
-  <a id="law" href="/law">行為準則</a>
+  <a id="law" href="/law">行為準則</a> <a id="law" href="/privacy">隱私政策</a>
   <p>Copyright &copy; 2024 Cithub. All rights reserved.</p>
 </footer>
 <button id="mode-toggle-button">切換日夜模式</button>

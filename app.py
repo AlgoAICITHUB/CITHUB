@@ -239,14 +239,15 @@ def profile(user_id):
     user_profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
     db.close()
     
-    if user_profile and user_profile['bio']:
-        profile_bio_html = markdown.markdown(user_profile['bio'], extensions=['codehilite', 'fenced_code', 'tables'])
-    if user_profile and user_profile['photo']:
-        user_photo = user_profile['photo']
-    else:
-        profile_bio_html = "No bio available."
+    profile_bio_html = "No bio available."
+    user_photo = None
+    if user_profile:
+        if user_profile['bio']:
+            profile_bio_html = markdown.markdown(user_profile['bio'], extensions=['codehilite', 'fenced_code', 'tables'])
+        if user_profile['photo']:
+            user_photo = user_profile['photo']
 
-    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html, posts=posts,photo = user_photo)
+    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html, posts=posts, photo=user_photo)
 
 @app.route('/profilem', methods=['GET','POST'])
 def profilem():
@@ -412,7 +413,6 @@ def share_post(post_id):
         flash('請先登錄。')
         return redirect(url_for('login'))
     
-    # 此處可以添加分享邏輯，比如記錄分享次數或者其他分享功能
     flash('帖子已成功分享！')
     
     return redirect(url_for('view_post', post_id=post_id))
@@ -420,10 +420,24 @@ def share_post(post_id):
 @app.route("/index", methods=["GET", "POST"])
 def index():
     user_id = session.get('user_id')
-    if user_id == 2:
-        return render_template("admin-room.html")
+
+    if user_id:
+        conn = get_db_connection()
+        user_profile = conn.execute('SELECT photo FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
+        conn.close()
+
+        if user_profile and user_profile['photo']:
+            user_photo = user_profile['photo']
+        else:
+            user_photo = None
     else:
-        return render_template("index.html")
+        user_photo = None
+
+    if user_id == 2:
+        return render_template("admin-room.html", photo=user_photo)
+    else:
+        return render_template("index.html", photo=user_photo)
+
 
 @app.route("/",methods=["GET", "POST"])
 def open():
@@ -433,6 +447,9 @@ def open():
 def law():
     return render_template('law.html')
 
+@app.route('/privacy', methods=['GET','POST'])
+def privacy():
+    return render_template('privacy.html')
 @app.route('/about', methods=["GET", "POST"])
 def about():
     return render_template('about.html')
