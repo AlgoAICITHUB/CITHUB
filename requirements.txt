@@ -4,7 +4,6 @@ MarkupSafe
 markdown
 Werkzeug
 python-dotenv
-secrets
 requests
 itsdangerous
 Flask-Mail
