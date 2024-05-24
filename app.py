@@ -37,7 +37,8 @@ app.config.update(
     SECRET_KEY=os.getenv('SECRET_KEY'),
     UPLOAD_FOLDER=UPLOAD_FOLDER
 )
-s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+load_dotenv()
+s = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
 mail = Mail(app)
 rate_limiting.setup_rate_limiting(app)
 logging_setup.setup_logging(app)
