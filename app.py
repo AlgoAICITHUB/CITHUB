@@ -32,9 +32,9 @@ app.config.update(
     MAIL_SERVER='smtp.gmail.com',
     MAIL_PORT=587,
     MAIL_USE_TLS=True,
-    MAIL_USERNAME='cithubOfficial@gmail.com',
-    MAIL_PASSWORD='kmyi oqcx gciq sgxx',
-    SECRET_KEY='b3c6a398b4ac82e5b5e3040588cbfec57472937775f639f3141d867493400e9a',
+    MAIL_USERNAME=os.getenv('MAIL_USERNAME'),
+    MAIL_PASSWORD=os.getenv('MAIL_PASSWORD'),
+    SECRET_KEY=os.getenv('SECRET_KEY'),
     UPLOAD_FOLDER=UPLOAD_FOLDER
 )
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -416,6 +416,76 @@ def share_post(post_id):
     flash('帖子已成功分享！')
     
     return redirect(url_for('view_post', post_id=post_id))
+
+#Courses
+@app.route('/add_course', methods=['POST'])
+def add_course():
+    data = request.json
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO courses (name, description) VALUES (?, ?)", 
+                   (data['name'], data['description']))
+    course_id = cursor.lastrowid
+    conn.commit()
+
+    for lesson in data['lessons']:
+        cursor.execute("INSERT INTO lessons (course_id, title, content) VALUES (?, ?, ?)", 
+                       (course_id, lesson['title'], lesson['content']))
+        lesson_id = cursor.lastrowid
+        for quiz in lesson['quizzes']:
+            cursor.execute("INSERT INTO quizzes (lesson_id, question, answer) VALUES (?, ?, ?)", 
+                           (lesson_id, quiz['question'], quiz['answer']))
+    
+    conn.commit()
+    conn.close()
+    return jsonify({'message': 'Course added successfully'}), 201
+
+
+
+@app.route("/num_course",methods=["GET", "POST"])
+def num_courses():
+    if request.method == 'POST':
+        num_courses = int(request.form.get('num_courses', 0))
+        return redirect(url_for('create_courses', num_courses=num_courses))
+    return render_template('numcourse.html')
+
+
+@app.route('/create_courses/<int:num_courses>', methods=['GET', 'POST'])
+def create_courses(num_courses):
+    if request.method == 'POST':
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # 處理課程數據的提交
+        courses_data = []
+        for i in range(num_courses):
+            course_title = request.form.get(f'title_{i}')
+            course_content = request.form.get(f'content_{i}')
+            # 儲存課程到資料庫
+            cursor.execute('INSERT INTO courses (name, description) VALUES (?, ?)', (course_title, course_content))
+            course_id = cursor.lastrowid  # 獲取剛剛插入的課程 ID
+
+            # 測驗問題和答案
+            question = request.form.get(f'question_{i}')
+            answer = request.form.get(f'answer_{i}')
+            cursor.execute('INSERT INTO quizzes (lesson_id, question, answer) VALUES (?, ?, ?)', (course_id, question, answer))
+            
+            courses_data.append({'title': course_title, 'content': course_content, 'question': question, 'answer': answer})
+        
+        conn.commit()
+        conn.close()
+        return render_template('courses_submitted.html', courses=courses_data)
+    return render_template('create_courses.html', num_courses=num_courses)
+
+
+
+
+
+
+
+
+
+
 # Main
 @app.route("/index", methods=["GET", "POST"])
 def index():
@@ -525,6 +595,9 @@ def adminonly():
 </body>
 </html>
 """)
+    
+
+
 
 #####################################################
 if __name__ == '__main__':

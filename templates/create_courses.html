@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>輸入課程資訊</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+            padding: 20px;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .course-section {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #5cb85c;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+    <form method="post">
+        {% for i in range(num_courses) %}
+        <div class="course-section">
+            <label for="title_{{i}}">課程{{i+1}}標題：</label>
+            <input type="text" id="title_{{i}}" name="title_{{i}}" required>
+            <label for="content_{{i}}">內容：</label>
+            <textarea id="markdown-editor{{i}}" name="content_{{i}}"></textarea>
+            <script>
+                new EasyMDE({element: document.getElementById('markdown-editor{{i}}')});
+            </script>
+            <label for="question_{{i}}">測驗問題：</label>
+            <input type="text" id="question_{{i}}" name="question_{{i}}" required>
+            <label for="answer_{{i}}">答案：</label>
+            <input type="text" id="answer_{{i}}" name="answer_{{i}}" required>
+        </div>
+        {% endfor %}
+        <button type="submit">提交所有課程</button>
+    </form>
+</body>
+</html>

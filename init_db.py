@@ -52,6 +52,43 @@ def create_table():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users (id)
         )
+        """,
+
+        """
+        CREATE TABLE IF NOT EXISTS courses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            description TEXT NOT NULL
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS lessons (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            course_id INTEGER NOT NULL,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            FOREIGN KEY (course_id) REFERENCES courses (id)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS quizzes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            lesson_id INTEGER NOT NULL,
+            question TEXT NOT NULL,
+            answer TEXT NOT NULL,
+            FOREIGN KEY (lesson_id) REFERENCES lessons (id)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS user_courses (
+            user_id INTEGER NOT NULL,
+            course_id INTEGER NOT NULL,
+            lesson_id INTEGER NOT NULL,
+            PRIMARY KEY (user_id, course_id),
+            FOREIGN KEY (user_id) REFERENCES users (id),
+            FOREIGN KEY (course_id) REFERENCES courses (id),
+            FOREIGN KEY (lesson_id) REFERENCES lessons (id)
+        )
         """
     ]
 

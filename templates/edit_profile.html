@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>編輯個人資料</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -76,7 +78,10 @@
     <div class="container">
         <h2>編輯個人資料</h2>
         <form action="/edit-profile" method="post" enctype="multipart/form-data">
-            自我介紹：<textarea name="bio">{{ profile['bio'] }}</textarea><br>
+            自我介紹：<textarea id="markdown-editor0" name="bio">{{ profile['bio'] }}</textarea>
+            <script>
+                new EasyMDE({element: document.getElementById('markdown-editor0')});
+            </script>
             頭像：<input type="file" name="file" /><br>
             <input type="submit" value="更新資料">
         </form>

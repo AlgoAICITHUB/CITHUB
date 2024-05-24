@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>課程提交成功</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 0;
+        }
+        p {
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <h1>課程提交成功</h1>
+    <div>
+        <h2>您已成功提交以下課程：</h2>
+        <ul>
+            {% for course in courses %}
+            <li>
+                <h3>課程標題：{{ course.title }}</h3>
+                <p>課程內容：<br>{{ course.content }}</p>
+                <p>測驗問題：{{ course.question }}</p>
+                <p>答案：{{ course.answer }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
