@@ -89,7 +89,17 @@ def create_table():
             FOREIGN KEY (course_id) REFERENCES courses (id),
             FOREIGN KEY (lesson_id) REFERENCES lessons (id)
         )
+        """,
         """
+ CREATE TABLE IF NOT EXISTS user_progress (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            course_id INTEGER NOT NULL,
+            completed BOOLEAN NOT NULL DEFAULT FALSE,
+            FOREIGN KEY (user_id) REFERENCES users (id),
+            FOREIGN KEY (course_id) REFERENCES courses (id)
+        )
+"""
     ]
 
     for table in tables:

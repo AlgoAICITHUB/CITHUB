@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>課程詳細信息</title>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']] // 添加對 $...$ 的支持
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <!-- MathJax 的配置必須在載入庫之前完成 -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .lesson-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .quiz {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ course.name }}</h1>
+    <div class="lesson-content">
+        <h2>課程內容</h2>
+        <div>{{ course_description_markdown|safe }}</div>
+        <p>進度：{{ '完成' if progress.completed else '未完成' }}</p>
+    </div>
+    <div class="quiz">
+        <h2>測驗</h2>
+        <form method="post" action="{{ url_for('submit_quiz', course_id=course['id']) }}">
+            <label for="question">{{ quiz.question }}</label>
+            <input type="text" id="answer" name="answer" required>
+            <button type="submit">提交答案</button>
+        </form>
+    </div>
+</body>
+</html>

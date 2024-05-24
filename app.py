@@ -478,12 +478,50 @@ def create_courses(num_courses):
     return render_template('create_courses.html', num_courses=num_courses)
 
 
+@app.route('/course/<int:course_id>')
+def view_course(course_id):
+    user_id = session.get('user_id')  # 假設您已經在 session 中存儲了 user_id
+    conn = get_db_connection()
+    course = conn.execute('SELECT * FROM courses WHERE id = ?', (course_id,)).fetchone()
+    quiz = conn.execute('SELECT * FROM quizzes WHERE lesson_id = ?', (course_id,)).fetchone()
+    progress = conn.execute('SELECT * FROM user_progress WHERE user_id = ? AND course_id = ?', (user_id, course_id)).fetchone()
+    conn.close()
+
+    # 將課程描述轉換為 Markdown 格式的 HTML
+    course_description_markdown = markdown.markdown(course['description'], extensions=['codehilite', 'fenced_code', 'tables'])
+
+    return render_template('course_detail.html', course=course, quiz=quiz, progress=progress, course_description_markdown=course_description_markdown)
 
 
 
+@app.route('/submit_quiz/<int:course_id>', methods=['POST'])
+def submit_quiz(course_id):
+    user_id = session.get('user_id') 
+    if user_id is None:
+        return redirect(url_for('login')) 
+
+    user_answer = request.form['answer']
+    conn = get_db_connection()
+    quiz = conn.execute('SELECT * FROM quizzes WHERE lesson_id = ?', (course_id,)).fetchone()
+    correct_answer = quiz['answer']
+    if user_answer == correct_answer:
+        result = "恭喜，您答對了！"
+        conn.execute('INSERT OR REPLACE INTO user_progress (user_id, course_id, completed) VALUES (?, ?, ?)', 
+                     (user_id, course_id, True))
+    else:
+        result = "很抱歉，答案錯誤。"
+    conn.commit()
+    conn.close()
+    return render_template('quiz_result.html', result=result, course_id=course_id)
 
 
 
+@app.route("/view_course",methods=["GET", "POST"])
+def view_courses():
+    conn = get_db_connection()
+    courses = conn.execute('SELECT * FROM courses').fetchall()
+    conn.close()
+    return render_template('courses.html', courses=courses)
 
 
 # Main

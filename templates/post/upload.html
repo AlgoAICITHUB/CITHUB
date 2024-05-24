@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>發布新文章</title>
     <link rel = "icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     <style type="text/css">
         body {
             font-family: Arial, sans-serif;
@@ -77,14 +79,22 @@
 <body>
     <div class="upload-container">
         <h1>發布新文章</h1>
-        <form action="/upload" method="post" class="upload-form">
+        <form action="/upload" method="post" class="upload-form" novalidate>
             <label for="title">標題：</label><br>
             <input type="text" id="title" name="title" required><br>
             <label for="content">內容：</label><br>
-            <textarea id="content" name="content" rows="6" required></textarea><br>
+            <textarea id="markdown-editor" name="content" required></textarea>
             <input type="submit" value="發布">
         </form>
-    </div>
-    <footer>Copyright &copy; 2024 Cithub. All rights reserved.</footer>
-</body>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var easyMDE = new EasyMDE({element: document.getElementById('markdown-editor')});
+                document.querySelector('.upload-form').onsubmit = function(e) {
+                    if (!document.getElementById('title').value || !easyMDE.value()) {
+                        e.preventDefault();
+                        alert('Please fill out all required fields.');
+                    }
+                };
+            });
+        </script>
 </html>

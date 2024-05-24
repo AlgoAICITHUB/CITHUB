@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>課程列表</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        a {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>課程列表</h1>
+    <ul>
+        {% for course in courses %}
+        <li>
+            <a href="{{ url_for('view_course', course_id=course['id']) }}">{{ course['name'] }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
