@@ -1,5 +1,5 @@
 .env
 async_app.log
 app.db
-__pycache__
-static/uploads
+__pycache__/
+static/uploads/

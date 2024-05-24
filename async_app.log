@@ -1055,3 +1055,9 @@
 2024-05-23 20:41:59,617 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:9999/profilem
 2024-05-23 20:41:59,633 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:9999/static/uploads/enlarge_cithub.png
 2024-05-23 20:42:00,258 - async_logger - INFO - IP: 192.168.50.42, URL: http://192.168.50.42:9999/static/favicon.ico
+2024-05-24 15:36:01,362 - async_logger - INFO - IP: 10.70.6.25, URL: http://10.70.6.25:9999/
+2024-05-24 15:36:01,381 - async_logger - INFO - IP: 10.70.6.25, URL: http://10.70.6.25:9999/video/HelloCITHUB
+2024-05-24 15:36:05,938 - async_logger - INFO - IP: 10.70.6.25, URL: http://10.70.6.25:9999/index
+2024-05-24 15:36:14,166 - async_logger - INFO - IP: 10.70.6.25, URL: http://10.70.6.25:9999/termOfUse
+2024-05-24 15:36:15,414 - async_logger - INFO - IP: 10.70.6.25, URL: http://10.70.6.25:9999/register
+2024-05-24 15:36:15,446 - async_logger - INFO - IP: 10.70.6.25, URL: http://10.70.6.25:9999/static/style.css
