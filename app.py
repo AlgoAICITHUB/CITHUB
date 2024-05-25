@@ -22,6 +22,12 @@ import logging_setup
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask_mail import Mail, Message
 
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+
+load_dotenv(os.path.join(basedir, '.env'))
+
 #---------前處理---------
 # 初始化應用程式和配置
 app = Flask(__name__)
@@ -41,7 +47,7 @@ load_dotenv()
 s = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
 mail = Mail(app)
 rate_limiting.setup_rate_limiting(app)
-logging_setup.setup_logging(app)
+
 ALLOWED_EXTENSIONS = {"png","jpg","jpeg","gif"}
 # 初始化資料庫
 with app.app_context():
