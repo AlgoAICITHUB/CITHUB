@@ -43,7 +43,8 @@ app.config.update(
     SECRET_KEY=os.getenv('SECRET_KEY'),
     UPLOAD_FOLDER=UPLOAD_FOLDER
 )
-s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+load_dotenv()
+s = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
 mail = Mail(app)
 rate_limiting.setup_rate_limiting(app)
 
@@ -252,8 +253,10 @@ def profile(user_id):
             profile_bio_html = markdown.markdown(user_profile['bio'], extensions=['codehilite', 'fenced_code', 'tables'])
         if user_profile['photo']:
             user_photo = user_profile['photo']
+        else:
+            user_photo = "\static\default_avatar.png"
 
-    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html, posts=posts, photo=user_photo)
+    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html, posts=posts, photo=user_photo,username=session.get('username'))
 
 @app.route('/profilem', methods=['GET','POST'])
 def profilem():
