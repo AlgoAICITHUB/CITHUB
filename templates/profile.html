@@ -137,6 +137,11 @@
             transition: color 0.2s ease-in-out;
             margin: 0 10px;
         }
+        
+        .username{
+            width: 30px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -146,8 +151,7 @@
 
                 <div class="profile-info">
                     <img src={{photo}} alt="User's head" />
-                    <h2>{{ profile.user }}</h2>
-                    <h2>{{user_name}}</h2>
+                    <h2 id = "username">{{ username }}</h2>
                     <h1>{{ profile_bio_html | safe }}</h1>
 
                 </div>
