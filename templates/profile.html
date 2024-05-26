@@ -39,8 +39,9 @@
             flex-direction: column;
             min-height: 100vh;
             overflow-x: hidden;
-            overflow-y: hidden;
+            overflow-y: auto; /* 允許垂直滾動 */
         }
+
 
         .container {
             display: flex;
@@ -77,6 +78,10 @@
             object-fit: cover;
             margin-bottom: 20px;
         }
+        .profile-info h1 {
+            margin: 0;
+            word-wrap: break-word; /* 自動換行 */
+        }
 
         .profile-info h2 {
             margin: 0;
@@ -98,13 +103,16 @@
         }
 
         .post-item {
+            display: block;
             padding: 15px;
             margin-bottom: 20px;
             background-color: var(--container-bg-color);
             border: 1px solid var(--border-color);
             border-radius: 0.5rem;
             transition: background-color 0.3s ease-in-out;
+            text-decoration: none; /* 移除超連結的下劃線 */
         }
+
 
         .post-item:hover {
             background-color: #e2e6ea;
@@ -114,6 +122,10 @@
             margin: 0 0 10px;
             color: var(--primary-color);
             font-weight: 500;
+        }
+
+        .post-item a:visited {
+            color: inherit; /* 使用與父元素相同的文字顏色 */
         }
 
         .post-content {
@@ -161,15 +173,17 @@
             <div class="posts">
                 <h3>用戶的帖子</h3>
                 {% for post in posts %}
-                <div class="post-item">
+                <a href="{{ url_for('view_post', post_id=post.id) }}" class="post-item">
                     <h4 class="post-title">{{ post.title }}</h4>
                     <p class="post-content">{{ post.content }}</p>
-                </div>
+                </a>
                 {% else %}
                 <p>沒有帖子展示。</p>
                 {% endfor %}
             </div>
         </div>
+        
+        
     </div>
     <footer>
         <a href="{{ url_for('edit_profile', user_id=profile.user_id) }}">編輯個人資料</a> | 

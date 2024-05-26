@@ -381,19 +381,25 @@ def list_md_files():
     
     if query:
         post_rows = conn.execute('''
-        SELECT p.id, p.title, p.content, p.created_at, u.username 
+        SELECT p.id, p.title, p.content, p.created_at, u.username, COUNT(l.id) as likes, 
+        CASE WHEN EXISTS (SELECT 1 FROM likes WHERE user_id = ? AND post_id = p.id) THEN 1 ELSE 0 END as liked_by_user
         FROM posts p
         JOIN users u ON p.user_id = u.id
+        LEFT JOIN likes l ON p.id = l.post_id
         WHERE p.title LIKE ?
+        GROUP BY p.id
         ORDER BY p.created_at DESC
-        ''', ('%' + query + '%',)).fetchall()
+        ''', (session.get('user_id', 0), '%' + query + '%',)).fetchall()
     else:
         post_rows = conn.execute('''
-        SELECT p.id, p.title, p.content, p.created_at, u.username 
+        SELECT p.id, p.title, p.content, p.created_at, u.username, COUNT(l.id) as likes, 
+        CASE WHEN EXISTS (SELECT 1 FROM likes WHERE user_id = ? AND post_id = p.id) THEN 1 ELSE 0 END as liked_by_user
         FROM posts p
         JOIN users u ON p.user_id = u.id
+        LEFT JOIN likes l ON p.id = l.post_id
+        GROUP BY p.id
         ORDER BY p.created_at DESC
-        ''').fetchall()
+        ''', (session.get('user_id', 0),)).fetchall()
     
     conn.close()
 
@@ -401,19 +407,47 @@ def list_md_files():
     
     return render_template('post/files.html', posts=posts, query=query)
 
+
 @app.route('/like/<int:post_id>', methods=['POST'])
 def like_post(post_id):
     user_id = session.get('user_id')
     if not user_id:
         flash('請先登錄。')
         return redirect(url_for('login'))
-    
+
     conn = get_db_connection()
-    conn.execute('UPDATE posts SET likes = likes + 1 WHERE id = ?', (post_id,))
-    conn.commit()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('INSERT INTO likes (user_id, post_id) VALUES (?, ?)', (user_id, post_id))
+        conn.commit()
+    except sqlite3.IntegrityError:
+        pass  # already liked
+
+    cursor.execute('SELECT COUNT(*) as like_count FROM likes WHERE post_id = ?', (post_id,))
+    likes = cursor.fetchone()['like_count']
     conn.close()
     
-    return redirect(url_for('view_post', post_id=post_id))
+    return jsonify({'likes': likes})
+
+@app.route('/unlike/<int:post_id>', methods=['POST'])
+def unlike_post(post_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('請先登錄。')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute('DELETE FROM likes WHERE user_id = ? AND post_id = ?', (user_id, post_id))
+    conn.commit()
+    
+    cursor.execute('SELECT COUNT(*) as like_count FROM likes WHERE post_id = ?', (post_id,))
+    likes = cursor.fetchone()['like_count']
+    conn.close()
+    
+    return jsonify({'likes': likes})
 
 @app.route('/share/<int:post_id>', methods=['POST'])
 def share_post(post_id):
@@ -550,10 +584,10 @@ def index():
     else:
         user_photo = None
 
-    if user_id == 2:
-        return render_template("admin-room.html", photo=user_photo)
-    else:
-        return render_template("index.html", photo=user_photo)
+    # if user_id == 2:
+    #     return render_template("admin-room.html", photo=user_photo)
+    # else:
+    return render_template("index.html", photo=user_photo)
 
 
 @app.route("/",methods=["GET", "POST"])

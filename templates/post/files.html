@@ -124,20 +124,43 @@
         }
 
         .Moderator {
-    color: rgb(0, 128, 255); 
-    font-size: 24px;
-    text-shadow: 2px 2px 5px rgba(0, 128, 255, 0.7); 
-    animation: glow 1s infinite alternate;
-}
+            color: rgb(0, 128, 255); 
+            font-size: 24px;
+            text-shadow: 2px 2px 5px rgba(0, 128, 255, 0.7); 
+            animation: glow 1s infinite alternate;
+        }
 
-@keyframes glow {
-    from {
-        text-shadow: 2px 2px 5px rgba(0, 128, 255, 0.7); 
-    }
-    to {
-        text-shadow: 2px 2px 10px rgba(0, 128, 255, 1); 
-    }
-}
+        @keyframes glow {
+            from {
+                text-shadow: 2px 2px 5px rgba(0, 128, 255, 0.7); 
+            }
+            to {
+                text-shadow: 2px 2px 10px rgba(0, 128, 255, 1); 
+            }
+        }
+        svg {
+            fill: #ccc; /* 初始顏色為灰色 */
+            cursor: pointer;
+            transition: fill 0.3s;
+            margin-left: 10px; /* 添加一些間距 */
+            margin-bottom: -1.3px;
+        }
+
+        svg:hover {
+            fill: #c0392b; /* 滑鼠懸停時顏色變為深紅色 */
+        }
+
+        svg.clicked {
+            fill: #e74c3c; /* 點擊後顏色變為紅色 */
+        }
+        .like-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .like-count {
+            margin-left: 5px;
+        }
 
     </style>
 </head>
@@ -151,7 +174,7 @@
             </form>
         </div>
         {% for post in posts %}
-            <div class="post">
+            <div class="post" id="post-{{ post.id }}">
                 <h2>{{ post.title }}</h2>
                 <p>作者: 
                     {% if post.username == 'admin' %}
@@ -162,14 +185,45 @@
                         {{ post.username }}
                     {% endif %}
                 </p>
-                
                 <p>發布時間: {{ post.created_at }}</p>
-                <a href="{{ url_for('view_post', post_id=post.id) }}">閱讀更多</a>
-                <a href="{{ url_for('edit_post', post_id=post['id']) }}">編輯</a>
+                <div class="like-section">
+                    <a href="{{ url_for('view_post', post_id=post.id) }}" style="margin-right: 5px;">閱讀更多</a>
+                    <a href="{{ url_for('edit_post', post_id=post.id) }}">編輯</a>
+                    <svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                    width="17.5px" height="17.5px" viewBox="0 0 544.582 544.582"
+                    xml:space="preserve" onclick="toggleLike(this, {{ post.id }}, {{ post.liked_by_user }})" class="{% if post.liked_by_user %}clicked{% endif %}">
+                    <g>
+                    <path d="M448.069,57.839c-72.675-23.562-150.781,15.759-175.721,87.898C247.41,73.522,169.303,34.277,96.628,57.839
+                        C23.111,81.784-16.975,160.885,6.894,234.708c22.95,70.38,235.773,258.876,263.006,258.876
+                        c27.234,0,244.801-188.267,267.751-258.876C561.595,160.732,521.509,81.631,448.069,57.839z"/>
+                    </g>
+                    </svg>
+                    <span class="like-count">{{ post.likes }}</span>
+                </div>
             </div>
         {% endfor %}
-        <footer>Copyright &copy; 2024 Cithub. All rights reserved.</footer>
-        <a href="/index">回首頁</a>
+        <footer>
+            Copyright &copy; 2024 Cithub. All rights reserved.&nbsp;<a href="/index">回首頁</a>
+        </footer>
+        
     </div>
+    <script>
+        function toggleLike(svg, postId) {
+            const likeCountSpan = svg.nextElementSibling;
+            const isLiked = svg.classList.toggle('clicked');
+            const url = isLiked ? '{{ url_for("like_post", post_id=0) }}'.replace('0', postId) : '{{ url_for("unlike_post", post_id=0) }}'.replace('0', postId);
+            
+            fetch(url, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    likeCountSpan.textContent = data.likes;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // 如果出錯，還原SVG的狀態
+                    svg.classList.toggle('clicked');
+                });
+        }
+    </script>
 </body>
 </html>
