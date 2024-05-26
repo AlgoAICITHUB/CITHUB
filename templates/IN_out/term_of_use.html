@@ -12,12 +12,18 @@
         font-family: 'Roboto', sans-serif;
         background-color: #e3e3e3;
         color: #333;
-        font-size: 20%;
+        font-size: 86%;
     }
     .container {
         background-color: #fff;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        min-height: 100vh; /* 將高度設定為視窗高度的100% */
+        display: flex; /* 使用彈性盒子模型 */
+        flex-direction: column; /* 主軸方向為垂直方向 */
+        justify-content: space-between; /* 在彈性盒子的主軸上均勻分配剩餘空間 */
+        padding-bottom: 50px; /* 底部留出一些空間，避免內容與頁尾重疊 */
     }
+
     h1 {
         color: #003366;
         text-align: center;
