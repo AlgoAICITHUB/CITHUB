@@ -21,6 +21,8 @@ import rate_limiting
 import logging_setup
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask_mail import Mail, Message
+import subprocess
+import uuid
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -490,15 +492,12 @@ def add_course():
     conn.close()
     return jsonify({'message': 'Course added successfully'}), 201
 
-
-
-@app.route("/num_course",methods=["GET", "POST"])
+@app.route("/num_course", methods=["GET", "POST"])
 def num_courses():
     if request.method == 'POST':
         num_courses = int(request.form.get('num_courses', 0))
         return redirect(url_for('create_courses', num_courses=num_courses))
     return render_template('numcourse.html')
-
 
 @app.route('/create_courses/<int:num_courses>', methods=['GET', 'POST'])
 def create_courses(num_courses):
@@ -506,16 +505,13 @@ def create_courses(num_courses):
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # 處理課程數據的提交
         courses_data = []
         for i in range(num_courses):
             course_title = request.form.get(f'title_{i}')
             course_content = request.form.get(f'content_{i}')
-            # 儲存課程到資料庫
             cursor.execute('INSERT INTO courses (name, description) VALUES (?, ?)', (course_title, course_content))
-            course_id = cursor.lastrowid  # 獲取剛剛插入的課程 ID
+            course_id = cursor.lastrowid
 
-            # 測驗問題和答案
             question = request.form.get(f'question_{i}')
             answer = request.form.get(f'answer_{i}')
             cursor.execute('INSERT INTO quizzes (lesson_id, question, answer) VALUES (?, ?, ?)', (course_id, question, answer))
@@ -527,28 +523,27 @@ def create_courses(num_courses):
         return render_template('courses_submitted.html', courses=courses_data)
     return render_template('create_courses.html', num_courses=num_courses)
 
-
-@app.route('/course/<int:course_id>')
-def view_course(course_id):
-    user_id = session.get('user_id')  # 假設您已經在 session 中存儲了 user_id
+@app.route('/view_course/<course_name>/<int:chapter>')
+def view_course(course_name, chapter):
+    user_id = session.get('user_id')
     conn = get_db_connection()
-    course = conn.execute('SELECT * FROM courses WHERE id = ?', (course_id,)).fetchone()
-    quiz = conn.execute('SELECT * FROM quizzes WHERE lesson_id = ?', (course_id,)).fetchone()
-    progress = conn.execute('SELECT * FROM user_progress WHERE user_id = ? AND course_id = ?', (user_id, course_id)).fetchone()
+    course = conn.execute('SELECT * FROM courses WHERE name = ?', (course_name,)).fetchone()
+    if not course:
+        return "Course not found", 404
+
+    quiz = conn.execute('SELECT * FROM quizzes WHERE lesson_id = ? LIMIT 1 OFFSET ?', (course['id'], chapter - 1)).fetchone()
+    progress = conn.execute('SELECT * FROM user_progress WHERE user_id = ? AND course_id = ?', (user_id, course['id'])).fetchone()
     conn.close()
 
-    # 將課程描述轉換為 Markdown 格式的 HTML
     course_description_markdown = markdown.markdown(course['description'], extensions=['codehilite', 'fenced_code', 'tables'])
 
     return render_template('course_detail.html', course=course, quiz=quiz, progress=progress, course_description_markdown=course_description_markdown)
 
-
-
 @app.route('/submit_quiz/<int:course_id>', methods=['POST'])
 def submit_quiz(course_id):
-    user_id = session.get('user_id') 
+    user_id = session.get('user_id')
     if user_id is None:
-        return redirect(url_for('login')) 
+        return redirect(url_for('login'))
 
     user_answer = request.form['answer']
     conn = get_db_connection()
@@ -564,14 +559,22 @@ def submit_quiz(course_id):
     conn.close()
     return render_template('quiz_result.html', result=result, course_id=course_id)
 
-
-
-@app.route("/view_course",methods=["GET", "POST"])
+@app.route("/view_courses", methods=["GET", "POST"])
 def view_courses():
     conn = get_db_connection()
     courses = conn.execute('SELECT * FROM courses').fetchall()
     conn.close()
     return render_template('courses.html', courses=courses)
+
+
+
+
+
+
+
+
+
+
 
 
 # Main
@@ -644,42 +647,6 @@ def comingsoon():
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
-
-@app.route("/adminonly", methods=['GET','POST'])
-def adminonly():
-    user_id = session.get('user_id')
-    if user_id == 2 or user_id == 3:
-        return render_template('index.html')
-    else:
-        return render_template_string("""
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <title>Forbidden</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
-<body>
-    <script>
-    window.onload = function() {
-        Swal.fire({
-            title: '禁止進入！',
-            text: '立即停止您的行為！任何未經授權的進入嘗試都將遭到無上法典的制裁。',
-            icon: 'error',
-            confirmButtonText: '我已瞭解',
-            confirmButtonColor: '#d33', 
-        }).then((result) => {
-            if (result.value) {
-                window.location.href = '/';
-            }
-        });
-
-    };
-    </script>
-</body>
-</html>
-""")
-    
 
 
 
