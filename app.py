@@ -470,74 +470,65 @@ def share_post(post_id):
     return redirect(url_for('view_post', post_id=post_id))
 
 #Courses
-@app.route('/add_course', methods=['POST'])
-def add_course():
-    data = request.json
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO courses (name, description) VALUES (?, ?)", 
-                   (data['name'], data['description']))
-    course_id = cursor.lastrowid
-    conn.commit()
-
-    for lesson in data['lessons']:
-        cursor.execute("INSERT INTO lessons (course_id, title, content) VALUES (?, ?, ?)", 
-                       (course_id, lesson['title'], lesson['content']))
-        lesson_id = cursor.lastrowid
-        for quiz in lesson['quizzes']:
-            cursor.execute("INSERT INTO quizzes (lesson_id, question, answer) VALUES (?, ?, ?)", 
-                           (lesson_id, quiz['question'], quiz['answer']))
-    
-    conn.commit()
-    conn.close()
-    return jsonify({'message': 'Course added successfully'}), 201
-
-@app.route("/num_course", methods=["GET", "POST"])
+@app.route('/num_courses', methods=['GET', 'POST'])
 def num_courses():
     if request.method == 'POST':
+        course_name = request.form.get('course_name')
         num_courses = int(request.form.get('num_courses', 0))
-        return redirect(url_for('create_courses', num_courses=num_courses))
-    return render_template('numcourse.html')
+        return redirect(url_for('create_course', course_name=course_name, total_lessons=num_courses, lesson_num=1))
+    return render_template('num_courses.html')
 
-@app.route('/create_courses/<int:num_courses>', methods=['GET', 'POST'])
-def create_courses(num_courses):
+@app.route('/create_course/<string:course_name>/<int:total_lessons>/<int:lesson_num>', methods=['GET', 'POST'])
+def create_course(course_name, total_lessons, lesson_num):
     if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        question = request.form['question']
+        answer = request.form['answer']
+
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        courses_data = []
-        for i in range(num_courses):
-            course_title = request.form.get(f'title_{i}')
-            course_content = request.form.get(f'content_{i}')
-            cursor.execute('INSERT INTO courses (name, description) VALUES (?, ?)', (course_title, course_content))
+        # 插入課程資訊
+        if lesson_num == 1:
+            cursor.execute('INSERT INTO courses (name, description) VALUES (?, ?)', (course_name, ''))
             course_id = cursor.lastrowid
-
-            question = request.form.get(f'question_{i}')
-            answer = request.form.get(f'answer_{i}')
-            cursor.execute('INSERT INTO quizzes (lesson_id, question, answer) VALUES (?, ?, ?)', (course_id, question, answer))
-            
-            courses_data.append({'title': course_title, 'content': course_content, 'question': question, 'answer': answer})
+        else:
+            course = conn.execute('SELECT id FROM courses WHERE name = ?', (course_name,)).fetchone()
+            course_id = course['id']
         
+        # 插入課堂內容
+        cursor.execute('INSERT INTO lessons (course_id, title, content) VALUES (?, ?, ?)', (course_id, title, content))
+        lesson_id = cursor.lastrowid
+
+        # 插入測驗問題
+        cursor.execute('INSERT INTO quizzes (lesson_id, question, answer) VALUES (?, ?, ?)', (lesson_id, question, answer))
+
         conn.commit()
         conn.close()
-        return render_template('courses_submitted.html', courses=courses_data)
-    return render_template('create_courses.html', num_courses=num_courses)
 
-@app.route('/view_course/<course_name>/<int:chapter>')
-def view_course(course_name, chapter):
-    user_id = session.get('user_id')
+        # 檢查是否完成所有課堂創建
+        if lesson_num < total_lessons:
+            return redirect(url_for('create_course', course_name=course_name, total_lessons=total_lessons, lesson_num=lesson_num + 1))
+        else:
+            return redirect(url_for('view_course', course_name=course_name, lesson_num=1))
+
+    return render_template('create_course.html', course_name=course_name, lesson_num=lesson_num)
+
+@app.route('/view_course/<string:course_name>/<int:lesson_num>')
+def view_course(course_name, lesson_num):
     conn = get_db_connection()
     course = conn.execute('SELECT * FROM courses WHERE name = ?', (course_name,)).fetchone()
     if not course:
         return "Course not found", 404
 
-    quiz = conn.execute('SELECT * FROM quizzes WHERE lesson_id = ? LIMIT 1 OFFSET ?', (course['id'], chapter - 1)).fetchone()
-    progress = conn.execute('SELECT * FROM user_progress WHERE user_id = ? AND course_id = ?', (user_id, course['id'])).fetchone()
+    lesson = conn.execute('SELECT * FROM lessons WHERE course_id = ? LIMIT 1 OFFSET ?', (course['id'], lesson_num - 1)).fetchone()
+    quiz = conn.execute('SELECT * FROM quizzes WHERE lesson_id = ?', (lesson['id'],)).fetchone() if lesson else None
     conn.close()
 
     course_description_markdown = markdown.markdown(course['description'], extensions=['codehilite', 'fenced_code', 'tables'])
 
-    return render_template('course_detail.html', course=course, quiz=quiz, progress=progress, course_description_markdown=course_description_markdown)
+    return render_template('course_detail.html', course=course, lesson=lesson, quiz=quiz, course_description_markdown=course_description_markdown, lesson_num=lesson_num)
 
 @app.route('/submit_quiz/<int:course_id>', methods=['POST'])
 def submit_quiz(course_id):
@@ -565,8 +556,6 @@ def view_courses():
     courses = conn.execute('SELECT * FROM courses').fetchall()
     conn.close()
     return render_template('courses.html', courses=courses)
-
-
 
 
 
