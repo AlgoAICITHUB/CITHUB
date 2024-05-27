@@ -229,9 +229,15 @@ def logout():
 
 # Profiles
 
-@app.route('/profile/<int:user_id>')
-def profile(user_id):
+@app.route('/profile/<string:user_name>')
+def profile(user_name):
     conn = get_db_connection()
+
+    user_row = conn.execute('SELECT id FROM users WHERE username = ?', (user_name,)).fetchone()
+    if not user_row:
+        return "User not found", 404
+    user_id = user_row['id']
+
     post_rows = conn.execute('''
     SELECT p.id, p.title, p.content, p.created_at, u.username 
     FROM posts p
@@ -239,13 +245,11 @@ def profile(user_id):
     WHERE p.user_id = ?
     ORDER BY p.created_at DESC
     ''', (user_id,)).fetchall()
+    posts = [dict(post) for post in post_rows]
+
+    user_profile = conn.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
     conn.close()
 
-    posts = [dict(post) for post in post_rows]  
-    db = get_db_connection()
-    user_profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
-    db.close()
-    
     profile_bio_html = "No bio available."
     user_photo = None
     if user_profile:
@@ -254,18 +258,20 @@ def profile(user_id):
         if user_profile['photo']:
             user_photo = user_profile['photo']
         else:
-            user_photo = "\static\default_avatar.png"
+            user_photo = "/static/default_avatar.png"
 
-    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html, posts=posts, photo=user_photo,username=session.get('username'))
+    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html, posts=posts, photo=user_photo, username=session.get('username'))
+
 
 @app.route('/profilem', methods=['GET','POST'])
 def profilem():
-
     user_id = session.get('user_id')
-    return profile(user_id)
+    user_name = session.get('username')
+    return profile(user_name)
 
 @app.route('/edit-profile', methods=['GET', 'POST'])
 def edit_profile():
+    user_name = session.get('username')
     user_id = session.get('user_id')
     if not user_id:
         flash('請先登錄。')
@@ -286,7 +292,7 @@ def edit_profile():
         db.commit()
         db.close()
         flash('個人資料更新成功！')
-        return redirect(url_for('profile', user_id=user_id))
+        return redirect(url_for('profile', user_name=user_name))
     else:
         profile = db.execute('SELECT * FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
         db.close()
@@ -297,6 +303,7 @@ def edit_profile():
 
         profile_dict = dict(profile) if profile else None
         return render_template('edit_profile.html', profile=profile_dict)
+
 # Posts
 
 @app.route("/upload", methods=["GET", "POST"])
@@ -571,7 +578,6 @@ def view_courses():
 @app.route("/index", methods=["GET", "POST"])
 def index():
     user_id = session.get('user_id')
-
     if user_id:
         conn = get_db_connection()
         user_profile = conn.execute('SELECT photo FROM profiles WHERE user_id = ?', (user_id,)).fetchone()
@@ -580,15 +586,12 @@ def index():
         if user_profile and user_profile['photo']:
             user_photo = user_profile['photo']
         else:
-            user_photo = None
+            user_photo = "static/default_avatar.png"
+        return render_template("index.html", photo=user_photo)
     else:
         user_photo = None
 
-    # if user_id == 2:
-    #     return render_template("admin-room.html", photo=user_photo)
-    # else:
-    return render_template("index.html", photo=user_photo)
-
+    return render_template("index_open.html")
 
 @app.route("/",methods=["GET", "POST"])
 def open():
@@ -684,5 +687,5 @@ def adminonly():
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
-    app.run(debug=True,port=9999,host="0.0.0.0")
+    app.run(debug=True,port=5000,host="0.0.0.0")
 #2024/5/18

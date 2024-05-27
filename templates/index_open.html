@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Next Generation of Learning</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #e6ffff;
+        }
+
+        header {
+            background-color: #f8f8f8;
+            padding: 10px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        @keyframes changeColor {
+            0% { color: red; }
+            20% { color: orange; }
+            40% { color: yellow; }
+            60% { color: rgb(5, 218, 5); }
+            80% { color: rgb(0, 119, 255); }
+            100% { color: rgb(197, 5, 197); }
+        }
+
+        .logo:hover {
+            font-size: 24px;
+            animation: changeColor 1.8s infinite;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #4b4bb9;
+        }
+
+        .auth {
+            display: flex;
+            align-items: center;
+        }
+
+        .auth a {
+            margin-right: 20px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .auth .signup {
+            background-color: #4b4bb9;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .auth .signup:hover {
+            background-color: #3a3a9f;
+        }
+
+        .hero {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 50px 20px;
+            flex-wrap: wrap;
+            background-color: #f0f8ff;
+        }
+
+        .hero-content {
+            max-width: 50%;
+            padding: 20px;
+        }
+
+        .hero-content h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .hero-content ul {
+            list-style: none;
+            font-size: 1.2em;
+        }
+
+        .hero-content ul li {
+            margin-bottom: 10px;
+        }
+
+        .signup-form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 40%;
+            min-width: 300px;
+        }
+
+        .signup-form h2 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .signup-form form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .signup-form form input {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .signup-form form button {
+            background-color: #4b4bb9;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        .signup-form form button:hover {
+            background-color: #3a3a9f;
+        }
+
+        .signup-form p {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+
+        .social-icons a {
+            display: inline-block;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .social-icons a:hover {
+            border-color: #4b4bb9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-icons a img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .features {
+            padding: 50px 20px;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .features .feature-list {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .features .feature-item {
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .features .feature-item h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .testimonials {
+            padding: 50px 20px;
+            background-color: #f0f8ff;
+            text-align: center;
+        }
+
+        .testimonials h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .testimonials .testimonial-list {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .testimonials .testimonial-item {
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .testimonials .testimonial-item p {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .testimonials .testimonial-item span {
+            display: block;
+            font-size: 1em;
+            color: #777;
+        }
+
+        .partners {
+            padding: 50px 20px;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .partners h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .partners .partner-list {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .partners .partner-item {
+            flex: 1;
+            min-width: 150px;
+            max-width: 200px;
+            margin: 20px;
+        }
+
+        .partners .partner-item img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media (max-width: 768px) {
+            .hero-content,
+            .signup-form {
+                max-width: 100%;
+                padding: 10px;
+            }
+            .features .feature-list,
+            .testimonials .testimonial-list,
+            .partners .partner-list {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">CITHUB</div>
+            <ul>
+                <li><a href="/view_course">Courses</a></li>
+                <li><a href="/files">PaperList</a></li>
+                <li><a href="/about">LearnMore</a></li>
+                <li><a href="/about">Privacy</a></li>
+                <li><a href="/termOfUse">TermOfUse</a></li>
+            </ul>
+            <div class="auth">
+                <a href="/login">Log In</a>
+                <button class="signup"><a href="/register" class="signup">Sign Up</a></button>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Free Learning Community for Teenagers.</h1>
+                <ul>
+                    <li>Learning from each other</li>
+                    <li>Expressing your own ideas about knowledge</li>
+                </ul>
+            </div>
+            <div class="signup-form">
+                <h2>Join Our Journey to the success!</h2>
+                <form action="/register" method="post">
+                    <input type="text" placeholder="username" id="username" name="username" required>
+                    <input type="password" placeholder="Password" id="password" name="password" required>
+                    <input type="email" placeholder="Email" id="email" name="email" required>
+                    <button type="submit" class="signup">Sign Up</button>
+                </form>
+                <p>Or sign up using:</p>
+                <div class="social-icons">
+                    <a href="https://accounts.google.com/o/oauth2/auth?client_id=474559934367-lb544etuur5u27a8jeetol7s5alkp2b9.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:5000/oauth2callback&response_type=code&scope=email%20profile"><img src="https://image.similarpng.com/very-thumbnail/2020/06/Logo-google-icon-PNG.png" alt="Google"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="features">
+            <h2>Our Features</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <h3>Interactive Courses</h3>
+                    <p>Engage with interactive courses designed to help you learn at your own pace.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Community Support</h3>
+                    <p>Join a supportive community of learners and educators to enhance your knowledge.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Flexible Learning</h3>
+                    <p>Access our resources anytime, anywhere, and learn according to your schedule.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="testimonials">
+            <h2>What are our features?</h2>
+            <div class="testimonial-list">
+                <div class="testimonial-item">
+                    <p>"Latex, markdown, even Python online judge is available!"</p>
+                    <span>- TudoHuang</span>
+                </div>
+                <div class="testimonial-item">
+                    <p>"Google Login available, stable term of use!"</p>
+                    <span>- A1u</span>
+                </div>
+                <div class="testimonial-item">
+                    <p>"Easy forget_password system, and easy to set up courses!"</p>
+                    <span>- Chenya</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="partners">
+            <h2>Our Contributors</h2>
+            <div class="partner-list">
+                <div class="partner-item">
+                    <img src="https://contrib.rocks/image?repo=tudohuang/Flaskweb" alt="Partner 1">
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
