@@ -269,10 +269,10 @@
             color: var(--light-color-day);
         }
         
-        .day-mode .container{
+        .container{
             padding: 0%;
         }
-        .day-mode footer{
+        footer{
             margin: 0%;
         }
 
@@ -358,6 +358,61 @@
         .dropdown:hover .dropdown-content {
             display: block;
         }
+        .switch {
+    height: 100px;
+    position: fixed;
+    right: 50px;
+    bottom: 1px;
+}
+    
+.theme-switch {
+  display: inline-block;
+  height: 34px;
+  position: relative;
+  width: 60px;
+}
+
+.theme-switch input {
+  display:none;
+}
+
+.slider {
+  background-color: #ccc;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+}
+
+.slider:before {
+  background-color: #fff;
+  bottom: 4px;
+  content: "";
+  height: 26px;
+  left: 4px;
+  position: absolute;
+  transition: .4s;
+  width: 26px;
+}
+
+input:checked + .slider {
+  background-color: #2b2b2b;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
     </style>
     
 </head>
@@ -399,6 +454,12 @@
                 <p>分享你的想法，腦力激盪，不斷進步。</p>
             </div>
         </section>
+        <div class="switch">
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <div class="slider round"></div>
+            </label>
+        </div>
 <!--
         <section class="call-to-action">
             <h2>準備好加入了嗎？</h2>
@@ -411,7 +472,6 @@
     <a id="law" href="/law">行為準則</a> <a id="law" href="/privacy">隱私政策</a>
     <p>Copyright &copy; 2024 Cithub. All rights reserved.</p>
 </footer>
-<button id="mode-toggle-button">切換日夜模式</button>
 
 <script>
     function goToProfile() {
@@ -425,10 +485,9 @@
     function toggleMode() {
         document.body.classList.toggle('day-mode');
     }
-
-    // 假設你有一個按鈕來切換模式
-    const toggleButton = document.getElementById('mode-toggle-button');
-    toggleButton.addEventListener('click', toggleMode);
+    
+    const togglecheckbox =  document.getElementById('checkbox');
+    togglecheckbox.addEventListener('change', toggleMode);
 </script>
 </body>
 </html>
