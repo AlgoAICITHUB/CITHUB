@@ -18,17 +18,19 @@ from dotenv import load_dotenv
 import secrets
 import string
 import rate_limiting
-import logging_setup
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask_mail import Mail, Message
 import subprocess
 import uuid
+from flask_dance.contrib.github import make_github_blueprint, github
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 load_dotenv(os.path.join(basedir, '.env'))
+
+
 
 #---------前處理---------
 # 初始化應用程式和配置
@@ -55,6 +57,8 @@ ALLOWED_EXTENSIONS = {"png","jpg","jpeg","gif"}
 with app.app_context():
     init_db.create_table()
 
+
+
 # 功能函數
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
@@ -72,6 +76,10 @@ def delete_cookie():
     resp = make_response(redirect('/login'))
     resp.set_cookie('verified', '', expires=0)
     return resp
+
+GITHUB_AUTH_URL = "https://github.com/login/oauth/authorize"
+GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
+GITHUB_USER_URL = "https://api.github.com/user"
 #---------網站主函數---------
 
 
@@ -160,6 +168,64 @@ def google_account():
         return render_template("IN_out/register_success.html")
     else:
         return render_template('404.html'), 404
+
+@app.route("/github")
+def github_login():
+    return redirect(f"{GITHUB_AUTH_URL}?client_id={os.getenv('GITHUB_CLIENT_ID')}&redirect_uri=http://127.0.0.1:5000/oauthgitcallback&scope=user")
+
+
+@app.route('/oauthgitcallback', methods=["GET", "POST"])
+def github_account():
+    dbs = get_db_connection()
+    code = request.args.get('code')
+    if not code:
+        return "Error: No code provided."
+
+    # 向 GitHub 發送 POST 請求以交換授權碼為訪問令牌
+    payload = {
+        'client_id': os.getenv('GITHUB_CLIENT_ID'),
+        'client_secret': os.getenv('GITHUB_CLIENT_SECRET'),
+        'code': code,
+        'redirect_uri': 'http://127.0.0.1:5000/oauthgitcallback'
+    }
+    headers = {'Accept': 'application/json'}
+    response = requests.post(GITHUB_TOKEN_URL, data=payload, headers=headers)
+
+    # 處理 GitHub 返回的 JSON 格式的回應
+    if response.status_code == 200:
+        access_token = response.json().get('access_token')
+        if not access_token:
+            return "Error: No access token provided."
+
+        # 使用 access_token 向 GitHub 發送請求以獲取使用者資訊
+        user_info_response = requests.get(GITHUB_USER_URL, headers={'Authorization': f'Bearer {access_token}'})
+        user_info = user_info_response.json()
+
+        username = user_info.get('login')
+        password = str(user_info.get('node_id'))  
+        email = user_info.get('email')
+        photo = str(user_info.get('avatar'))
+        user_id = user_info.get('id')
+        dbs.execute('UPDATE profiles SET photo = ? WHERE user_id = ?', (photo, user_id))
+
+        # 檢查用戶是否已經存在於數據庫中
+        if db.get_user_by_username(username):
+            result = db.validate_user_login(username, password)
+            if result:
+                session['user_id'] = result['id']
+                session['username'] = username
+                return redirect(url_for('edit_profile', user_id=result['id']))
+            else:
+                return render_template("IN_out/login.html", error="無效的使用者名稱或密碼。")
+
+        # 用戶不存在，創建新用戶
+        user_id = db.create_user(username, password, email)
+        db.create_profile_for_user(user_id)
+
+        return render_template("IN_out/register_success.html")
+    else:
+        return render_template('404.html'), 404
+
 
 @app.route("/regSuc",methods=["GET", "POST"])
 def regSuc():
