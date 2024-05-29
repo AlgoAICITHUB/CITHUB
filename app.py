@@ -387,10 +387,11 @@ def upload_file():
         title = request.form['title']
         content = request.form['content']
         user_id = session['user_id'] 
+        label = request.form['labels']
 
 
         conn = get_db_connection()
-        conn.execute('INSERT INTO posts (user_id, title, content) VALUES (?, ?, ?)', (user_id, title, content))
+        conn.execute('INSERT INTO posts (user_id, title, content,label) VALUES (?, ?, ?,?)', (user_id, title, content,label))
         conn.commit()
         conn.close()
 
@@ -455,35 +456,44 @@ def view_post(post_id):
 @app.route("/files")
 def list_md_files():
     query = request.args.get('query', '')
+    labels = request.args.getlist('labels')
     conn = get_db_connection()
-    
+
+    sql_query = '''
+    SELECT p.id, p.title, p.content, p.created_at, u.username, COUNT(l.id) as likes
+    FROM posts p
+    JOIN users u ON p.user_id = u.id
+    LEFT JOIN likes l ON p.id = l.post_id
+    '''
+
+    params = []
+    conditions = []
+
     if query:
-        post_rows = conn.execute('''
-        SELECT p.id, p.title, p.content, p.created_at, u.username, COUNT(l.id) as likes, 
-        CASE WHEN EXISTS (SELECT 1 FROM likes WHERE user_id = ? AND post_id = p.id) THEN 1 ELSE 0 END as liked_by_user
-        FROM posts p
-        JOIN users u ON p.user_id = u.id
-        LEFT JOIN likes l ON p.id = l.post_id
-        WHERE p.title LIKE ?
-        GROUP BY p.id
-        ORDER BY p.created_at DESC
-        ''', (session.get('user_id', 0), '%' + query + '%',)).fetchall()
-    else:
-        post_rows = conn.execute('''
-        SELECT p.id, p.title, p.content, p.created_at, u.username, COUNT(l.id) as likes, 
-        CASE WHEN EXISTS (SELECT 1 FROM likes WHERE user_id = ? AND post_id = p.id) THEN 1 ELSE 0 END as liked_by_user
-        FROM posts p
-        JOIN users u ON p.user_id = u.id
-        LEFT JOIN likes l ON p.id = l.post_id
-        GROUP BY p.id
-        ORDER BY p.created_at DESC
-        ''', (session.get('user_id', 0),)).fetchall()
-    
+        conditions.append("p.title LIKE ?")
+        params.append('%' + query + '%')
+
+    if labels:
+        label_conditions = " OR ".join(["p.label LIKE ?" for _ in labels])
+        conditions.append(f"({label_conditions})")
+        params.extend(['%' + label + '%' for label in labels])
+
+    if conditions:
+        sql_query += " WHERE " + " AND ".join(conditions)
+
+    sql_query += '''
+    GROUP BY p.id
+    ORDER BY p.created_at DESC
+    '''
+
+
+    post_rows = conn.execute(sql_query, params).fetchall()
     conn.close()
 
-    posts = [dict(post) for post in post_rows]  
-    
+    posts = [dict(post) for post in post_rows]
+
     return render_template('post/files.html', posts=posts, query=query)
+
 
 
 @app.route('/like/<int:post_id>', methods=['POST'])

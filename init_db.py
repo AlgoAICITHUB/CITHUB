@@ -24,6 +24,7 @@ def create_table():
         """
         CREATE TABLE IF NOT EXISTS posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            label TEXT NOT NULL,
             user_id INTEGER NOT NULL,
             title TEXT NOT NULL,
             content TEXT NOT NULL,

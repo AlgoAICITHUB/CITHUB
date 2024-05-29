@@ -170,9 +170,20 @@
         <div class="search-box">
             <form action="{{ url_for('list_md_files') }}" method="GET">
                 <input type="text" name="query" placeholder="搜尋文章..." value="{{ query }}">
+                <div>
+                    <label><input type="checkbox" name="labels" value="國文"> 國文</label>
+                    <label><input type="checkbox" name="labels" value="英文"> 英文</label>
+                    <label><input type="checkbox" name="labels" value="數學"> 數學</label>
+                    <label><input type="checkbox" name="labels" value="社會"> 社會</label>
+                    <label><input type="checkbox" name="labels" value="自然"> 自然</label>
+                    <label><input type="checkbox" name="labels" value="創意思考"> 創意思考</label>
+                    <label><input type="checkbox" name="labels" value="美術"> 美術</label>
+                    <label><input type="checkbox" name="labels" value="國際理解"> 國際理解</label>
+                </div>
                 <button type="submit">搜尋</button>
             </form>
         </div>
+        
         {% for post in posts %}
             <div class="post" id="post-{{ post.id }}">
                 <h2>{{ post.title }}</h2>

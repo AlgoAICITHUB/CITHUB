@@ -37,7 +37,7 @@
             text-align: center;
         }
 
-        input[type="text"], textarea {
+        input[type="text"], textarea, input[type="checkbox"] {
             width: calc(100% - 20px);
             padding: 10px;
             margin: 10px 0;
@@ -47,6 +47,11 @@
             margin-left: auto;
             margin-right: auto;
             box-sizing: border-box;
+        }
+
+        label.checkbox {
+            display: inline-block;
+            margin-right: 15px;
         }
 
         input[type="submit"] {
@@ -84,6 +89,16 @@
             <input type="text" id="title" name="title" required><br>
             <label for="content">內容：</label><br>
             <textarea id="markdown-editor" name="content" required></textarea>
+            <div>
+                <label class="checkbox"><input type="checkbox" name="labels" value="國文"> 國文</label>
+                <label class="checkbox"><input type="checkbox" name="labels" value="英文"> 英文</label>
+                <label class="checkbox"><input type="checkbox" name="labels" value="數學"> 數學</label>
+                <label class="checkbox"><input type="checkbox" name="labels" value="社會"> 社會</label>
+                <label class="checkbox"><input type="checkbox" name="labels" value="自然"> 自然</label>
+                <label class="checkbox"><input type="checkbox" name="labels" value="創意思考"> 創意思考</label>
+                <label class="checkbox"><input type="checkbox" name="labels" value="美術"> 美術</label>
+                <label class="checkbox"><input type="checkbox" name="labels" value="國際理解"> 國際理解</label>
+            </div>
             <input type="submit" value="發布">
         </form>
         <script>
