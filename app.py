@@ -23,8 +23,8 @@ from flask_mail import Mail, Message
 import subprocess
 import uuid
 from flask_dance.contrib.github import make_github_blueprint, github
-
-
+from db import get_db_connection, get_user_by_username, create_user, create_profile_for_user, update_user_profile_photo, validate_user_login
+from requests import post, get
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -171,17 +171,30 @@ def google_account():
 
 @app.route("/github")
 def github_login():
-    return redirect(f"{GITHUB_AUTH_URL}?client_id={os.getenv('GITHUB_CLIENT_ID')}&redirect_uri=http://127.0.0.1:5000/oauthgitcallback&scope=user")
-
+    return redirect(f"{GITHUB_AUTH_URL}?client_id={os.getenv('GITHUB_CLIENT_ID')}&redirect_uri=http://127.0.0.1:5000/oauthgitcallback&scope=user,user:email")
 
 @app.route('/oauthgitcallback', methods=["GET", "POST"])
 def github_account():
-    dbs = get_db_connection()
     code = request.args.get('code')
     if not code:
-        return "Error: No code provided."
+        return "Error: No code provided.", 400
 
-    # 向 GitHub 發送 POST 請求以交換授權碼為訪問令牌
+    access_token = exchange_code_for_token(code)
+    if not access_token:
+        return "Error: Failed to retrieve access token.", 500
+
+    user_info = get_user_info(access_token)
+    if not user_info:
+        return render_template('404.html'), 404
+
+    username = user_info.get('login')
+    password = str(user_info.get('node_id'))
+    email = user_info.get('email', 'no-email@example.com')  # Default placeholder
+    photo = user_info.get('avatar_url')
+
+    return process_user_login(username, password, email, photo)
+
+def exchange_code_for_token(code):
     payload = {
         'client_id': os.getenv('GITHUB_CLIENT_ID'),
         'client_secret': os.getenv('GITHUB_CLIENT_SECRET'),
@@ -189,43 +202,33 @@ def github_account():
         'redirect_uri': 'http://127.0.0.1:5000/oauthgitcallback'
     }
     headers = {'Accept': 'application/json'}
-    response = requests.post(GITHUB_TOKEN_URL, data=payload, headers=headers)
-
-    # 處理 GitHub 返回的 JSON 格式的回應
+    response = post(GITHUB_TOKEN_URL, json=payload, headers=headers)
     if response.status_code == 200:
-        access_token = response.json().get('access_token')
-        if not access_token:
-            return "Error: No access token provided."
+        return response.json().get('access_token')
+    return None
 
-        # 使用 access_token 向 GitHub 發送請求以獲取使用者資訊
-        user_info_response = requests.get(GITHUB_USER_URL, headers={'Authorization': f'Bearer {access_token}'})
-        user_info = user_info_response.json()
+def get_user_info(access_token):
+    headers = {'Authorization': f'Bearer {access_token}'}
+    response = get(GITHUB_USER_URL, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    return None
 
-        username = user_info.get('login')
-        password = str(user_info.get('node_id'))  
-        email = user_info.get('email')
-        photo = str(user_info.get('avatar'))
-        user_id = user_info.get('id')
-        dbs.execute('UPDATE profiles SET photo = ? WHERE user_id = ?', (photo, user_id))
-
-        # 檢查用戶是否已經存在於數據庫中
-        if db.get_user_by_username(username):
-            result = db.validate_user_login(username, password)
-            if result:
-                session['user_id'] = result['id']
-                session['username'] = username
-                return redirect(url_for('edit_profile', user_id=result['id']))
-            else:
-                return render_template("IN_out/login.html", error="無效的使用者名稱或密碼。")
-
-        # 用戶不存在，創建新用戶
-        user_id = db.create_user(username, password, email)
-        db.create_profile_for_user(user_id)
-
-        return render_template("IN_out/register_success.html")
+def process_user_login(username, password, email, photo):
+    from db import get_user_by_username, update_user_profile_photo, create_user, create_profile_for_user
+    db = get_db_connection()
+    existing_user = get_user_by_username(username)
+    if existing_user:
+        update_user_profile_photo(existing_user['id'], photo)
+        session['user_id'] = existing_user['id']
+        session['username'] = username
+        return redirect(url_for('edit_profile', user_id=existing_user['id']))
     else:
-        return render_template('404.html'), 404
-
+        user_id = create_user(username, password)
+        create_profile_for_user(user_id)
+        session['user_id'] = user_id
+        session['username'] = username
+        return render_template("IN_out/register_success.html")
 
 @app.route("/regSuc",methods=["GET", "POST"])
 def regSuc():
