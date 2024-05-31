@@ -150,6 +150,7 @@ def google_account():
         username = user_info['name']
         password = user_info['id']
         gmail = user_info['email']
+        avatar = user_info['picture']
         
         #已經登過（登入）
         if db.get_user_by_username(username):
@@ -163,6 +164,7 @@ def google_account():
         
         #沒登入過（註冊）
         user_id = db.create_user(username, password,gmail)
+        db.update_user_profile_photo(user_id,avatar)
         db.create_profile_for_user(user_id)
 
         return render_template("IN_out/register_success.html")

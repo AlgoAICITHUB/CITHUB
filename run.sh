@@ -2,12 +2,12 @@
 
 echo "開始設置專案環境..."
 
-# 更新
+
 echo "更新系統並安裝基本依賴項..."
 sudo apt-get update
 sudo apt-get install -y python3 python3-pip python3-venv curl
 
-# 設置虛擬環境
+
 echo "設置 Python 虛擬環境..."
 python3 -m venv venv
 source venv/bin/activate
