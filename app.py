@@ -217,7 +217,7 @@ def get_user_info(access_token):
         return response.json()
     return None
 
-def process_user_login(username, password, photo):
+def process_user_login(username, password, email,photo):
     from db import get_user_by_username, update_user_profile_photo, create_user, create_profile_for_user
     existing_user = get_user_by_username(username)
     if existing_user:
