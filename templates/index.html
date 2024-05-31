@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>首頁 - CitHub</title>
-    <!--<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">-->
+
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <style>
         body, html {
@@ -269,12 +269,7 @@
             color: var(--light-color-day);
         }
         
-        .container{
-            padding: 0%;
-        }
-        footer{
-            margin: 0%;
-        }
+
 
         .day-mode .btn:hover {
             background-color: var(--accent-color-day);
@@ -583,7 +578,7 @@
                 <a href="/upload">上傳文章</a>
                 <a href="/logout">登出</a>
                 <div class="dropdown">
-                    <a href="/profilem"><img src="{{photo}}"></a>
+                    <a href="/profilem"><img src="{{photo}}" alt="user"></a>
                 </div>
             </ul>
         </nav>
@@ -629,12 +624,6 @@
               </div>
             </div>
           </label>
-<!--
-        <section class="call-to-action">
-            <h2>準備好加入了嗎？</h2>
-            <a href="/termOfUse" class="btn">立即註冊</a>
-        </section>
-    -->    
     </main>
 </div>
 <footer>

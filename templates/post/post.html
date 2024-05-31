@@ -133,10 +133,6 @@
         <div>{{ content|safe }}</div>
         
         <div class="actions">
-            <!--
-            <form action="{{ url_for('like_post', post_id=post['id']) }}" method="post" style="display:inline;">
-                <button type="submit">按讚 ({{ post['likes'] }})</button>
-            </form>-->
             <button type="button" onclick="openShareModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2">
                     <circle cx="18" cy="5" r="3"></circle>

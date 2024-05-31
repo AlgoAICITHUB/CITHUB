@@ -3,3 +3,4 @@ async_app.log
 app.db
 __pycache__/
 static/uploads/
+video.py

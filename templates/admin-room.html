@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>首頁 - CitHub</title>
-    <!--<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">-->
     <link rel = "stylesheet" href="{{ url_for('static', filename='snow.css') }}">
     <link rel = "icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <style>
@@ -16,7 +15,6 @@ body, html {
     color: #EFEFEF;
     width: 100%;
     height: 100%;
-    /*transform: rotate(-2deg);*/
 }
 
 .container {
@@ -146,7 +144,6 @@ main {
 /* 頁腳 */
 footer {
     background-color: #0D3B66;
-   /* color: #CCCCCC;*/
    color: #07edea;
     text-align: center;
     padding: 10px;
@@ -416,77 +413,8 @@ footer {
 <div id="stars"></div>
 <div id="valentine"></div>
 <div id="meteor"></div>
-<iframe id="youtube-music" width="100" height="100" src="https://www.youtube.com/embed/videoseries?list=PLCk35gMt8AuHW6H872uOCR8aDJKDNcQr1&enablejsapi=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 
 
-  
-<script src="{{ url_for('static', filename='chatbot.js') }}"></script>
-<script src="{{ url_for('static', filename='snow.js') }}"></script>
-<script src="{{ url_for('static', filename='night_ad.js') }}"></script>
-<script src="{{ url_for('static', filename='index_easter.js') }}"></script>
-<script src="{{ url_for('static', filename='love_ad.js') }}"></script>
-<script src="https://www.youtube.com/iframe_api"></script>
-
-<script>function toggleMode() {
-  document.body.classList.toggle('day-mode');
-}
-
-// 假設你有一個按鈕來切換模式
-const toggleButton = document.getElementById('mode-toggle-button');
-toggleButton.addEventListener('click', toggleMode);
-
-
-var player;
-
-function onYouTubeIframeAPIReady() {
-    player = new YT.Player('youtube-music', {
-        events: {
-            'onReady': onPlayerReady
-        }
-    });
-}
-
-function onPlayerReady(event) {
-    document.getElementById('toggle-music').addEventListener('click', function() {
-        var state = player.getPlayerState();
-        if (state === YT.PlayerState.PLAYING) {
-            player.pauseVideo();
-        } else {
-            player.playVideo();
-        }
-    });
-
-    document.getElementById('skip-video').addEventListener('click', function() {
-        player.nextVideo();
-    });
-    document.getElementById('prev-video').addEventListener('click', function() {
-        player.previousVideo();
-    });
-    document.getElementById('shuffle').addEventListener('click', function() {
-        var isShuffle = player.getShuffle();
-        player.setShuffle(!isShuffle);
-    });
-}
-
-
-
-
-
-</script>
-<script>
-    function goToProfile() {
-        // 提示用戶輸入userid
-        var userid = prompt("請輸入userid:");
-
-        if (userid) {
-            // 構造跳轉的URL
-            var profileUrl = "/profile/" + userid;
-            
-            // 實現頁面跳轉
-            window.location.href = profileUrl;
-        }
-    }
-</script>
 </body>
 </html>

@@ -170,7 +170,7 @@ def google_account():
 
         return render_template("IN_out/register_success.html")
     else:
-        return render_template('404.html'), 404
+        return page_not_found()
 
 @app.route("/github")
 def github_login():
@@ -217,9 +217,8 @@ def get_user_info(access_token):
         return response.json()
     return None
 
-def process_user_login(username, password, email, photo):
+def process_user_login(username, password, photo):
     from db import get_user_by_username, update_user_profile_photo, create_user, create_profile_for_user
-    db = get_db_connection()
     existing_user = get_user_by_username(username)
     if existing_user:
         update_user_profile_photo(existing_user['id'], photo)
@@ -286,7 +285,7 @@ def changepassword():
 @app.route('/confirm/<token>', methods=["GET"])
 def confirm_email(token):
     try:
-        email = s.loads(token, salt='email-confirm', max_age=900)
+        #email = s.loads(token, salt='email-confirm', max_age=900)
         resp = make_response(render_template("IN_out/reset_success.html"))
         random_cookie_value = generate_random_string(30) 
         session['random_cookie_value'] = random_cookie_value  # 將隨機cookie值存儲到會話(session)中
@@ -339,7 +338,6 @@ def profile(user_name):
 
 @app.route('/profilem', methods=['GET','POST'])
 def profilem():
-    user_id = session.get('user_id')
     user_name = session.get('username')
     return profile(user_name)
 
@@ -348,7 +346,6 @@ def edit_profile():
     user_name = session.get('username')
     user_id = session.get('user_id')
     if not user_id:
-        flash('請先登錄。')
         return redirect(url_for('login'))
 
     db = get_db_connection()
@@ -383,7 +380,6 @@ def edit_profile():
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
     if not session.get('user_id'): 
-        flash('請先登錄。')
         return redirect(url_for('login'))
 
     if request.method == "POST":
@@ -449,7 +445,6 @@ def view_post(post_id):
             flash('評論已添加。')
             return redirect(url_for('view_post', post_id=post_id))
         else:
-            flash('請先登錄。')
             return redirect(url_for('login'))
 
     html_content = Markup(markdown.markdown(post['content'], extensions=['extra', 'codehilite', 'fenced_code', 'tables']))
@@ -503,7 +498,6 @@ def list_md_files():
 def like_post(post_id):
     user_id = session.get('user_id')
     if not user_id:
-        flash('請先登錄。')
         return redirect(url_for('login'))
 
     conn = get_db_connection()
@@ -525,7 +519,6 @@ def like_post(post_id):
 def unlike_post(post_id):
     user_id = session.get('user_id')
     if not user_id:
-        flash('請先登錄。')
         return redirect(url_for('login'))
     
     conn = get_db_connection()
@@ -544,7 +537,6 @@ def unlike_post(post_id):
 def share_post(post_id):
     user_id = session.get('user_id')
     if not user_id:
-        flash('請先登錄。')
         return redirect(url_for('login'))
     
     flash('帖子已成功分享！')
@@ -694,7 +686,6 @@ def countdown():
     # 計算差異
     difference = target_date - now
     now_time = now.strftime("%Y/%m/%d")
-    difference_time = difference
     total_seconds = int(difference.total_seconds())
     days, remainder = divmod(total_seconds, 86400)  
     hours, remainder = divmod(remainder, 3600)  
@@ -716,7 +707,7 @@ def comingsoon():
     return render_template("ComingSoon.html")
  
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found():
     return render_template('404.html'), 404
 
 
