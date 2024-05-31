@@ -151,6 +151,7 @@ def google_account():
         password = user_info['id']
         gmail = user_info['email']
         avatar = user_info['picture']
+        print(avatar)
         
         #已經登過（登入）
         if db.get_user_by_username(username):
