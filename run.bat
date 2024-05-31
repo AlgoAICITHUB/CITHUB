@@ -1,1 +1,1 @@
-docker-compose up --build
+docker build -t flask .  

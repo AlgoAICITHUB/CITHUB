@@ -93,14 +93,12 @@ def register():
         email = request.form['email']
         
         if db.get_user_by_username(username):
-            error="用戶名已被使用過"
-            return render_template("IN_out/register.html",error=error)
+            return jsonify({'error': '用戶名已被使用過'})
         
         if db.get_user_by_email(email):
-            error="電子郵件已被使用過"
-            return render_template("IN_out/register.html",error=error)
+            return jsonify({'error': "電子郵件已被使用過"})
 
-        user_id = db.create_user(username, password,email)
+        user_id = db.create_user(username, password, email)
         db.create_profile_for_user(user_id)
 
         return render_template("IN_out/registerOp.html")
@@ -110,7 +108,9 @@ def register():
 @app.route("/termOfUse")
 def termOfUse():
     return render_template('IN_out/term_of_use.html')
-
+@app.route('/registerOp')
+def register_op():
+    return render_template('IN_out/registerOp.html')
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -707,7 +707,7 @@ def comingsoon():
     return render_template("ComingSoon.html")
  
 @app.errorhandler(404)
-def page_not_found():
+def page_not_found(e):
     return render_template('404.html'), 404
 
 
