@@ -559,7 +559,7 @@ def create_course(course_name, total_lessons, lesson_num):
 
         conn = get_db_connection()
         cursor = conn.cursor()
-        
+
         # 插入課程資訊
         if lesson_num == 1:
             cursor.execute('INSERT INTO courses (name, description) VALUES (?, ?)', (course_name, ''))
@@ -586,6 +586,7 @@ def create_course(course_name, total_lessons, lesson_num):
 
     return render_template('create_course.html', course_name=course_name, lesson_num=lesson_num)
 
+
 @app.route('/view_course/<string:course_name>/<int:lesson_num>')
 def view_course(course_name, lesson_num):
     conn = get_db_connection()
@@ -601,33 +602,32 @@ def view_course(course_name, lesson_num):
 
     return render_template('course_detail.html', course=course, lesson=lesson, quiz=quiz, course_description_markdown=course_description_markdown, lesson_num=lesson_num)
 
-@app.route('/submit_quiz/<int:course_id>', methods=['POST'])
-def submit_quiz(course_id):
+@app.route('/submit_quiz/<int:lesson_id>', methods=['POST'])
+def submit_quiz(lesson_id):
     user_id = session.get('user_id')
     if user_id is None:
         return redirect(url_for('login'))
 
     user_answer = request.form['answer']
     conn = get_db_connection()
-    quiz = conn.execute('SELECT * FROM quizzes WHERE lesson_id = ?', (course_id,)).fetchone()
+    quiz = conn.execute('SELECT * FROM quizzes WHERE lesson_id = ?', (lesson_id,)).fetchone()
     correct_answer = quiz['answer']
     if user_answer == correct_answer:
         result = "恭喜，您答對了！"
-        conn.execute('INSERT OR REPLACE INTO user_progress (user_id, course_id, completed) VALUES (?, ?, ?)', 
-                     (user_id, course_id, True))
+        conn.execute('INSERT OR REPLACE INTO user_progress (user_id, lesson_id, completed) VALUES (?, ?, ?)', 
+                     (user_id, lesson_id, True))
     else:
         result = "很抱歉，答案錯誤。"
     conn.commit()
     conn.close()
-    return render_template('quiz_result.html', result=result, course_id=course_id)
+    return render_template('quiz_result.html', result=result, lesson_id=lesson_id)
 
 @app.route("/view_courses", methods=["GET", "POST"])
 def view_courses():
     conn = get_db_connection()
-    courses = conn.execute('SELECT * FROM courses').fetchall()
+    courses = conn.execute('SELECT DISTINCT name FROM courses').fetchall()
     conn.close()
     return render_template('courses.html', courses=courses)
-
 
 
 

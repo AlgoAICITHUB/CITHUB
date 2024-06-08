@@ -115,12 +115,12 @@
     <div class="container">
         <h1>{{ course['name'] }} - 第{{ lesson_num }}堂課</h1>
         <div class="content">
-            {{ course_description_markdown | safe }}
+            {{ course_description_markdown}}
         </div>
         <div class="quiz-section">
             <h2>測驗</h2>
             {% if quiz %}
-            <form method="post" action="{{ url_for('submit_quiz', course_id=course['id']) }}">
+            <form method="post" action="{{ url_for('submit_quiz', lesson_id=lesson['id']) }}">
                 <p>{{ quiz['question'] }}</p>
                 <textarea name="answer" required></textarea>
                 <button type="submit">提交答案</button>
