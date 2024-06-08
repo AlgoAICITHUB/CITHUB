@@ -20,9 +20,6 @@ import string
 import rate_limiting
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask_mail import Mail, Message
-import subprocess
-import uuid
-from flask_dance.contrib.github import make_github_blueprint, github
 from db import get_db_connection, get_user_by_username, create_user, create_profile_for_user, update_user_profile_photo, validate_user_login
 from requests import post, get
 basedir = os.path.abspath(os.path.dirname(__file__))
