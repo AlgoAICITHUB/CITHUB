@@ -9,6 +9,8 @@
 - TudoHuang
 - Chenya
 - A1u
+## 作品說明:
+自從3月19日進行第一次的init commit以來，我們三個的共同專案正式啟動。起初，我們計劃建立一個什麼都有的網站，但隨著時間的推移和項目進展，我們逐漸地明確了目標，聚焦於打造一個學術討論社區。一個一個的BUG、一個一個的功能使我們的製作之路坎坷，但最後還是作出了這一個完整的作品。
 ### 使用模組:
 - flask
     - Flask, request, render_template, jsonify, render_template_string, redirect, url_for, flash, session, make_response
