@@ -2,7 +2,6 @@ from flask import (
     Flask, request, render_template, jsonify, render_template_string, 
     redirect, url_for, flash, session, make_response, send_from_directory
 )
-from flask_socketio import SocketIO, emit, join_room, leave_room
 from markupsafe import Markup
 import sqlite3
 from markdown.extensions.codehilite import CodeHiliteExtension
@@ -32,7 +31,6 @@ load_dotenv(os.path.join(basedir, '.env'))
 #---------前處理---------
 # 初始化應用程式和配置
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*")
 DATABASE = 'app.db'
 UPLOAD_FOLDER = 'static/uploads'
 app.config.update(
@@ -249,7 +247,7 @@ def forget():
             session['username'] = username
             token = s.dumps(email, salt='email-confirm')
             confirm_url = url_for('confirm_email', token=token, _external=True)
-            html = render_template('reset_password_email.html', username=username, confirm_url=confirm_url)
+            html = render_template('IN_out/reset_password_email.html', username=username, confirm_url=confirm_url)
             msg = Message(subject="Password Reset Request",
                           sender=app.config['MAIL_USERNAME'],
                           recipients=[email],
@@ -330,7 +328,7 @@ def profile(user_name):
         else:
             user_photo = "/static/default_avatar.png"
 
-    return render_template('profile.html', profile=user_profile, profile_bio_html=profile_bio_html, posts=posts, photo=user_photo, username=session.get('username'))
+    return render_template('profile/profile.html', profile=user_profile, profile_bio_html=profile_bio_html, posts=posts, photo=user_photo, username=session.get('username'))
 
 
 @app.route('/profilem', methods=['GET','POST'])
@@ -370,7 +368,7 @@ def edit_profile():
             return redirect(url_for('index'))
 
         profile_dict = dict(profile) if profile else None
-        return render_template('edit_profile.html', profile=profile_dict)
+        return render_template('profile/edit_profile.html', profile=profile_dict)
 
 # Posts
 
@@ -547,7 +545,7 @@ def num_courses():
         course_name = request.form.get('course_name')
         num_courses = int(request.form.get('num_courses', 0))
         return redirect(url_for('create_course', course_name=course_name, total_lessons=num_courses, lesson_num=1))
-    return render_template('num_courses.html')
+    return render_template('course/num_courses.html')
 
 @app.route('/create_course/<string:course_name>/<int:total_lessons>/<int:lesson_num>', methods=['GET', 'POST'])
 def create_course(course_name, total_lessons, lesson_num):
@@ -584,7 +582,7 @@ def create_course(course_name, total_lessons, lesson_num):
         else:
             return redirect(url_for('view_course', course_name=course_name, lesson_num=1))
 
-    return render_template('create_course.html', course_name=course_name, lesson_num=lesson_num)
+    return render_template('course/create_course.html', course_name=course_name, lesson_num=lesson_num)
 
 
 @app.route('/view_course/<string:course_name>/<int:lesson_num>')
@@ -600,7 +598,7 @@ def view_course(course_name, lesson_num):
 
     course_description_markdown = markdown.markdown(course['description'], extensions=['codehilite', 'fenced_code', 'tables'])
 
-    return render_template('course_detail.html', course=course, lesson=lesson, quiz=quiz, course_description_markdown=course_description_markdown, lesson_num=lesson_num)
+    return render_template('course/course_detail.html', course=course, lesson=lesson, quiz=quiz, course_description_markdown=course_description_markdown, lesson_num=lesson_num)
 
 @app.route('/submit_quiz/<int:lesson_id>', methods=['POST'])
 def submit_quiz(lesson_id):
@@ -620,14 +618,14 @@ def submit_quiz(lesson_id):
         result = "很抱歉，答案錯誤。"
     conn.commit()
     conn.close()
-    return render_template('quiz_result.html', result=result, lesson_id=lesson_id)
+    return render_template('course/quiz_result.html', result=result, lesson_id=lesson_id)
 
 @app.route("/view_courses", methods=["GET", "POST"])
 def view_courses():
     conn = get_db_connection()
     courses = conn.execute('SELECT DISTINCT name FROM courses').fetchall()
     conn.close()
-    return render_template('courses.html', courses=courses)
+    return render_template('course/courses.html', courses=courses)
 
 
 
@@ -650,30 +648,35 @@ def index():
             user_photo = user_profile['photo']
         else:
             user_photo = "static/default_avatar.png"
-        return render_template("index.html", photo=user_photo)
+        return render_template("index/index.html", photo=user_photo)
     else:
         user_photo = None
 
-    return render_template("index_open.html")
+    return render_template("index/index_open.html")
 
-@app.route("/",methods=["GET", "POST"])
-def open():
-    return render_template("open.html")
+@app.route("/", methods=["GET", "POST"])
+@app.route("/about", methods=["GET", "POST"])
+@app.route("/slide", methods=['GET', "POST"])
+def index_pages():
+    templates = {
+        "/": "index/open.html",
+        "/about": "index/about.html",
+        "/slide": "index/about_open.html"
+    }
+    return render_template(templates[request.path])
 
-@app.route('/law', methods=['GET','POST'])
-def law():
-    return render_template('law.html')
+@app.route('/law', methods=['GET', 'POST'])
+@app.route('/privacy', methods=['GET', 'POST'])
+def other_pages():
+    templates = {
+        "/law": "others/law.html",
+        "/privacy": "others/privacy.html"
+    }
+    return render_template(templates[request.path])
 
-@app.route('/privacy', methods=['GET','POST'])
-def privacy():
-    return render_template('privacy.html')
-@app.route('/about', methods=["GET", "POST"])
-def about():
-    return render_template('about.html')
-
-@app.route('/slide', methods=['GET', "POST"])
-def slide():
-    return render_template('about_open.html')
+@app.route("/noIn")
+def no():
+    return render_template("IN_out/wrongx.html")
 
 @app.route('/countdown', methods=['GET'])
 def countdown():
@@ -688,11 +691,9 @@ def countdown():
     hours, remainder = divmod(remainder, 3600)  
     minutes, seconds = divmod(remainder, 60)  
     target_time = target_date.strftime("%Y/%m/%d")
-    return render_template('countdown.html',now_time=now_time,day=days,hours=hours,minutes=minutes,seconds=seconds,target_time=target_time)
+    return render_template('others/countdown.html',now_time=now_time,day=days,hours=hours,minutes=minutes,seconds=seconds,target_time=target_time)
 
-@app.route("/noIn")
-def no():
-    return render_template("IN_out/wrongx.html")
+
 # Assist
 @app.route('/video/<video_name>', methods=["GET"])
 def serve_video(video_name):
@@ -701,11 +702,11 @@ def serve_video(video_name):
 
 @app.route('/comingsoon', methods=["GET", "POST"])
 def comingsoon():
-    return render_template("ComingSoon.html")
+    return render_template("error_handle/ComingSoon.html")
  
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    return render_template('error_handle/404.html'), 404
 
 
 

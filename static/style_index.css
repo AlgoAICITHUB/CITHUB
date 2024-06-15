@@ -1,0 +1,556 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #1E1E24;
+    color: #EFEFEF;
+    width: 100%;
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+main {
+    flex: 1;
+}
+
+/* 導航條 */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0D3B66;
+    padding: 1rem;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center; 
+}
+
+.nav-links a {
+    margin: 0 10px;
+    color: #EFEFEF;
+    text-decoration: none;
+}
+
+.nav-links a:hover {
+    color: #16DB93;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 24px;
+    color: #16DB93;
+}
+
+@keyframes changeColor {
+    0% { color: red; }
+    20% { color: orange; }
+    40% { color: yellow; }
+    60% { color: rgb(5, 218, 5); }
+    80% { color: rgb(0, 119, 255); }
+    100% { color: rgb(197, 5, 197); }
+}
+
+.logo:hover {
+    font-size: 24px;
+    animation: changeColor 1.8s infinite; 
+}
+
+/* 調整圖片樣式 */
+.nav-links img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 10px; /* 增加圖片和文字之間的間距 */
+    border: 2px solid #EFEFEF; /* 圓形邊框 */
+    vertical-align: middle; /* 使圖片垂直居中 */
+}
+
+/* 主要內容區域 */
+.hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 50px 0;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.feature {
+    background-color: #0D3B66;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+/* 呼籲行動區域 */
+.call-to-action {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.btn {
+    background-color: #048BA8;
+    color: #EFEFEF;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background-color: #16DB93;
+}
+
+/* 頁腳 */
+footer {
+    background-color: #0D3B66;
+    color: #07edea;
+    text-align: center;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.night-mode {
+    background-color: #000000; /* 深藍色背景代表夜晚 */
+}
+
+.dLINE, .dLINE2 {
+    position: relative;
+    display: inline-block; 
+}
+
+.dLINE::after, .dLINE2::after {
+    content: '';
+    position: absolute;
+    bottom: -3px; 
+    left: -10%; /* 向左延伸底線 */
+    width: 120%; /* 增加底線的總長度 */
+    height: 2px; /* 根據需要調整底線的厚度 */
+}
+
+.dLINE::after {
+    background-image: linear-gradient(181deg, #ffa620 0%, #fba11a 50%, transparent 54%, transparent 100%);
+}
+
+.dLINE2::after {
+    background-image: linear-gradient(179deg, #fe619e 0%, #fe619e 50%, transparent 54%, transparent 100%);
+}
+
+.heart {
+    width: 60px; /* Adjusted for a more subtle effect */
+    height: 60px;
+    background: pink;
+    opacity: 0.5;
+    position: fixed;
+    transform: rotate(45deg);
+    animation: float 5s infinite linear;
+}
+
+.heart::before,
+.heart::after {
+    content: "";
+    background: pink;
+    border-radius: 50%;
+    width: 60px; /* Adjusted to match heart size */
+    height: 60px;
+    position: absolute;
+}
+
+.heart::before {
+    top: -30px; /* Adjusted to match heart size */
+    left: 0;
+}
+
+.heart::after {
+    top: 0;
+    left: 30px; /* Adjusted to match heart size */
+}
+
+#law{
+    color:#16DB93;
+}
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0) rotate(45deg);
+        opacity: 1;
+        bottom: 10px; /* Start below the screen */
+    }
+    100% {
+        transform: translate(0, -100vh) rotate(45deg); /* End above the screen */
+        opacity: 0;
+    }
+}
+
+#valentine {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+}
+
+img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 10px; /* 增加圖片和文字之間的間距 */
+    border: 2px solid #EFEFEF; /* 圓形邊框 */
+    vertical-align: middle; /* 使圖片垂直居中 */
+}
+
+/******************************************************************************************************************/
+
+:root {
+    --background-color-day: #F0F2F5; /* 更柔和的背景色 */
+    --text-color-day: #4B4B4B; /* 柔和的文字顏色 */
+    --primary-color-day: #0056b3; /* 較淡的主要顏色 */
+    --secondary-color-day: #E0E0E0; /* 次要顏色，用於邊框或分割線等 */
+    --accent-color-day: #3498DB; /* 強調色，稍亮但不過於鮮豔 */
+    --light-color-day: #FFFFFF; /* 用於卡片或浮動元素的背景色 */
+    --dark-color-day: #343A40; /* 暗色文字，用於重要文字或標題 */
+}
+
+.day-mode {
+    background-color: var(--background-color-day);
+    color: var(--text-color-day);
+}
+
+.day-mode .navbar, .day-mode footer {
+    background-color: var(--primary-color-day);
+    color: var(--light-color-day);
+}
+
+.day-mode .nav-links a {
+    color: var(--light-color-day);
+}
+
+.day-mode .nav-links a:hover {
+    color: var(--accent-color-day);
+}
+
+.day-mode .feature {
+    background-color: var(--light-color-day);
+    color: var(--dark-color-day);
+    border: 1px solid var(--secondary-color-day);
+}
+
+.day-mode .btn {
+    background-color: var(--primary-color-day);
+    color: var(--light-color-day);
+}
+
+
+
+.day-mode .btn:hover {
+    background-color: var(--accent-color-day);
+}
+
+.day-mode footer {
+    background-color: var(--primary-color-day);
+    color: var(--light-color-day);
+}
+
+/* 調整白天模式下的其他元素樣式 */
+.day-mode .dLINE::after, .day-mode .dLINE2::after {
+    background-image: linear-gradient(90deg, var(--primary-color-day), var(--accent-color-day));
+}
+
+/* 特殊文字和裝飾效果 */
+.day-mode .dLINE, .day-mode .dLINE2 {
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 提供一個簡單的按鈕來切換模式 */
+.mode-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: #EFEFEF;
+    border: none;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+}
+
+.mode-toggle:hover {
+    background-color: var(--accent-color);
+}
+
+/* 更新白天模式的按鈕樣式 */
+.day-mode .mode-toggle {
+    background-color: var(--primary-color-day);
+    color: var(--background-color-day);
+}
+
+.day-mode .mode-toggle:hover {
+    background-color: var(--accent-color-day);
+}
+
+#iframe {
+    display: none;
+}
+
+/* 設置主選單的樣式 */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* 隱藏下拉選單的內容 */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #0D3B66;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+/* 下拉選單的連結樣式 */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* 當滑鼠懸停在連結上時變更背景顏色 */
+
+
+/* 當滑鼠懸停在主選單上時顯示下拉選單的內容 */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+.theme-switch {
+--toggle-size: 20px;
+/* the size is adjusted using font-size,
+this is not transform scale,
+so you can choose any size */
+--container-width: 5.625em;
+--container-height: 2.5em;
+--container-radius: 6.25em;
+/* radius 0 - minecraft mode :) */
+height: 80px;
+position: fixed;
+right: 50px;
+bottom: 1px;
+--container-light-bg: #3D7EAE;
+--container-night-bg: #1D1F2C;
+--circle-container-diameter: 3.375em;
+--sun-moon-diameter: 2.125em;
+--sun-bg: #ECCA2F;
+--moon-bg: #C4C9D1;
+--spot-color: #959DB1;
+--circle-container-offset: calc((var(--circle-container-diameter) - var(--container-height)) / 2 * -1);
+--stars-color: #fff;
+--clouds-color: #F3FDFF;
+--back-clouds-color: #AACADF;
+--transition: .5s cubic-bezier(0, -0.02, 0.4, 1.25);
+--circle-transition: .3s cubic-bezier(0, -0.02, 0.35, 1.17);
+}
+
+.theme-switch, .theme-switch *, .theme-switch *::before, .theme-switch *::after {
+-webkit-box-sizing: border-box;
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+font-size: var(--toggle-size);
+
+}
+
+.theme-switch__container {
+width: var(--container-width);
+height: var(--container-height);
+background-color: var(--container-night-bg);
+border-radius: var(--container-radius);
+overflow: hidden;
+cursor: pointer;
+-webkit-box-shadow: 0em -0.062em 0.062em rgba(0, 0, 0, 0.25), 0em 0.062em 0.125em rgba(255, 255, 255, 0.94);
+box-shadow: 0em -0.062em 0.062em rgba(0, 0, 0, 0.25), 0em 0.062em 0.125em rgba(255, 255, 255, 0.94);
+-webkit-transition: var(--transition);
+-o-transition: var(--transition);
+transition: var(--transition);
+position: relative;
+}
+
+.theme-switch__container::before {
+content: "";
+position: absolute;
+z-index: 1;
+inset: 0;
+-webkit-box-shadow: 0em 0.05em 0.187em rgba(0, 0, 0, 0.25) inset, 0em 0.05em 0.187em rgba(0, 0, 0, 0.25) inset;
+box-shadow: 0em 0.05em 0.187em rgba(0, 0, 0, 0.25) inset, 0em 0.05em 0.187em rgba(0, 0, 0, 0.25) inset;
+border-radius: var(--container-radius)
+}
+
+.theme-switch__checkbox {
+display: none;
+}
+
+.theme-switch__circle-container {
+width: var(--circle-container-diameter);
+height: var(--circle-container-diameter);
+background-color: rgba(255, 255, 255, 0.1);
+position: absolute;
+left: calc(100% - var(--circle-container-offset) - var(--circle-container-diameter)); /* 將初始位置設置為選擇器的末端 */
+top: var(--circle-container-offset);
+border-radius: var(--container-radius);
+-webkit-box-shadow: inset 0 0 0 3.375em rgba(255, 255, 255, 0.1), inset 0 0 0 3.375em rgba(255, 255, 255, 0.1), 0 0 0 0.625em rgba(255, 255, 255, 0.1), 0 0 0 1.25em rgba(255, 255, 255, 0.1);
+box-shadow: inset 0 0 0 3.375em rgba(255, 255, 255, 0.1), inset 0 0 0 3.375em rgba(255, 255, 255, 0.1), 0 0 0 0.625em rgba(255, 255, 255, 0.1), 0 0 0 1.25em rgba(255, 255, 255, 0.1);
+display: -webkit-box;
+display: -ms-flexbox;
+display: flex;
+-webkit-transition: var(--circle-transition);
+-o-transition: var(--circle-transition);
+transition: var(--circle-transition);
+pointer-events: none;
+}
+
+.theme-switch__sun-moon-container {
+pointer-events: auto;
+position: relative;
+z-index: 2;
+width: var(--sun-moon-diameter);
+height: var(--sun-moon-diameter);
+margin: auto;
+border-radius: var(--container-radius);
+background-color: var(--sun-bg);
+-webkit-box-shadow: 0.062em 0.062em 0.062em 0em rgba(254, 255, 239, 0.61) inset, 0em -0.062em 0.062em 0em #a1872a inset;
+box-shadow: 0.062em 0.062em 0.062em 0em rgba(254, 255, 239, 0.61) inset, 0em -0.062em 0.062em 0em #a1872a inset;
+-webkit-filter: drop-shadow(0.062em 0.125em 0.125em rgba(0, 0, 0, 0.25)) drop-shadow(0em 0.062em 0.125em rgba(0, 0, 0, 0.25));
+filter: drop-shadow(0.062em 0.125em 0.125em rgba(0, 0, 0, 0.25)) drop-shadow(0em 0.062em 0.125em rgba(0, 0, 0, 0.25));
+overflow: hidden;
+-webkit-transition: var(--transition);
+-o-transition: var(--transition);
+transition: var(--transition);
+}
+
+.theme-switch__moon {
+-webkit-transform: translateX(100%);
+-ms-transform: translateX(100%);
+transform: translate(0);
+width: 100%;
+height: 100%;
+background-color: var(--moon-bg);
+border-radius: inherit;
+-webkit-box-shadow: 0.062em 0.062em 0.062em 0em rgba(254, 255, 239, 0.61) inset, 0em -0.062em 0.062em 0em #969696 inset;
+box-shadow: 0.062em 0.062em 0.062em 0em rgba(254, 255, 239, 0.61) inset, 0em -0.062em 0.062em 0em #969696 inset;
+-webkit-transition: var(--transition);
+-o-transition: var(--transition);
+transition: var(--transition);
+position: relative;
+}
+
+.theme-switch__spot {
+position: absolute;
+top: 0.75em;
+left: 0.312em;
+width: 0.75em;
+height: 0.75em;
+border-radius: var(--container-radius);
+background-color: var(--spot-color);
+-webkit-box-shadow: 0em 0.0312em 0.062em rgba(0, 0, 0, 0.25) inset;
+box-shadow: 0em 0.0312em 0.062em rgba(0, 0, 0, 0.25) inset;
+}
+
+.theme-switch__spot:nth-of-type(2) {
+width: 0.375em;
+height: 0.375em;
+top: 0.937em;
+left: 1.375em;
+}
+
+.theme-switch__spot:nth-last-of-type(3) {
+width: 0.25em;
+height: 0.25em;
+top: 0.312em;
+left: 0.812em;
+}
+
+.theme-switch__clouds {
+width: 1.25em;
+height: 1.25em;
+background-color: var(--clouds-color);
+border-radius: var(--container-radius);
+position: absolute;
+bottom: -4.062em; /* 將雲的初始位置設置為已啟用的位置 */
+left: 0.312em;
+-webkit-box-shadow: 0.937em 0.312em var(--clouds-color), -0.312em -0.312em var(--back-clouds-color), 1.437em 0.375em var(--clouds-color), 0.5em -0.125em var(--back-clouds-color), 2.187em 0 var(--clouds-color), 1.25em -0.062em var(--back-clouds-color), 2.937em 0.312em var(--clouds-color), 2em -0.312em var(--back-clouds-color), 3.625em -0.062em var(--clouds-color), 2.625em 0em var(--back-clouds-color), 4.5em -0.312em var(--clouds-color), 3.375em -0.437em var(--back-clouds-color), 4.625em -1.75em 0 0.437em var(--clouds-color), 4em -0.625em var(--back-clouds-color), 4.125em -2.125em 0 0.437em var(--back-clouds-color);
+box-shadow: 0.937em 0.312em var(--clouds-color), -0.312em -0.312em var(--back-clouds-color), 1.437em 0.375em var(--clouds-color), 0.5em -0.125em var(--back-clouds-color), 2.187em 0 var(--clouds-color), 1.25em -0.062em var(--back-clouds-color), 2.937em 0.312em var(--clouds-color), 2em -0.312em var(--back-clouds-color), 3.625em -0.062em var(--clouds-color), 2.625em 0em var(--back-clouds-color), 4.5em -0.312em var(--clouds-color), 3.375em -0.437em var(--back-clouds-color), 4.625em -1.75em 0 0.437em var(--clouds-color), 4em -0.625em var(--back-clouds-color), 4.125em -2.125em 0 0.437em var(--back-clouds-color);
+-webkit-transition: 0.5s cubic-bezier(0, -0.02, 0.4, 1.25);
+-o-transition: 0.5s cubic-bezier(0, -0.02, 0.4, 1.25);
+transition: 0.5s cubic-bezier(0, -0.02, 0.4, 1.25);
+}
+
+.theme-switch__stars-container {
+position: absolute;
+color: var(--stars-color);
+top: 50%;
+transform: translateY(-50%); /* 將星星的初始位置設置為已啟用的位置 */
+left: 0.312em;
+width: 2.75em;
+height: auto;
+-webkit-transition: var(--transition);
+-o-transition: var(--transition);
+transition: var(--transition);
+}
+
+/* actions */
+
+.theme-switch__checkbox:checked + .theme-switch__container {
+background-color: var(--container-light-bg); /* 點擊後切換到日間模式的背景顏色 */
+}
+
+.theme-switch__checkbox:checked + .theme-switch__container .theme-switch__circle-container {
+left: var(--circle-container-offset); /* 點擊後將選擇器移至起始位置 */
+}
+
+.theme-switch__checkbox:checked + .theme-switch__container:hover .theme-switch__circle-container {
+left: calc(0% + var(--circle-container-offset) + 0.187em); /* 与夜间模式相同的水平位移效果，但方向相反 */
+}
+
+
+
+.theme-switch__circle-container:hover {
+left: calc(100% - var(--circle-container-offset) - var(--circle-container-diameter) - 0.187em); /* 移至開關的起始位置 */
+}
+
+.theme-switch__checkbox:checked + .theme-switch__container .theme-switch__moon {
+-webkit-transform: translate(0);
+-ms-transform: translate(0);
+transform: translateX(100%); /* 點擊後將月亮移至起始位置 */
+}
+
+.theme-switch__checkbox:checked + .theme-switch__container .theme-switch__clouds {
+bottom: -0.625em; /* 點擊後將雲移至起始位置 */
+}
+
+.theme-switch__checkbox:checked + .theme-switch__container .theme-switch__stars-container {
+top: -100%; /* 點擊後將星星移至起始位置 */
+-webkit-transform: translateY(-50%);
+-ms-transform: translateY(-50%);
+transform: translateY(-50%);
+}
