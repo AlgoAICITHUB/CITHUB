@@ -1,6 +1,6 @@
 from flask import (
     Flask, request, render_template, jsonify, render_template_string, 
-    redirect, url_for, flash, session, make_response, send_from_directory
+    redirect, url_for, flash, session, make_response, send_from_directory, abort
 )
 from markupsafe import Markup
 import sqlite3
@@ -21,6 +21,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask_mail import Mail, Message
 from db import get_db_connection, get_user_by_username, create_user, create_profile_for_user, update_user_profile_photo, validate_user_login
 from requests import post, get
+import psutil
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -51,6 +52,36 @@ ALLOWED_EXTENSIONS = {"png","jpg","jpeg","gif"}
 # 初始化資料庫
 with app.app_context():
     init_db.create_table()
+
+CPU_THRESHOLD = 80  # 80% CPU 使用率
+GPU_THRESHOLD = 80  # 80% GPU 使用率 (假設使用 GPU，但這裡是示範用途)
+system_shutdown = False
+
+
+
+def is_cpu_gpu_overloaded():
+    """檢查 CPU 和 GPU 使用率是否過高"""
+    cpu_usage = psutil.cpu_percent(interval=1)
+
+    gpu_usage = psutil.virtual_memory().percent  
+    return cpu_usage > CPU_THRESHOLD or gpu_usage > GPU_THRESHOLD
+
+def is_admin():
+    """檢查是否為 admin"""
+    user_id = session.get('user_name')
+    return user_id == 'admin'
+
+@app.before_request
+def check_system_load():
+    """檢查系統負載，過高則觸發自我毀滅"""
+    global system_shutdown
+    if system_shutdown and not is_admin():
+        # 系統處於自我毀滅模式且非 admin，返回 404
+        abort(404)
+    elif is_cpu_gpu_overloaded() and not is_admin():
+        # CPU 或 GPU 使用率過高且非 admin，返回 404 錯誤
+        abort(404)
+
 
 
 
@@ -630,10 +661,33 @@ def view_courses():
 
 
 
+@app.route('/adminPanel', methods=['GET', 'POST'])
+def admin_panel():
+    return render_template('admin_panel.html')
 
 
 
-
+@app.route('/server-status', methods=['GET'])
+def server_status():
+    """提供伺服器狀態的 API"""
+    cpu_usage = psutil.cpu_percent(interval=1)
+    memory_info = psutil.virtual_memory()
+    disk_info = psutil.disk_usage('/')
+    net_info = psutil.net_io_counters()
+    
+    status = {
+        "cpu_usage": cpu_usage,
+        "memory_used": memory_info.used / (1024 ** 3),  # 轉換成 GB
+        "memory_total": memory_info.total / (1024 ** 3),  # 轉換成 GB
+        "memory_percent": memory_info.percent,
+        "disk_used": disk_info.used / (1024 ** 3),  # 轉換成 GB
+        "disk_total": disk_info.total / (1024 ** 3),  # 轉換成 GB
+        "disk_percent": disk_info.percent,
+        "net_sent": net_info.bytes_sent / (1024 ** 2),  # 轉換成 MB
+        "net_recv": net_info.bytes_recv / (1024 ** 2)  # 轉換成 MB
+    }
+    
+    return jsonify(status)  # 返回 JSON 格式的伺服器狀態
 
 # Main
 @app.route("/index", methods=["GET", "POST"])

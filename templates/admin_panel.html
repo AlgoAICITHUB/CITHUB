@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>全息系統監控面板</title>
+  <style>
+    body {
+      background-color: #0a0a0a;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      perspective: 1000px; /* 3D 透視效果 */
+    }
+
+    .panel {
+      width: 800px;
+      padding: 20px;
+      background-color: rgba(0, 255, 255, 0.1);
+      border: 2px solid rgba(0, 255, 255, 0.5);
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), inset 0 0 20px rgba(0, 255, 255, 0.2);
+      transform-style: preserve-3d;
+      animation: floatPanel 6s infinite ease-in-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 3D 浮動效果 */
+    @keyframes floatPanel {
+      0%, 100% { transform: translateY(0) rotateY(0deg); }
+      50% { transform: translateY(-10px) rotateY(2deg); }
+    }
+
+    .header {
+      font-size: 26px;
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px cyan;
+    }
+
+    .content {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .data-block {
+      width: 45%;
+      margin-bottom: 20px;
+      padding: 20px;
+      background-color: rgba(0, 255, 255, 0.2);
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .data-block:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
+    }
+
+    .data-block h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px cyan;
+    }
+
+    .data-block p {
+      font-size: 18px;
+    }
+
+    /* 光線掃過效果 */
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 200%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+      animation: scanEffect 3s infinite linear;
+    }
+
+    @keyframes scanEffect {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 150px;
+      margin-top: 20px;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 30px;
+      background-color: cyan;
+      border: none;
+      border-radius: 5px;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+
+    button:hover {
+      background-color: #00ffff;
+      transform: translateY(-5px);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="panel">
+    <div class="header">全息系統監控面板</div>
+
+    <div class="content">
+      <div class="data-block">
+        <h3>CPU 狀態</h3>
+        <p id="cpu_usage">使用率: 加載中...</p>
+        <p id="cpu_temp">溫度: 加載中...</p>
+      </div>
+
+      <div class="data-block">
+        <h3>記憶體狀態</h3>
+        <p id="memory_usage">已用: 加載中...</p>
+        <p id="memory_total">總量: 加載中...</p>
+      </div>
+
+      <div class="data-block">
+        <h3>磁碟狀態</h3>
+        <p id="disk_usage">已用: 加載中...</p>
+        <p id="disk_total">總量: 加載中...</p>
+      </div>
+
+      <div class="data-block">
+        <h3>網絡狀態</h3>
+        <p id="net_sent">上傳: 加載中...</p>
+        <p id="net_recv">下載: 加載中...</p>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="usageChart"></canvas>
+    </div>
+
+    <button onclick="refreshData()">刷新資料</button>
+
+    <div class="footer">© 2024 全息系統監控設計</div>
+  </div>
+
+  <script>
+    // 動態更新伺服器狀態數據
+    function fetchServerStatus() {
+      fetch('/server-status')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('cpu_usage').textContent = `使用率: ${data.cpu_usage}%`;
+          document.getElementById('memory_usage').textContent = `已用: ${data.memory_used.toFixed(2)} GB`;
+          document.getElementById('memory_total').textContent = `總量: ${data.memory_total.toFixed(2)} GB`;
+          document.getElementById('disk_usage').textContent = `已用: ${data.disk_used.toFixed(2)} GB`;
+          document.getElementById('disk_total').textContent = `總量: ${data.disk_total.toFixed(2)} GB`;
+          document.getElementById('net_sent').textContent = `上傳: ${data.net_sent.toFixed(2)} MB`;
+          document.getElementById('net_recv').textContent = `下載: ${data.net_recv.toFixed(2)} MB`;
+        })
+        .catch(error => console.error('Error fetching server status:', error));
+    }
+
+    function refreshData() {
+      fetchServerStatus();
+      alert('資料已刷新！');
+    }
+
+    // 動態圖表設定
+    const ctx = document.getElementById('usageChart').getContext('2d');
+    const usageChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['1s', '2s', '3s', '4s', '5s', '6s'],
+        datasets: [{
+          label: 'CPU 使用率 (%)',
+          data: [30, 35, 33, 40, 38, 45],
+          backgroundColor: 'rgba(0, 255, 255, 0.2)',
+          borderColor: 'rgba(0, 255, 255, 1)',
+          borderWidth: 2,
+          fill: true,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: 'cyan',
+            },
+          },
+          x: {
+            ticks: {
+              color: 'cyan',
+            },
+          }
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: 'cyan',
+            }
+          }
+        }
+      }
+    });
+
+    // 每 5 秒自動更新一次伺服器狀態
+    setInterval(fetchServerStatus, 5000);
+  </script>
+
+</body>
+</html>
